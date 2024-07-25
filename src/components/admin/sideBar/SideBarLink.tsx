@@ -39,7 +39,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
               }`}
           >
             <Icon className="w-5 h-5" strokeWidth={1.5} />
-            <span className={`${isExpanded? "": "sr-only"}`}>{label}</span>
+            <span className={`${isExpanded? "": "hidden"} flex items-center leading-none`}>{label}</span>
           </Link>
         </TooltipTrigger>
         <TooltipContent side="right">{label}</TooltipContent>

@@ -23,11 +23,11 @@ const weekProps = {
 export default function Dashboard() {
   return (
     <AdminLayout>
-      <div className="grid grid-cols-3 gap-4 w-full h-full">
-        <InsightCard className="col-span-1" {...monthProps} />
-        <InsightCard className="col-span-1" {...weekProps} />
-        <WeekProduct className="col-span-1" />
-        <RecentOrders className="col-span-2 row-span-2" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 w-full h-full">
+        <InsightCard {...monthProps} />
+        <InsightCard {...weekProps} />
+        <WeekProduct className="sm:col-span-2 md:col-span-1" />
+        <RecentOrders className="sm:col-span-2 row-span-2" />
         <TopProducts />
       </div>
     </AdminLayout>

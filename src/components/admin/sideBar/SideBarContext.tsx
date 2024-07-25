@@ -1,33 +1,35 @@
-// SideBarContext.tsx
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
 
-// Define the shape of the context value
 interface SideBarContextProps {
   isExpanded: boolean;
   toggleSideBar: () => void;
 }
 
-// Default value for the context
 const defaultValue: SideBarContextProps = {
   isExpanded: false,
   toggleSideBar: () => {}
 };
 
-
 const SideBarContext = createContext<SideBarContextProps>(defaultValue);
-
 
 interface SideBarContextProviderProps {
   children: ReactNode;
 }
 
-// Provider component
 export function SideBarContextProvider({ children }: SideBarContextProviderProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(() => {
+    // Retrieve the initial state from local storage
+    const storedValue = localStorage.getItem('isExpanded');
+    return storedValue ? JSON.parse(storedValue) : false;
+  });
+
+  useEffect(() => {
+    // Store the state in local storage whenever it changes
+    localStorage.setItem('isExpanded', JSON.stringify(isExpanded));
+  }, [isExpanded]);
 
   function toggleSideBar() {
     setIsExpanded(!isExpanded);
-    console.log(isExpanded)
   }
 
   return (
@@ -37,5 +39,4 @@ export function SideBarContextProvider({ children }: SideBarContextProviderProps
   );
 }
 
-// Export the context for use in other components
 export default SideBarContext;

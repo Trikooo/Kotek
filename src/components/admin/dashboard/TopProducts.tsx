@@ -53,15 +53,17 @@ const chartConfig = {
     color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig;
+interface TopProductsProps {
+  className?: String
+}
 
-
-export function TopProducts() {
+export function TopProducts({className = ""}: TopProductsProps) {
   const totalSales = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.sales, 0);
   }, []);
 
   return (
-    <Card className="flex flex-col">
+    <Card className={`flex flex-col ${className}`}>
       <CardHeader className="items-center pb-0">
         <CardTitle>Top Products Sales</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
