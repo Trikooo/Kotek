@@ -1,4 +1,28 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, ReactNode, useEffect, useState } from "react";
+
+interface Storage {
+  getItem(key: string): any;
+  setItem(key: string, value: any): void;
+}
+
+interface StorageInternal {
+  [key: string]: any; // Index signature to allow string keys
+}
+
+class LocalStorage implements Storage {
+  private storage: StorageInternal = {}; // Internal storage
+
+  getItem(key: string): any {
+    return this.storage[key] || null; // Return null if the key doesn't exist
+  }
+
+  setItem(key: string, value: any): void {
+    this.storage[key] = value; // Set the value for the given key
+  }
+}
+
+let localStorage = new LocalStorage();
+
 
 interface SideBarContextProps {
   isExpanded: boolean;

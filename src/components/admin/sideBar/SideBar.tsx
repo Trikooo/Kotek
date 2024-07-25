@@ -22,7 +22,7 @@ export default function SideBar() {
     >
       <div className="flex flex-col gap-5">
       <button onClick={toggleSideBar} className="hover:bg-slate-100 w-max p-3 rounded-lg">
-        <PanelLeft className="w-5 h-5" strokeWidth={1.5}/>
+        <PanelLeft className="w-5 h-5"/>
         </button>
         <nav className="space-y-1">
         <SidebarLink href="/admin/dashboard" icon={Home} label="Dashboard" />

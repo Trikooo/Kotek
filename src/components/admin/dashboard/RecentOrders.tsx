@@ -24,7 +24,7 @@ export default function RecentOrders({className = ""}: RecentOrdersProps) {
   return (
     <Card className={`${className}`}>
       <CardHeader>
-        <CardTitle>Orders</CardTitle>
+        <CardTitle>Recent Orders</CardTitle>
         <CardDescription>Recent orders from your store.</CardDescription>
       </CardHeader>
       <CardContent>

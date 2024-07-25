@@ -38,7 +38,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
                   : "text-muted-foreground hover:text-foreground hover:bg-slate-100"
               }`}
           >
-            <Icon className="w-5 h-5" strokeWidth={1.5} />
+            <Icon className="w-5 h-5" />
             <span className={`${isExpanded? "": "hidden"} flex items-center leading-none`}>{label}</span>
           </Link>
         </TooltipTrigger>
