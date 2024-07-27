@@ -64,7 +64,7 @@ export default function LowestStock() {
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
                   height="64"
-                  src="/image-profile.png"
+                  src="/profile-image.png"
                   width="64"
                 />
               </TableCell>
@@ -96,12 +96,13 @@ export default function LowestStock() {
               </TableCell>
             </TableRow>
             <TableRow>
+
               <TableCell className="hidden sm:table-cell">
                 <Image
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
                   height="64"
-                  src="/image-profile.png"
+                  src="/profile-image.png"
                   width="64"
                 />
               </TableCell>
@@ -138,7 +139,7 @@ export default function LowestStock() {
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
                   height="64"
-                  src="/image-profile.png"
+                  src="/profile-image.png"
                   width="64"
                 />
               </TableCell>
@@ -173,7 +174,7 @@ export default function LowestStock() {
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
                   height="64"
-                  src="/image-profile.png"
+                  src="/profile-image.png"
                   width="64"
                 />
               </TableCell>
@@ -210,7 +211,7 @@ export default function LowestStock() {
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
                   height="64"
-                  src="/image-profile.png"
+                  src="/profile-image.png"
                   width="64"
                 />
               </TableCell>
@@ -247,7 +248,7 @@ export default function LowestStock() {
                   alt="Product image"
                   className="aspect-square rounded-md object-cover"
                   height="64"
-                  src="/image-profile.png"
+                  src="/profile-image.png"
                   width="64"
                 />
               </TableCell>
