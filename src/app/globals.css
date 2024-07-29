@@ -68,3 +68,10 @@
     @apply bg-background text-foreground;
   }
 }
+.parent {
+  --parent-width: 100%; /* Adjust this value as needed */
+}
+
+.child {
+  width: calc(var(--parent-width) * 0.5); /* 50% of the parent’s width */
+}

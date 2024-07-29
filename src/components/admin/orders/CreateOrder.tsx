@@ -1,28 +1,19 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import DynamicCard from "@/components/dynamic-ui/DynamicCard"; // Adjust the import path if necessary
 
-interface CreateOrderProps {
-  className?: string;
-}
-export default function CreateOrder({ className = "" }: CreateOrderProps) {
+export default function CreateOrder({ className = "" }: { className?: string }) {
   return (
-    <Card className={className} x-chunk="dashboard-05-chunk-0">
-      <CardHeader className="pb-3">
-        <CardTitle>Your Orders</CardTitle>
-        <CardDescription className="max-w-lg text-balance leading-relaxed">
+    <DynamicCard
+      className={className}
+      title="Your Orders"
+      description={
+        <span className="max-w-lg text-balance leading-relaxed">
           Introducing Our Dynamic Orders Dashboard for Seamless Management and
           Insightful Analysis.
-        </CardDescription>
-      </CardHeader>
-      <CardFooter>
-        <Button>Create New Order</Button>
-      </CardFooter>
-    </Card>
+        </span>
+      }
+      content={"Manage all your orders in one place"} // You can replace this with actual content if needed
+      footer={<Button>Create New Order</Button>}
+    />
   );
 }

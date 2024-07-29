@@ -18,115 +18,64 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import DynamicPieChart from "@/components/dynamic-ui/DynamicPieChart"
 const chartData = [
-  { product: "MSI Z490-A PRO Motherboard", sales: 120, fill: "hsl(var(--chart-1))" },
-  { product: "Intel Core i5-11600K CPU", sales: 200, fill: "hsl(var(--chart-2))" },
-  { product: "Corsair Hydro Series H100i Water Cooler", sales: 90, fill: "hsl(var(--chart-3))" },
-  { product: "ASUS ROG Swift PG27UQ 4K Monitor", sales: 150, fill: "hsl(var(--chart-4))" },
-  { product: "NVIDIA GeForce RTX 3070 Graphics Card", sales: 250, fill: "hsl(var(--chart-5))" },
+  { product: "NVIDIA GeForce RTX 4080", sales: 500, fill: "var(--color-rtx-4080)" },
+  { product: "Apple MacBook Pro M2", sales: 350, fill: "var(--color-macbook-pro-m2)" },
+  { product: "Dell XPS 15", sales: 420, fill: "var(--color-dell-xps-15)" },
+  { product: "ASUS ROG Strix", sales: 300, fill: "var(--color-asus-rog)" },
+  { product: "Logitech MX Master 3", sales: 150, fill: "var(--color-logitech-mx-master-3)" },
 ];
-
-
 
 const chartConfig = {
   sales: {
     label: "Sales",
   },
-  msiMotherboard: {
-    label: "MSI Z490-A PRO Motherboard",
+  "rtx-4080": {
+    label: "NVIDIA GeForce RTX 4080",
     color: "hsl(var(--chart-1))",
   },
-  intelCpu: {
-    label: "Intel Core i5-11600K CPU",
+  "macbook-pro-m2": {
+    label: "Apple MacBook Pro M2",
     color: "hsl(var(--chart-2))",
   },
-  corsairCooler: {
-    label: "Corsair Hydro Series H100i Water Cooler",
+  "dell-xps-15": {
+    label: "Dell XPS 15",
     color: "hsl(var(--chart-3))",
   },
-  asusMonitor: {
-    label: "ASUS ROG Swift PG27UQ 4K Monitor",
+  "asus-rog": {
+    label: "ASUS ROG Strix",
     color: "hsl(var(--chart-4))",
   },
-  nvidiaGpu: {
-    label: "NVIDIA GeForce RTX 3070 Graphics Card",
+  "logitech-mx-master-3": {
+    label: "Logitech MX Master 3",
     color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig;
-interface TopProductsProps {
-  className?: String
-}
 
-export function TopProducts({className = ""}: TopProductsProps) {
-  const totalSales = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.sales, 0);
-  }, []);
+
+export default function TopProducts() {
+  const totalVisitors = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.sales, 0)
+  }, [])
 
   return (
-    <Card className={`flex flex-col ${className}`}>
+    <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Top Products Sales</CardTitle>
+        <CardTitle>Top Products</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="sales"
-              nameKey="product"
-              innerRadius={60}
-              strokeWidth={5}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
-                        >
-                          {totalSales.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Sales
-                        </tspan>
-                      </text>
-                    );
-                  }
-                  return null;
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
+        <DynamicPieChart chartConfig={chartConfig} chartData={chartData} dataKey="sales" nameKey="product" total={totalVisitors}/>
+       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total sales for the last 6 months
+          Showing total visitors for the last 6 months
         </div>
       </CardFooter>
     </Card>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import { TopProducts } from "@/components/admin/dashboard/TopProducts";
+import TopProducts  from "@/components/admin/dashboard/TopProducts";
 import AdminLayout from "../AdminLayout";
 import InsightCard from "@/components/admin/dashboard/InsightCard";
-import WeekProduct from "@/components/admin/dashboard/WeekProduct";
+import WeeklyProductSales from "@/components/admin/dashboard/WeeklyProductSales";
 import RecentOrders from "@/components/admin/dashboard/RecentOrders";
 
 // Define the props object for the InsightCard
@@ -26,7 +26,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 w-full h-full">
         <InsightCard {...monthProps} />
         <InsightCard {...weekProps} />
-        <WeekProduct className="sm:col-span-2 md:col-span-1" />
+        <WeeklyProductSales className="sm:col-span-2 md:col-span-1" />
         <RecentOrders className="sm:col-span-2 row-span-2" />
         <TopProducts />
       </div>

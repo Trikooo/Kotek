@@ -24,7 +24,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       <SideBar />
       <div
         className={`flex flex-1 flex-col sm:gap-4 sm:py-4 ${
-          isExpanded ? "sm:pl-52" : "sm:pl-14"
+          isExpanded ? "sm:ml-52" : "sm:ml-14"
         }`}
       >
         <Header />

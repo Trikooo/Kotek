@@ -25,7 +25,7 @@ export default function Products() {
             />
             <ViewProducts className="sm:col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-2" />
           </div>
-          <NewCustomers />
+          <NewCustomers className=""/>
         </div>
         <CustomerChart />
       </main>

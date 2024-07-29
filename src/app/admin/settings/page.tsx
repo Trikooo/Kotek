@@ -1,9 +1,14 @@
 import AdminLayout from "../AdminLayout";
+import "../../globals.css"
 
 export default function Settings() {
-  return(
+  return (
     <AdminLayout>
-        <h1>i am going to act as your settings page for the day.</h1>
-    </AdminLayout>
-  )
-};
+    <div className="relative w-full max-w-lg mx-auto p-4 border-2 border-black">
+      <div className="child bg-blue-500 border-2 border-black">
+        {/* Your content */}
+      </div>
+    </div>
+  </AdminLayout>
+  );
+}
