@@ -1,8 +1,14 @@
 
 
+import Main from "@/components/store/home/Main";
+
+
+
+
+
 
 export default function Home() {
   return (
-    <h1>hello</h1>
+      <Main />
   );
 }

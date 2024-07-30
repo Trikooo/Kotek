@@ -20,7 +20,7 @@ export default function SideBar() {
   if (typeof window !== "undefined") {
      width = window.innerWidth
   }
-  const [isLg, setIsLg] = useState(width? width > 1024 : false);
+  const [isLg, setIsLg] = useState(width? width < 1024 : false);
 
   useEffect(() => {
     const handleResize = () => {
