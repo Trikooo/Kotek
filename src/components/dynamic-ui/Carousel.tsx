@@ -37,8 +37,8 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
               src={image}
               alt={`Slide ${index + 1}`}
               className="w-full h-full object-cover"
-              width={2000}
-              height={2000}
+              width={700}
+              height={700}
             />
           </CarouselItem>
         ))}
