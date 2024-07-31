@@ -15,7 +15,7 @@ export default function FeaturedItemCard() {
       <Card
         className="transition-all duration-100 hover:shadow-md"
       >
-        <CardContent className="flex justify-center items-center pt-6 py-12">
+        <CardContent className="flex aspect-square items-center justify-center">
           <Image
             src="/products/image.png"
             alt="intel cpu"

@@ -28,6 +28,7 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
       opts={{
         loop: true,
       }}
+      buttonHover={true}
     >
       <CarouselContent>
         {images.map((image, index) => (

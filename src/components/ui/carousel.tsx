@@ -19,6 +19,8 @@ type CarouselProps = {
   plugins?: CarouselPlugin
   orientation?: "horizontal" | "vertical"
   setApi?: (api: CarouselApi) => void
+  buttonPosition?: 1 | 2 // Button position prop
+  buttonHover?: boolean // New prop for button visibility
 }
 
 type CarouselContextProps = {
@@ -52,6 +54,8 @@ const Carousel = React.forwardRef<
       opts,
       setApi,
       plugins,
+      buttonPosition = 2, // Default position
+      buttonHover = false, // Default visibility
       className,
       children,
       ...props
@@ -132,17 +136,25 @@ const Carousel = React.forwardRef<
           scrollNext,
           canScrollPrev,
           canScrollNext,
+          buttonPosition, // Pass button position to context
+          buttonHover, // Pass button hover to context
         }}
       >
         <div
           ref={ref}
           onKeyDownCapture={handleKeyDown}
-          className={cn("relative group", className)}
+          className={cn(
+            "relative group",
+            buttonHover ? "group-hover" : "",
+            className
+          )}
           role="region"
           aria-roledescription="carousel"
           {...props}
         >
           {children}
+          <CarouselPrevious />
+          <CarouselNext />
         </div>
       </CarouselContext.Provider>
     )
@@ -198,7 +210,12 @@ const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
 >(({ className, variant = "outline", size = "icon", ...props }, ref) => {
-  const { scrollPrev, canScrollPrev } = useCarousel()
+  const { scrollPrev, canScrollPrev, buttonPosition, buttonHover } = useCarousel()
+
+  const positionClasses =
+    buttonPosition === 1
+      ? "absolute -left-14 top-1/2 transform -translate-y-1/2 mb-4 ml-4"
+      : "absolute left-0 bottom-0 mb-4 ml-4"
 
   return (
     <Button
@@ -206,7 +223,9 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute left-0 bottom-0 mb-4 ml-4 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+        "h-8 w-8 rounded-full transition-opacity duration-200",
+        buttonHover ? "opacity-0 group-hover:opacity-100" : "opacity-100",
+        positionClasses,
         className
       )}
       disabled={!canScrollPrev}
@@ -225,7 +244,12 @@ const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
 >(({ className, variant = "outline", size = "icon", ...props }, ref) => {
-  const { scrollNext, canScrollNext } = useCarousel()
+  const { scrollNext, canScrollNext, buttonPosition, buttonHover } = useCarousel()
+
+  const positionClasses =
+    buttonPosition === 1
+      ? "absolute -right-14 top-1/2 transform -translate-y-1/2 mb-4 mr-4"
+      : "absolute left-14 bottom-0 mb-4 mr-4"
 
   return (
     <Button
@@ -233,7 +257,9 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute left-14 bottom-0 mb-4 mr-4 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+        "h-8 w-8 rounded-full transition-opacity duration-200",
+        buttonHover ? "opacity-0 group-hover:opacity-100" : "opacity-100",
+        positionClasses,
         className
       )}
       disabled={!canScrollNext}
