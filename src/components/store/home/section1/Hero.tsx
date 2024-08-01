@@ -8,7 +8,7 @@ const images = [
 
 export default function Hero() {
   return (
-    <div className="pt-[72px] lg:pt-20 overflow-hidden">
+    <div className="mt-[72px] lg:mt-20 overflow-hidden mx-4 shadow-sm rounded-lg">
       <CarouselDemo images={images} />
     </div>
   );

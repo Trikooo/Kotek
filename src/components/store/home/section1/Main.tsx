@@ -11,7 +11,7 @@ const Main = () => {
 
   return (
     <>
-      <Background />
+    <Background />
       <Header setMobileMenuOpen={setMobileMenuOpen} />
       <MobileMenu
         mobileMenuOpen={mobileMenuOpen}

@@ -22,13 +22,14 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
   return (
     <Carousel
       plugins={[plugin.current]}
-      className="w-full h-auto lg:h-[650px] " // Set a fixed height for the carousel
+      className="w-full h-auto lg:h-[650px]" // Set a fixed height for the carousel
       onMouseLeave={plugin.current.reset}
       onClick={plugin.current.stop}
       opts={{
         loop: true,
       }}
       buttonHover={true}
+
     >
       <CarouselContent>
         {images.map((image, index) => (
