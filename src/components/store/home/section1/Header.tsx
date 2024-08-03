@@ -4,6 +4,7 @@ import { Menu } from "lucide-react";
 import AnnouncementBanner from "@/components/dynamic-ui/AnnouncementBanner";
 import { CircleUserRound, ShoppingCart, Search } from "lucide-react";
 import { ReactElement } from "react";
+import { Button } from "@/components/ui/button";
 
 interface NavigationItem {
   name: string;
@@ -11,11 +12,39 @@ interface NavigationItem {
   element?: ReactElement;
 }
 
+const useOS = () => {
+  const [os, setOS] = useState("");
+
+  useEffect(() => {
+    const platform = navigator.platform.toLowerCase();
+    if (platform.includes("mac")) {
+      setOS("mac");
+    } else {
+      setOS("windows");
+    }
+  }, []);
+
+  return os;
+};
+
+const SearchField = () => {
+  const os = useOS();
+
+  return (
+    <p className="flex items-center">
+      <Search strokeWidth={1.5} className="mr-3 w-6 h-6" />{" "}
+      <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+        <span className="text-xs">{os === "mac" ? "⌘" : "Ctrl"}</span>K
+      </kbd>
+    </p>
+  );
+};
+
 const navigation: NavigationItem[] = [
   { name: "Store", href: "#" },
   { name: "Categories", href: "#" },
   { name: "Company", href: "#" },
-  { element: <Search />, name: "Search", href: "#" }
+  { element: <SearchField />, name: "Search", href: "#" },
 ];
 
 const Header = ({ setMobileMenuOpen }: any) => {
@@ -23,7 +52,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const controlHeader = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       if (window.scrollY < lastScrollY || window.scrollY < 100) {
         setIsVisible(true);
       } else {
@@ -34,7 +63,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.addEventListener("scroll", controlHeader);
       return () => {
         window.removeEventListener("scroll", controlHeader);
@@ -43,7 +72,13 @@ const Header = ({ setMobileMenuOpen }: any) => {
   });
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${isVisible ? 'translate-y-0 bg-white/50 backdrop-blur-lg' : '-translate-y-full bg-transparent'}`}>
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        isVisible
+          ? "translate-y-0 bg-white/50 backdrop-blur-lg"
+          : "-translate-y-full bg-transparent"
+      }`}
+    >
       <nav
         aria-label="Global"
         className="flex items-center justify-between p-6 lg:px-8"

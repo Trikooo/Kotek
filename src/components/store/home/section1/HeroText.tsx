@@ -5,7 +5,7 @@ export default function HeroText() {
         <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
           Try Out Pc Builder!
         </h1>
-        <p className="mt-6 text-lg leading-8 text-gray-600">
+        <p className="mt-6 text-lg leading-8 text-gray-600 hidden lg:block">
           Build your dream PC with confidence using our interactive PC Builder
           tool. Select compatible components step-by-step, from CPUs to RAM,
           with our smart system ensuring all parts work seamlessly together.
@@ -19,7 +19,7 @@ export default function HeroText() {
           >
             Explore
           </a>
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
+          <a href="#" className="text-sm font-semibold leading-6 text-gray-900 hidden lg:block">
             View Store <span aria-hidden="true">→</span>
           </a>
         </div>
