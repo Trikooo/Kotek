@@ -35,7 +35,7 @@ export default function CategoriesCarousel() {
         {Array.from({ length: 5 }).map((_, index) => (
           <CarouselItem
             key={index}
-            className=" basis-1/2 md:basis-1/3 lg:basis-1/4"
+            className=" basis-1/2 md:basis-1/3 lg:basis-1/4 py-1"
           >
             <Card className="transition-all duration-100 hover:shadow-md">
               <CardContent className="flex aspect-square items-center justify-center ">
