@@ -30,11 +30,13 @@ const SearchField = ({ onClick }: { onClick: () => void }) => {
 
   return (
     <button className="flex items-center" onClick={onClick}>
-      <Search strokeWidth={1.5} className="mr-3 w-5 h-5" />
+      <Search strokeWidth={1.5} className="mr-6 lg:mr-3 w-5 h-5" />
       {os === "loading" ? (
-        <span className="text-xs pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">...</span>
+        <span className="text-xs pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+          ...
+        </span>
       ) : (
-        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+        <kbd className="pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100  ">
           <span className="text-xs">{os === "mac" ? "⌘" : "Ctrl"}</span>K
         </kbd>
       )}
@@ -106,14 +108,15 @@ const Header = ({ setMobileMenuOpen }: any) => {
               />
             </a>
           </div>
-          <div className="flex lg:hidden">
+          <div className="flex lg:hidden items-center">
+            <SearchField onClick={() => setSearchFieldVisible(true)} />
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="-m-2.5 inline-flex items-center rounded-md p-2.5 text-gray-700"
+              className="-m-2.5 inline-flex items-center rounded-md p-2.5"
             >
               <span className="sr-only">Open main menu</span>
-              <Menu aria-hidden="true" className="h-6 w-6" />
+              <Menu aria-hidden="true" className="h-5 w-5" />
             </button>
           </div>
           <div className="hidden lg:flex flex-grow justify-center gap-20">
@@ -139,16 +142,19 @@ const Header = ({ setMobileMenuOpen }: any) => {
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-12 lg:border-l lg:border-slate-900/15 pl-5">
             <a href="#">
-              <ShoppingCart strokeWidth={1.5} className="w-5 h-5"/>
+              <ShoppingCart strokeWidth={1.5} className="w-5 h-5" />
             </a>
             <a href="#">
-              <CircleUserRound strokeWidth={1.5} className="w-5 h-5"/>
+              <CircleUserRound strokeWidth={1.5} className="w-5 h-5" />
             </a>
           </div>
         </nav>
       </header>
 
-      <SearchPopup open={searchFieldVisible} onOpenChange={setSearchFieldVisible}/>
+      <SearchPopup
+        open={searchFieldVisible}
+        onOpenChange={setSearchFieldVisible}
+      />
     </>
   );
 };
