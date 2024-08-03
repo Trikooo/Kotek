@@ -15,21 +15,40 @@ interface CarouselDemoProps {
 }
 
 export default function CarouselDemo({ images }: CarouselDemoProps) {
-  const plugin = React.useRef(
+  const [isAutoplay, setIsAutoplay] = React.useState(true); // State to manage autoplay
+  const autoplayPlugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: false })
   );
 
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.metaKey && event.key === 'k') {
+      event.preventDefault();
+      if (isAutoplay) {
+        autoplayPlugin.current.stop(); // Stop autoplay
+      } else {
+        autoplayPlugin.current.play(); // Resume autoplay
+      }
+      setIsAutoplay(!isAutoplay); // Toggle autoplay state
+    }
+  };
+
+  React.useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [isAutoplay]);
+
   return (
     <Carousel
-      plugins={[plugin.current]}
+      plugins={[autoplayPlugin.current]}
       className="w-full h-auto lg:h-[650px]" // Set a fixed height for the carousel
-      onMouseLeave={plugin.current.reset}
-      onClick={plugin.current.stop}
+      onMouseLeave={autoplayPlugin.current.reset}
+      onClick={autoplayPlugin.current.stop}
       opts={{
         loop: true,
       }}
       buttonHover={true}
-
     >
       <CarouselContent>
         {images.map((image, index) => (
