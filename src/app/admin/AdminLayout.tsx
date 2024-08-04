@@ -1,7 +1,7 @@
 "use client";
 import SideBar from "@/components/admin/sideBar/SideBar";
 import Header from "@/components/admin/header/Header";
-import SideBarContext, { SideBarContextProvider } from "@/components/admin/sideBar/SideBarContext";
+import SideBarContext, { SideBarContextProvider } from "@/context/SideBarContext";
 import { useContext } from "react";
 
 export default function AdminLayout({
