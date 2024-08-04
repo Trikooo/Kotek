@@ -13,11 +13,32 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import Autoplay from "embla-carousel-autoplay";
+import { useHeaderContext } from "@/context/HeaderContext";
 
 export default function CategoriesCarousel() {
+  const [isAutoplay, setIsAutoplay] = React.useState(true); // State to manage autoplay
+  const { searchFieldVisible } = useHeaderContext();
   const plugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: false })
   );
+  const handleAutoPlay = () => {
+    if (searchFieldVisible) {
+      setIsAutoplay(true);
+    } else {
+      setIsAutoplay(false);
+    }
+    if (isAutoplay) {
+      plugin.current.stop(); // Stop autoplay
+    } else {
+      plugin.current.play(); // Resume autoplay
+    }
+  };
+
+  React.useEffect(() => {
+    handleAutoPlay();
+    console.log(isAutoplay);
+  });
+
   return (
     <Carousel
       plugins={[plugin.current]}

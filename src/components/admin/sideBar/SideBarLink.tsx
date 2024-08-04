@@ -7,7 +7,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { LucideIcon } from "lucide-react";
-import SideBarContext from "./SideBarContext";
+import SideBarContext from "../../../context/SideBarContext";
 import { useContext } from "react";
 
 interface SidebarLinkProps {

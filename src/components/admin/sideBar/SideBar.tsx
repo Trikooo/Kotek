@@ -12,7 +12,7 @@ import {
 
 import SidebarLink from "./SideBarLink";
 import { useContext } from "react";
-import SideBarContext from "./SideBarContext";
+import SideBarContext from "../../../context/SideBarContext";
 import { useEffect, useState } from "react";
 export default function SideBar() {
   const { isExpanded, toggleSideBar } = useContext(SideBarContext);

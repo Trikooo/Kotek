@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"]});
 
 export const metadata: Metadata = {
   title: "KOTEK",
-  description: "cx-app with a description",
+  description: "kotek informatique est une boutique de vente de materiel informatique de tous les types",
 };
 
 export default function RootLayout({

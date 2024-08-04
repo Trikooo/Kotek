@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Menu, Search, ShoppingCart, CircleUserRound } from "lucide-react";
 import AnnouncementBanner from "@/components/dynamic-ui/AnnouncementBanner";
 import SearchPopup from "./SearchPopup";
+import { useHeaderContext } from "@/context/HeaderContext";
 
 const useOS = () => {
   const [os, setOS] = useState("loading");
@@ -53,7 +54,7 @@ const navigation = [
 const Header = ({ setMobileMenuOpen }: any) => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [searchFieldVisible, setSearchFieldVisible] = useState(false);
+  const { searchFieldVisible, setSearchFieldVisible } = useHeaderContext();
 
   useEffect(() => {
     const controlHeader = () => {

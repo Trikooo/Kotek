@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useHeaderContext } from "@/context/HeaderContext";
 
 // Define the prop types for CarouselDemo
 interface CarouselDemoProps {
@@ -16,28 +17,28 @@ interface CarouselDemoProps {
 
 export default function CarouselDemo({ images }: CarouselDemoProps) {
   const [isAutoplay, setIsAutoplay] = React.useState(true); // State to manage autoplay
+  const { searchFieldVisible } = useHeaderContext();
   const autoplayPlugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: false })
   );
 
-  const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.metaKey && event.key === 'k') {
-      event.preventDefault();
-      if (isAutoplay) {
-        autoplayPlugin.current.stop(); // Stop autoplay
-      } else {
-        autoplayPlugin.current.play(); // Resume autoplay
-      }
-      setIsAutoplay(!isAutoplay); // Toggle autoplay state
+  const handleAutoPlay = () => {
+    if (searchFieldVisible) {
+      setIsAutoplay(true);
+    } else {
+      setIsAutoplay(false);
+    }
+    if (isAutoplay) {
+      autoplayPlugin.current.stop(); // Stop autoplay
+    } else {
+      autoplayPlugin.current.play(); // Resume autoplay
     }
   };
 
   React.useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [isAutoplay]);
+    handleAutoPlay();
+    console.log(isAutoplay);
+  });
 
   return (
     <Carousel

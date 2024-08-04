@@ -7,16 +7,11 @@ import Hero from "@/components/store/home/section1/Hero";
 import Background from "./Background";
 
 const Main = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
     <Background />
-      <Header setMobileMenuOpen={setMobileMenuOpen} />
-      <MobileMenu
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
-      />
+      
       <Hero />
     </>
   );
