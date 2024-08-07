@@ -14,7 +14,7 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
       />
-      <div className="mt-[72px] lg:mt-20">
+      <div className="mt-[72px] lg:mt-20 mx-5">
       {children}
       </div>
     </HeaderProvider>

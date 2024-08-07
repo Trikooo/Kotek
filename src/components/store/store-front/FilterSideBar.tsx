@@ -13,14 +13,12 @@ const brands = ["Brand A", "Brand B", "Brand C", "Brand D"];
 const colors = ["Red", "Blue", "Green", "Black"];
 
 export default function FilterSideBar() {
-  const [value, setValue] = useState<[number, number]>([20, 80]);
+  const [value, setValue] = useState<[number, number]>([0, 100]);
   const [inStock, setInStock] = useState(false);
 
   return (
-    <aside className="ml-5 w-1/5">
-      <h1 className="text-2xl font-semibold py-7">
-        Filtering
-      </h1>
+    <aside className="relative top-0 left-0 w-1/5 h-full overflow-auto">
+      <h1 className="text-2xl font-semibold pb-7">Filtering</h1>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1">
           <AccordionTrigger>Price</AccordionTrigger>
