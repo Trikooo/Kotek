@@ -17,7 +17,7 @@ export default function FilterSideBar() {
   const [inStock, setInStock] = useState(false);
 
   return (
-    <aside className="relative top-0 left-0 w-1/5 h-full overflow-auto">
+    <aside className="fixed top-28 left-0 w-60 ml-5  h-full overflow-auto hidden lg:block">
       <h1 className="text-2xl font-semibold pb-7">Filtering</h1>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1">
