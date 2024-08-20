@@ -142,7 +142,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
             </div>
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-12 lg:border-l lg:border-slate-900/15 pl-5">
-            <a href="#">
+            <a href="/cart">
               <ShoppingCart strokeWidth={1.5} className="w-5 h-5" />
             </a>
             <a href="#">

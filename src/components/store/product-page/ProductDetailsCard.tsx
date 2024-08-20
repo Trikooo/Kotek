@@ -12,19 +12,30 @@ export default function ProductDetailsCard() {
     "/products/image.png",
     "/products/image.png",
     "/products/image.png",
+    "/products/image.png",
+    "/products/image.png",
+    "/products/image.png",
+    "/products/image.png",
+    "/products/image.png",
+    "/products/image.png",
   ];
 
   return (
-    <div className="w-max flex gap-4">
+    <div className="flex flex-col items-start md:flex-row-reverse gap-4 w-full">
       {/* Main Image */}
-      <div className="flex flex-col gap-2">
+      <Card className="p-4">
+        <Image src={mainImage} alt="product" height={600} width={600} />
+      </Card>
+
+      {/* Thumbnails */}
+      <div className="flex gap-2 mt-4 md:mt-0 overflow-x-auto md:overflow-y-auto md:flex-col max-w-full md:max-h-[600px]">
         {thumbnails.map((src, index) => (
           <button
             key={index}
             onClick={() => setMainImage(src)}
-            className="mb-2"
+            className="shrink-0"
           >
-            <Card className="p-4 hover:shadow-md">
+            <Card className="p-2 hover:shadow-md">
               <Image
                 src={src}
                 alt={`Thumbnail ${index}`}
@@ -35,9 +46,6 @@ export default function ProductDetailsCard() {
           </button>
         ))}
       </div>
-      <Card className="p-4">
-        <Image src={mainImage} alt="product" height={600} width={600} />
-      </Card>
     </div>
   );
 }

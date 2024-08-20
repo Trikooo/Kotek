@@ -12,7 +12,7 @@ import { CircleCheck } from "lucide-react";
 
 export default function ProductInformation() {
   return (
-    <div className="p-6 space-y-4">
+    <div className="md:p-6 space-y-4">
       {/* Product Title */}
       <h3 className="text-xl md:text-3xl font-semibold">
         Intel Core i5 14600k

@@ -9,12 +9,11 @@ import { Button } from "@/components/ui/button";
 export default function ProductPage() {
   return (
     <StoreLayout>
-      <div className="flex gap-8 pt-14">
-        {/* Set flex-1 to make each component split the width evenly */}
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row gap-8 pt-14">
+        <div className="w-full md:flex-1">
           <ProductDetailsCard />
         </div>
-        <div className="flex-1">
+        <div className="w-full md:flex-1 mt-8 md:mt-0">
           <ProductInformation />
         </div>
       </div>
@@ -48,7 +47,7 @@ export default function ProductPage() {
       <div className="mt-14">
         <div className="flex flex-col justify-center items-center mt-24">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
-            Recommended Items
+            Recommended
           </h1>
 
           <div className="relative w-full mt-14 px-5">
