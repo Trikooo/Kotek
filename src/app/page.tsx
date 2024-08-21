@@ -10,9 +10,11 @@ export default function Home() {
     <div className="overflow-hidden">
       <StoreLayout>
       <Main />
+      <div className=" mx-2 md:mx-0">
       <Section2 />
       <Section3 />
-      <Footer />
+      </div>
+
       </StoreLayout>
     </div>
   );

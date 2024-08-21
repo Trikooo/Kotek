@@ -9,7 +9,8 @@ export default function Cart() {
         <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
           Your Cart
         </h1>
-        <div className="mt-14 w-full">
+        <div className=" mt-14 w-full">
+
           <CartItemCard />
           <OrderSummary />
         </div>

@@ -43,7 +43,7 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
   return (
     <Carousel
       plugins={[autoplayPlugin.current]}
-      className="w-full h-auto lg:h-[650px]" // Set a fixed height for the carousel
+      className="w-full" // Keep width at full
       onMouseLeave={autoplayPlugin.current.reset}
       onClick={autoplayPlugin.current.stop}
       opts={{
@@ -53,14 +53,17 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
     >
       <CarouselContent>
         {images.map((image, index) => (
-          <CarouselItem key={index} className="h-full flex items-center">
-            <Image
-              src={image}
-              alt={`Slide ${index + 1}`}
-              className="w-full h-full object-cover"
-              width={800}
-              height={650}
-            />
+          <CarouselItem key={index} className="w-full">
+            <div className="relative w-full pb-[50%]">
+              {" "}
+              {/* Aspect ratio container */}
+              <Image
+                src={image}
+                alt={`Slide ${index + 1}`}
+                className="absolute top-0 left-0 w-full h-full object-cover"
+                layout="fill" // Ensures the image covers the container
+              />
+            </div>
           </CarouselItem>
         ))}
       </CarouselContent>

@@ -7,11 +7,8 @@ import Hero from "@/components/store/home/section1/Hero";
 import Background from "./Background";
 
 const Main = () => {
-
   return (
     <>
-    <Background />
-      
       <Hero />
     </>
   );

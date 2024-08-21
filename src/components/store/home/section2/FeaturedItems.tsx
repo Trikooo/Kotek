@@ -9,7 +9,7 @@ export default function FeaturedItems() {
         Featured Items
       </h1>
 
-      <div className="relative w-full mt-14 px-5">
+      <div className="relative w-full mt-14">
         <Button
           variant="link"
           className="absolute top-0 right-0 hover:text-indigo-600 duration-0 md:text-lg"

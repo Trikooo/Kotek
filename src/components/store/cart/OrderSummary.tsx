@@ -1,3 +1,5 @@
+"use client"
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -6,6 +8,12 @@ import { Separator } from "@/components/ui/separator";
 import { cartItems, subtotal, discounts, fees, total } from "./CartItemCard"; // adjust the path
 
 export default function OrderSummary() {
+  const router = useRouter();
+
+  const handleProceed = () => {
+    router.push('/checkout/shipping');
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -31,7 +39,9 @@ export default function OrderSummary() {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full bg-indigo-600 hover:bg-indigo-500">Proceed to Checkout</Button>
+        <Button className="w-full bg-indigo-600 hover:bg-indigo-500" onClick={handleProceed}>
+          Proceed to Checkout
+        </Button>
       </CardFooter>
     </Card>
   );
