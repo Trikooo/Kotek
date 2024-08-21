@@ -107,14 +107,10 @@ export default function Section3() {
         <CardTitle className="">PC Configuration</CardTitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 w-full">
           {Object.keys(components).map((key) => (
-
-              <ComboboxDemo label={key} components={components[key]} />
-
+            <ComboboxDemo key={key} label={key} components={components[key]} />
           ))}
-        <Button className="w-auto md:col-span-2">Configure</Button>
+          <Button className="w-auto md:col-span-2">Configure</Button>
         </div>
-
-
       </Card>
     </div>
   );
