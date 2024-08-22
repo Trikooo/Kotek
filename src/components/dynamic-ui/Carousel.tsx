@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useHeaderContext } from "@/context/HeaderContext";
+import { Card } from "../ui/card";
 
 // Define the prop types for CarouselDemo
 interface CarouselDemoProps {
@@ -54,16 +55,17 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
       <CarouselContent>
         {images.map((image, index) => (
           <CarouselItem key={index} className="w-full">
-            <div className="relative w-full pb-[50%]">
+
+            <Card className="relative w-full pb-[50%] overflow-hidden">
               {" "}
               {/* Aspect ratio container */}
               <Image
                 src={image}
                 alt={`Slide ${index + 1}`}
-                className="absolute top-0 left-0 w-full h-full object-cover"
+                className="absolute top-0 left-0 w-full h-full object-cover overflow-hidden"
                 layout="fill" // Ensures the image covers the container
               />
-            </div>
+            </Card>
           </CarouselItem>
         ))}
       </CarouselContent>

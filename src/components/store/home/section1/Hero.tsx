@@ -8,8 +8,8 @@ const images = [
 
 export default function Hero() {
   return (
-    <div className="overflow-hidden shadow-sm rounded-lg">
+
       <CarouselDemo images={images} />
-    </div>
+
   );
 }

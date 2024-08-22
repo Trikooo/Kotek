@@ -6,47 +6,149 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  id                     String                 @id @default(uuid())
-  name                   String
-  priceInCents           Int
-  filePath               String
-  imagePath              String
-  description            String
-  isAvailableForPurchase Boolean                @default(true)
-  createdAt              DateTime               @default(now())
-  updatedAt              DateTime               @updatedAt
-  oders                  Order[]
-  DownloadVerifications  DownloadVerification[]
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  username     String    @unique
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  role         String    @default("user")
+  orders       Order[]
+  cart         Cart?
+  addresses    Address[]
+  reviews      Review[]
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Order[]
+model Category {
+  id            String     @id @default(uuid()) @db.Uuid
+  name          String     @unique
+  description   String?
+  imageUrl      String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  parentId      String?    @db.Uuid
+  parent        Category?  @relation("CategoryParent", fields: [parentId], references: [id])
+  subcategories Category[] @relation("CategoryParent")
+  products      Product[]
+  tags          String[]
+
+  @@index([name])
+  @@index([imageUrl])
+  @@index([name, imageUrl])
+
+}
+
+model Product {
+  id          String      @id @default(uuid()) @db.Uuid
+  name        String
+  description String      @db.Text
+  price       Int
+  imageUrl    String
+  stock       Int
+  sku         String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  categoryId  String?     @db.Uuid
+  category    Category?   @relation(fields: [categoryId], references: [id])
+  tags        String[]
+  keyFeatures String[]
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
+  reviews     Review[]
+
+  @@index([name])
 }
 
 model Order {
-  id               String   @id @default(uuid())
-  pricePaidInCents Int
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  userId           String
-  productId        String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  products         Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  id          String      @id @default(uuid()) @db.Uuid
+  userId      String      @db.Uuid
+  user        User        @relation(fields: [userId], references: [id])
+  status      OrderStatus
+  totalAmount Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  items       OrderItem[]
+
+  @@index([userId])
 }
 
-model DownloadVerification {
-  id        String   @id @default(uuid())
-  expiresAt DateTime
+model OrderItem {
+  id        String  @id @default(uuid()) @db.Uuid
+  orderId   String  @db.Uuid
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String  @db.Uuid
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  DISPATCHED
+  DELIVERED
+  CANCELED
+}
+
+model Cart {
+  id        String     @id @default(uuid()) @db.Uuid
+  userId    String     @unique @db.Uuid
+  user      User       @relation(fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  items     CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String  @id @default(uuid()) @db.Uuid
+  cartId    String  @db.Uuid
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  productId String  @db.Uuid
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int
+
+  @@index([cartId])
+  @@index([productId])
+}
+
+model Address {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id])
+  fullName    String
+  phoneNumber String
+  wilaya      String
+  commune     String
+  address     String
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Review {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  productId String   @db.Uuid
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int
+  comment   String?
   createdAt DateTime @default(now())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([productId])
 }
