@@ -17,7 +17,7 @@ export default function Footer() {
   let currentYear = new Date().getFullYear();
   return (
     <footer className="flex flex-col sm:flex-row items-center justify-between px-4 py-10 sm:px-6 border-t mt-16 gap-6 sm:gap-0 mx-10">
-      <p className="text-sm text-muted-foreground">&copy; {currentYear} Kotek. All rights reserved.</p>
+      <p className="text-sm text-muted-foreground text-center">&copy; {currentYear} Kotek. All rights reserved.</p>
       <div className="flex space-x-6">
         {contactLinks.map(({ href, label, Icon, className, strokeWidth }) => (
           <Link key={label} href={href} aria-label={label} prefetch={false}>
