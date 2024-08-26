@@ -4,7 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter, // Import CardFooter for footer section
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface Column {
   header: string;
@@ -29,13 +30,14 @@ export interface Row {
 }
 
 interface DataTableProps {
-  title: string;
+  title: React.ReactNode;
   description?: string;
   columns: Column[];
   rows: Row[];
   actions?: React.ReactNode;
-  footer?: React.ReactNode; // Add footer prop
+  footer?: React.ReactNode;
   className?: string;
+  isLoading?: boolean;
 }
 
 export function DataTable({
@@ -44,8 +46,9 @@ export function DataTable({
   columns,
   rows,
   actions,
-  footer, // Include footer in props
+  footer,
   className = "",
+  isLoading = false,
 }: DataTableProps) {
   const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".avif", ".webp"];
 
@@ -57,90 +60,129 @@ export function DataTable({
   return (
     <Card className={className}>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="sm:pb-2">{title}</CardTitle>
-            {description && (
-              <CardDescription className="hidden sm:block">
-                {description}
-              </CardDescription>
-            )}
-          </div>
+        <div>
+          <CardTitle className="sm:pb-2">{title}</CardTitle>
+          {description && (
+            <CardDescription className="hidden sm:block">
+              {description}
+            </CardDescription>
+          )}
           {actions && <div className="ml-4">{actions}</div>}
         </div>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columns.map((column, index) => (
-                <TableHead
-                  key={index}
-                  className={`${
-                    column.important ? "" : "hidden sm:table-cell"
-                  } ${index === columns.length - 1 ? "text-right" : ""}`}
-                >
-                  {column.header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {columns.map((column, colIndex) => {
-                  const cellData = row[column.header.toLowerCase().replace(/ /g, "_")];
-                  const columnClass = column.important ? "" : "hidden sm:table-cell";
-                  const useBadge = column.badge;
-
-                  return (
+        {isLoading ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((column, index) => (
+                  <TableHead
+                    key={index}
+                    className={`${
+                      column.important ? "" : "hidden sm:table-cell"
+                    } ${index === columns.length - 1 ? "text-right" : ""}`}
+                  >
+                    {column.header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(5)].map((_, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {columns.map((column, colIndex) => (
                     <TableCell
                       key={colIndex}
                       className={`${
-                        column.header === columns[columns.length - 1].header
-                          ? "text-right"
-                          : ""
-                      } ${columnClass}`}
+                        column.important ? "" : "hidden sm:table-cell"
+                      }`}
                     >
-                      {isImage(cellData) ? (
-                        <div className="relative w-16 h-16 sm:w-14 sm:h-14 md:w-12 md:h-12 lg:w-10 lg:h-10 xl:w-8 xl:h-8 2xl:w-6 2xl:h-6">
-                          <Image
-                            src={cellData}
-                            alt="Data"
-                            className="object-cover"
-                            width={89}
-                            height={89}
-                          />
-                        </div>
-                      ) : useBadge && cellData ? (
-                        <Badge
-                          className="text-xs"
-                          variant={cellData.filled ? "default" : "outline"}
-                        >
-                          {cellData.value}
-                        </Badge>
+                      {column.header === "Image" ? (
+                        <Skeleton className="w-12 h-12 rounded-md" />
                       ) : (
-                        <>
-                          {column.hasSecondaryData && cellData ? (
-                            <>
-                              <div className="font-medium">{cellData.primary}</div>
-                              <div className="hidden sm:block text-sm text-gray-500">
-                                {cellData.secondary}
-                              </div>
-                            </>
-                          ) : (
-                            cellData
-                          )}
-                        </>
+                        <Skeleton className="w-[100px] h-[20px] rounded-full" />
                       )}
                     </TableCell>
-                  );
-                })}
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((column, index) => (
+                  <TableHead
+                    key={index}
+                    className={`${
+                      column.important ? "" : "hidden sm:table-cell"
+                    } ${index === columns.length - 1 ? "text-right" : ""}`}
+                  >
+                    {column.header}
+                  </TableHead>
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        {rows.length === 0 && (
+            </TableHeader>
+            <TableBody>
+              {rows.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {columns.map((column, colIndex) => {
+                    const cellData = row[column.header.toLowerCase().replace(/ /g, "_")];
+                    const columnClass = column.important ? "" : "hidden sm:table-cell";
+                    const useBadge = column.badge;
+
+                    return (
+                      <TableCell
+                        key={colIndex}
+                        className={`${
+                          column.header === columns[columns.length - 1].header
+                            ? "text-right"
+                            : ""
+                        } ${columnClass}`}
+                      >
+                        {isImage(cellData) ? (
+                          <div className="relative w-16 h-16 sm:w-14 sm:h-14 md:w-12 md:h-12 lg:w-10 lg:h-10 xl:w-8 xl:h-8 2xl:w-6 2xl:h-6">
+                            <Image
+                              src={cellData}
+                              alt="Data"
+                              className="object-cover"
+                              width={89}
+                              height={89}
+                            />
+                          </div>
+                        ) : useBadge && cellData ? (
+                          <Badge
+                            className="text-xs"
+                            variant={cellData.filled ? "default" : "outline"}
+                          >
+                            {cellData.value}
+                          </Badge>
+                        ) : (
+                          <>
+                            {column.hasSecondaryData && cellData ? (
+                              <>
+                                <div className="font-medium">
+                                  {cellData.primary}
+                                </div>
+                                <div className="hidden sm:block text-sm text-gray-500">
+                                  {cellData.secondary}
+                                </div>
+                              </>
+                            ) : (
+                              cellData
+                            )}
+                          </>
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+        {rows.length === 0 && !isLoading && (
           <div className="text-center text-gray-500">N/A</div>
         )}
       </CardContent>

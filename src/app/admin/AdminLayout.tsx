@@ -1,8 +1,11 @@
 "use client";
 import SideBar from "@/components/admin/sideBar/SideBar";
 import Header from "@/components/admin/header/Header";
-import SideBarContext, { SideBarContextProvider } from "@/context/SideBarContext";
+import SideBarContext, {
+  SideBarContextProvider,
+} from "@/context/SideBarContext";
 import { useContext } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function AdminLayout({
   children,
@@ -28,7 +31,9 @@ function Layout({ children }: { children: React.ReactNode }) {
         }`}
       >
         <Header />
-        <main className="flex items-start gap-4 p-4">{children}</main>
+        <main className="flex items-start gap-4 p-4">
+          {children} <Toaster />
+        </main>
       </div>
     </div>
   );

@@ -52,12 +52,12 @@ export default function SideBar() {
       <div className="flex flex-col gap-5">
         <button
           onClick={isLg ? toggleSideBar : undefined}
-          className={`hover:bg-slate-100 w-max p-3 rounded-lg ${
-            !isLg ? "cursor-not-allowed opacity-50" : ""
+          className={`hover:bg-indigo-50 w-max p-3 rounded-lg ${
+            !isLg ? "disabled cursor-not-allowed opacity-30" : ""
           }`}
           disabled={!isLg}
         >
-          <PanelLeft className="w-5 h-5" />
+          <PanelLeft className="w-5 h-5" strokeWidth={1.5}/>
         </button>
         <nav className="space-y-1">
           <SidebarLink href="/admin/dashboard" icon={Home} label="Dashboard" />
