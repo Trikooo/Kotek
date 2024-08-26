@@ -54,7 +54,6 @@ export default function ExistingCategories() {
   const columns = [
     { header: "Image", important: true },
     { header: "Name", important: true },
-    { header: "Description" },
     { header: "Parent" },
     { header: "Actions", important: true },
   ];
