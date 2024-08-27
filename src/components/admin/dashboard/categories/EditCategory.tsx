@@ -155,7 +155,7 @@ export default function EditCategory({ category, categories, onClose }: EditCate
             </div>
           </div>
           <div className="mt-4 flex gap-4">
-            <Button type="submit" isLoading={isLoading}>
+            <Button type="submit" isLoading={isLoading} loadingText="Please wait">
               Save Changes
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>

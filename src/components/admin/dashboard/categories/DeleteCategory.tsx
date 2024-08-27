@@ -38,8 +38,8 @@ export function DeleteCategory({ id }: DeleteCategoryProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" disabled={isLoading}> {/* Disable button when loading */}
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <TrashIcon className="h-4 w-4" strokeWidth={1.5} />}
+        <Button variant="outline" isLoading={isLoading}>
+          <TrashIcon className="h-4 w-4" strokeWidth={1.5} />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -52,7 +52,9 @@ export function DeleteCategory({ id }: DeleteCategoryProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} disabled={isLoading}> {/* Disable action button when loading */}
+          <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
+            {" "}
+            {/* Disable action button when loading */}
             {isLoading ? "Deleting..." : "Continue"}
           </AlertDialogAction>
         </AlertDialogFooter>

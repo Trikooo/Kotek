@@ -193,7 +193,7 @@ export default function CreateCategory({ categories }: CreateCategoryProps) {
             </div>
           </div>
           <div className="mt-4">
-            <Button type="submit" isLoading={isLoading}>
+            <Button type="submit" isLoading={isLoading} loadingText="Please wait">
               Create Category
             </Button>
           </div>

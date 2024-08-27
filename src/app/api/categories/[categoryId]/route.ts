@@ -29,14 +29,25 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
-    console.log("this is params: ", typeof params)
+    console.log("this is params: ", params); // Log params
+    console.log("Deleting category with ID:", params.categoryId);
     await deleteCategory(params.categoryId);
+    console.log("hello i am below the deletion process");
+    return NextResponse.json(
+      { message: "Category deleted successfully" },
+      { status: 200 }
+    );
   } catch (error) {
+    console.error("Error occurred:", error); // Log the error
     if (error instanceof Error) {
       let status = 500;
       let message = error.message;
-      if (message.includes("not found")) status = 404
-      return NextResponse.json({message: message}, { status: status})
+      if (message.includes("not found")) status = 404;
+      return NextResponse.json({ message: message }, { status: status });
     }
+    return NextResponse.json(
+      { message: "An unexpected error occurred" },
+      { status: 500 }
+    );
   }
 }
