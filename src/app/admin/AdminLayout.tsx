@@ -32,7 +32,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       >
         <Header />
         <main className="flex items-start gap-4 p-4">
-          {children} <Toaster />
+          {children}
         </main>
       </div>
     </div>

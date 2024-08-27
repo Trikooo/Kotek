@@ -1,5 +1,3 @@
-"use client";
-import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FilePenIcon, Search, TrashIcon } from "lucide-react";
@@ -11,39 +9,27 @@ import {
 } from "@/components/ui/tooltip";
 import { DataTable } from "@/components/dynamic-ui/DataTable";
 import Image from "next/image";
+import { useState } from "react";
+import EditCategory from "./EditCategory"; // Import the EditCategory component
+import { DeleteCategory } from "./DeleteCategory";
 
-// Define Category type
 interface Category {
   id: string;
   name: string;
-  description: string;
-  parentCategory?: string;
-  imageUrl?: string;
+  description?: string;
+  parentId?: string; // Changed to parentId
+  imageUrl: string;
 }
 
-export default function ExistingCategories() {
-  const [categories, setCategories] = useState<Category[]>([]);
+interface ExistingCategoriesProps {
+  categories: Category[];
+  loading: boolean;
+  error: string | null;
+}
+
+export default function ExistingCategories({ categories, loading, error }: ExistingCategoriesProps) {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch categories from the API
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        if (!response.ok) throw new Error("Failed to fetch categories");
-        const data: Category[] = await response.json();
-        setCategories(data);
-        setLoading(false);
-      } catch (err) {
-        setError((err as Error).message);
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null); // State for editing
 
   // Filter categories based on the search term
   const filteredCategories = categories.filter((category) =>
@@ -62,7 +48,7 @@ export default function ExistingCategories() {
   const rows = filteredCategories.map((category) => ({
     image: (
       <Image
-        src={category.imageUrl || "/placeholder.svg"} // Use imageUrl from the category data
+        src={category.imageUrl || "/placeholder.svg"}
         alt={category.name}
         width={64}
         height={64}
@@ -72,8 +58,8 @@ export default function ExistingCategories() {
     ),
     name: category.name,
     description: category.description,
-    parent: category.parentCategory
-      ? categories.find((c) => c.id === category.parentCategory)?.name || "None"
+    parent: category.parentId
+      ? categories.find((c) => c.id === category.parentId)?.name || "None"
       : "None",
     actions: (
       <div className="flex items-center gap-2">
@@ -92,13 +78,7 @@ export default function ExistingCategories() {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => handleDelete(category.id)}
-              >
-                <TrashIcon className="h-4 w-4" strokeWidth={1.5} />
-              </Button>
+         <DeleteCategory id={category.id}/>
             </TooltipTrigger>
             <TooltipContent>Delete</TooltipContent>
           </Tooltip>
@@ -107,29 +87,34 @@ export default function ExistingCategories() {
     ),
   }));
 
+  function handleEdit(category: Category) {
+    setEditingCategory(category); // Set the category to be edited
+  }
+
+  function handleDelete(categoryId: string) {
+    console.log("Delete category with id", categoryId);
+  }
+
   return (
     <div>
-      {error ? (
+      {editingCategory ? (
+        <EditCategory
+          category={editingCategory}
+          categories={categories} // Pass the categories for parent selection
+          onClose={() => setEditingCategory(null)}
+        />
+      ) : error ? (
         <p>Error: {error}</p>
       ) : (
         <DataTable
           title={<CategoriesTitle setSearchTerm={setSearchTerm} />}
           columns={columns}
           rows={rows}
-          isLoading={loading} // Pass the loading state
+          isLoading={loading}
         />
       )}
     </div>
   );
-}
-
-// Function stubs for handling edit and delete
-function handleEdit(category: Category) {
-  console.log("Edit category", category);
-}
-
-function handleDelete(categoryId: string) {
-  console.log("Delete category with id", categoryId);
 }
 
 const CategoriesTitle = ({ setSearchTerm }: { setSearchTerm: (term: string) => void }) => {

@@ -58,29 +58,29 @@ export function DataTable({
   };
 
   return (
-    <Card className={className}>
+    <Card className={`${className}`}>
       <CardHeader>
-        <div>
+        <div className="flex flex-col">
           <CardTitle className="sm:pb-2">{title}</CardTitle>
           {description && (
             <CardDescription className="hidden sm:block">
               {description}
             </CardDescription>
           )}
-          {actions && <div className="ml-4">{actions}</div>}
+          {actions && <div className="mt-2">{actions}</div>}
         </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="flex w-full">
                 {columns.map((column, index) => (
                   <TableHead
                     key={index}
-                    className={`${
-                      column.important ? "" : "hidden sm:table-cell"
-                    } ${index === columns.length - 1 ? "text-right" : ""}`}
+                    className={`flex-1 flex justify-center items-center ${
+                      column.important ? "" : "hidden sm:flex"
+                    }`}
                   >
                     {column.header}
                   </TableHead>
@@ -89,12 +89,12 @@ export function DataTable({
             </TableHeader>
             <TableBody>
               {[...Array(5)].map((_, rowIndex) => (
-                <TableRow key={rowIndex}>
+                <TableRow key={rowIndex} className="flex w-full">
                   {columns.map((column, colIndex) => (
                     <TableCell
                       key={colIndex}
-                      className={`${
-                        column.important ? "" : "hidden sm:table-cell"
+                      className={`flex-1 flex justify-center items-center ${
+                        column.important ? "" : "hidden sm:flex"
                       }`}
                     >
                       {column.header === "Image" ? (
@@ -111,13 +111,13 @@ export function DataTable({
         ) : (
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="flex w-full">
                 {columns.map((column, index) => (
                   <TableHead
                     key={index}
-                    className={`${
-                      column.important ? "" : "hidden sm:table-cell"
-                    } ${index === columns.length - 1 ? "text-right" : ""}`}
+                    className={`flex-1 flex justify-center items-center ${
+                      column.important ? "" : "hidden sm:flex"
+                    }`}
                   >
                     {column.header}
                   </TableHead>
@@ -126,20 +126,16 @@ export function DataTable({
             </TableHeader>
             <TableBody>
               {rows.map((row, rowIndex) => (
-                <TableRow key={rowIndex}>
+                <TableRow key={rowIndex} className="flex w-full">
                   {columns.map((column, colIndex) => {
                     const cellData = row[column.header.toLowerCase().replace(/ /g, "_")];
-                    const columnClass = column.important ? "" : "hidden sm:table-cell";
+                    const columnClass = column.important ? "" : "hidden sm:flex";
                     const useBadge = column.badge;
 
                     return (
                       <TableCell
                         key={colIndex}
-                        className={`${
-                          column.header === columns[columns.length - 1].header
-                            ? "text-right"
-                            : ""
-                        } ${columnClass}`}
+                        className={`flex-1 flex justify-center items-center ${columnClass}`}
                       >
                         {isImage(cellData) ? (
                           <div className="relative w-16 h-16 sm:w-14 sm:h-14 md:w-12 md:h-12 lg:w-10 lg:h-10 xl:w-8 xl:h-8 2xl:w-6 2xl:h-6">
@@ -159,7 +155,7 @@ export function DataTable({
                             {cellData.value}
                           </Badge>
                         ) : (
-                          <>
+                          <div className="flex flex-col items-center">
                             {column.hasSecondaryData && cellData ? (
                               <>
                                 <div className="font-medium">
@@ -172,7 +168,7 @@ export function DataTable({
                             ) : (
                               cellData
                             )}
-                          </>
+                          </div>
                         )}
                       </TableCell>
                     );
@@ -186,7 +182,7 @@ export function DataTable({
           <div className="text-center text-gray-500">N/A</div>
         )}
       </CardContent>
-      {footer && <CardFooter>{footer}</CardFooter>}
+      {footer && <CardFooter className="flex justify-center">{footer}</CardFooter>}
     </Card>
   );
 }

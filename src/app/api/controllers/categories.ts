@@ -1,14 +1,6 @@
 import { Category } from "@prisma/client";
 import prisma from "../lib/prisma";
 
-export interface CategoryData {
-  name: string;
-  description?: string;
-  imageUrl: string;
-  parentId?: string;
-  tags?: string[];
-}
-
 export async function getAllCategories() {
   try {
     return await prisma.category.findMany();
@@ -45,6 +37,12 @@ export async function getCategoryById(id: string) {
   }
 }
 
+import { Prisma } from "@prisma/client";
+import { unlink, writeFile } from "fs/promises";
+import path from "path";
+import { categorySchema } from "../lib/validation";
+import { NextRequest } from "next/server";
+
 export async function createCategory(data: Category) {
   try {
     console.log(data);
@@ -54,7 +52,18 @@ export async function createCategory(data: Category) {
       },
     });
   } catch (error: unknown) {
-    if (error instanceof Error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      // P2002 is the Prisma error code for unique constraint violation
+      console.error(
+        `Conflict: Category with this unique field already exists.`
+      );
+      throw new Error(
+        "Conflict: Category with this unique field already exists."
+      );
+    } else if (error instanceof Error) {
       console.error(`Error creating category: ${error.message}`);
       throw new Error(`Error creating category: ${error.message}`);
     } else {
@@ -64,16 +73,18 @@ export async function createCategory(data: Category) {
   }
 }
 
-export async function updateCategory(id: string, data: Partial<CategoryData>) {
+export async function updateCategory(id: string, data: Partial<Category>) {
   try {
     const updatedCategory = await prisma.category.update({
       where: {
         id: id,
       },
-      data,
+      data: {
+        ...data,
+      },
     });
     if (!updatedCategory) {
-      throw new Error(`Category with id ${id} not found`);
+      throw new Error("Category not found");
     }
     return updatedCategory;
   } catch (error: unknown) {
@@ -90,6 +101,9 @@ export async function updateCategory(id: string, data: Partial<CategoryData>) {
 export async function deleteCategory(id: string) {
   try {
     const deletedCategory = await prisma.category.delete({ where: { id: id } });
+    if (!deleteCategory) {
+      throw new Error("Category not found");
+    }
     return deletedCategory;
   } catch (error) {
     if (error instanceof Error) {
@@ -100,4 +114,57 @@ export async function deleteCategory(id: string) {
       throw new Error("Unknown error occurred while deleting the category");
     }
   }
+}
+
+export async function categoryValidation(
+  request: NextRequest
+): Promise<Partial<Category>> {
+  const formData = await request.formData();
+
+  // Utility function to capitalize the first letter of a string
+  const capitalizeFirstLetter = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
+  // Extract fields
+  let name = formData.get("name")?.toString().trim() || "";
+  let description = formData.get("description")?.toString().trim() || "";
+  const parentId = formData.get("parentId")?.toString().trim() || "";
+  const tags =
+    formData
+      .get("tags")
+      ?.toString()
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag) || [];
+
+  // Capitalize first letter of name and description
+  name = capitalizeFirstLetter(name);
+  description = capitalizeFirstLetter(description);
+
+  // Extract and save file
+  const file = formData.get("image") as File;
+  if (!file) {
+    throw new Error("Validation error: Image file is required.");
+  }
+
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const filename = file.name.replaceAll(" ", "_");
+  const filePath = path.join(process.cwd(), "public/uploads", filename);
+  const imageUrl = `/uploads/${filename}`;
+  let data: Partial<Category> = {
+    ...(name && { name }),
+    ...(description && { description }),
+    ...(parentId && parentId !== "" && { parentId }),
+    ...(tags.length > 0 && { tags }),
+    imageUrl: imageUrl
+  };
+  categorySchema.parse(data);
+
+  await writeFile(filePath, buffer);
+  data.imageUrl = imageUrl;
+
+
+  return data;
 }
