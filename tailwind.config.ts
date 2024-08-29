@@ -74,10 +74,20 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "dropdown-in": {
+          "0%": { transform: "scale(0.95) translateY(-15px)", opacity: "0" },
+          "100%": { transform: "scale(1) translateY(0)", opacity: "1" },
+        },
+        "drop-in": {
+          "0%": { transform: "scale(0.95) translateY(+15px)", opacity: "0" },
+          "100%": { transform: "scale(1) translateY(0)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "dropdown-in": "dropdown-in 0.1s ease-out forwards",
+        "drop-in": "drop-in 0.1s ease-out forwards", // Added "s" for seconds
       },
     },
   },

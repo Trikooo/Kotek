@@ -48,7 +48,7 @@ export default function Page() {
   return (
     <AdminLayout>
       <div className="grid grid-cols-1 gap-4 lg:gap-8 md:grid-cols-2 w-full">
-        <CreateCategory categories={categoriesDropDown} />
+        <CreateCategory categories={categoriesDropDown} categoriesLoading={loading} error={error}/>
         <ExistingCategories
           categories={categories}
           loading={loading}

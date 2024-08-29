@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CircleAlert } from 'lucide-react'; // Import icons
 
 export interface Column {
   header: string;
@@ -38,6 +39,7 @@ interface DataTableProps {
   footer?: React.ReactNode;
   className?: string;
   isLoading?: boolean;
+  error?: unknown; // New prop for error state
 }
 
 export function DataTable({
@@ -49,29 +51,36 @@ export function DataTable({
   footer,
   className = "",
   isLoading = false,
+  error
 }: DataTableProps) {
   const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".avif", ".webp"];
 
   const isImage = (value: any): boolean => {
     if (typeof value !== "string") return false;
-    return imageExtensions.some(extension => value.endsWith(extension));
+    return imageExtensions.some(extension => value.toLowerCase().endsWith(extension)) || value.startsWith("http");
   };
 
   return (
     <Card className={`${className}`}>
       <CardHeader>
         <div className="flex flex-col">
-          <CardTitle className="sm:pb-2">{title}</CardTitle>
-          {description && (
+          {!error && <CardTitle className="sm:pb-2">{title}</CardTitle>}
+          {description && !error && (
             <CardDescription className="hidden sm:block">
               {description}
             </CardDescription>
           )}
-          {actions && <div className="mt-2">{actions}</div>}
+          {actions && !error && <div className="mt-2">{actions}</div>}
         </div>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
+        {error ? (
+          <div className="flex flex-col items-center justify-center text-red-400 ">
+            <CircleAlert className="w-12 h-12 mb-4" />
+            <h2 className="text-lg font-semibold">Something went wrong</h2>
+            <p className="my-2 text-center">We encountered an issue while loading the data. Please try again later.</p>
+          </div>
+        ) : isLoading ? (
           <Table>
             <TableHeader>
               <TableRow className="flex w-full">
@@ -130,7 +139,6 @@ export function DataTable({
                   {columns.map((column, colIndex) => {
                     const cellData = row[column.header.toLowerCase().replace(/ /g, "_")];
                     const columnClass = column.important ? "" : "hidden sm:flex";
-                    const useBadge = column.badge;
 
                     return (
                       <TableCell
@@ -145,14 +153,15 @@ export function DataTable({
                               className="object-cover"
                               width={89}
                               height={89}
+                              unoptimized={cellData.startsWith("http")}
                             />
                           </div>
-                        ) : useBadge && cellData ? (
+                        ) : column.badge ? (
                           <Badge
                             className="text-xs"
-                            variant={cellData.filled ? "default" : "outline"}
+                            variant={cellData?.filled ? "default" : "outline"}
                           >
-                            {cellData.value}
+                            {cellData?.value || cellData}
                           </Badge>
                         ) : (
                           <div className="flex flex-col items-center">
@@ -178,7 +187,7 @@ export function DataTable({
             </TableBody>
           </Table>
         )}
-        {rows.length === 0 && !isLoading && (
+        {rows.length === 0 && !isLoading && !error && (
           <div className="text-center text-gray-500">N/A</div>
         )}
       </CardContent>

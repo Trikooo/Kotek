@@ -103,14 +103,13 @@ export default function ExistingCategories({ categories, loading, error }: Exist
           categories={categories} // Pass the categories for parent selection
           onClose={() => setEditingCategory(null)}
         />
-      ) : error ? (
-        <p>Error: {error}</p>
       ) : (
         <DataTable
           title={<CategoriesTitle setSearchTerm={setSearchTerm} />}
           columns={columns}
           rows={rows}
           isLoading={loading}
+          error={error}
         />
       )}
     </div>

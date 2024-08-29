@@ -1,4 +1,6 @@
+"use client"
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardDescription,
@@ -11,14 +13,18 @@ interface ViewProductsProps {
   className?: string;
 }
 export default function ViewProducts({ className = "" }: ViewProductsProps) {
+  const router = useRouter();
+  function handleNavigate() {
+    router.push("/admin/products/manage");
+  }
   return (
-    <Card className={className} x-chunk="dashboard-05-chunk-0">
+    <Card className={className}>
       <CardHeader className="pb-3">
         <CardTitle>Your Products</CardTitle>
         <CardDescription>view and manage your products</CardDescription>
       </CardHeader>
       <CardFooter>
-        <Button>View All Products</Button>
+        <Button onClick={handleNavigate}>Manage Your Products</Button>
       </CardFooter>
     </Card>
   );

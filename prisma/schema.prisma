@@ -7,10 +7,9 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")// uses connection pooling
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
-
 
 model User {
   id           String    @id @default(uuid()) @db.Uuid
@@ -45,24 +44,32 @@ model Category {
 }
 
 model Product {
-  id          String      @id @default(uuid()) @db.Uuid
+  id          String        @id @default(uuid()) @db.Uuid
   name        String
-  description String      @db.Text
+  description String        @db.Text
   price       Int
   imageUrl    String
   stock       Int
-  sku         String      @unique
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  categoryId  String?     @db.Uuid
-  category    Category?   @relation(fields: [categoryId], references: [id])
+  sku         String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  categoryId  String?       @db.Uuid
+  category    Category?     @relation(fields: [categoryId], references: [id])
   tags        String[]
   keyFeatures String[]
   orderItems  OrderItem[]
   cartItems   CartItem[]
   reviews     Review[]
+  brand       String
+  status      ProductStatus @default(ACTIVE) // Set default to ACTIVE
 
   @@index([name])
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DRAFT
 }
 
 model Order {

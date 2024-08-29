@@ -67,8 +67,13 @@ export default function EditCategory({ category, categories, onClose }: EditCate
       console.error("Failed to update category: ", error);
 
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data.message || "Server error, couldn't update category";
-        toast.error(errorMessage);
+        const errorMessage = error.response?.data.message;
+
+        if (errorMessage.includes("Conflict")) {
+          toast.error("A category with this name already exists.");
+        } else {
+          toast.error("Internal server error.");
+        }
       } else {
         toast.error("An unknown error occurred.");
       }

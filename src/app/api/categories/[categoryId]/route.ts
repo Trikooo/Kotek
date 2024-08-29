@@ -18,8 +18,8 @@ export async function PUT(request: NextRequest, { params }: Params) {
     if (error instanceof Error) {
       let status = 500;
       let message = error.message;
-      if (message.startsWith("Validation")) status = 400;
-      if (message.startsWith("Conflict")) status = 409;
+      if (message.includes("Validation")) status = 400;
+      if (message.includes("Conflict")) status = 409;
       return NextResponse.json({ message: message }, { status: status });
     } else {
       return NextResponse.json({ message: "Unknown Error" }, { status: 500 });

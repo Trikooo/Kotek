@@ -2,17 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import Select from "@/components/ui/better-select"; // Updated import
 import { Textarea } from "@/components/ui/textarea";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { Option } from "@/components/ui/better-select"; // Updated import
 
 interface Category {
   id: string;
@@ -21,9 +16,33 @@ interface Category {
 
 interface CreateCategoryProps {
   categories: Category[];
+  categoriesLoading: boolean;
+  error: unknown
 }
 
-export default function CreateCategory({ categories }: CreateCategoryProps) {
+export default function CreateCategory({
+  categories,
+  categoriesLoading,
+  error
+}: CreateCategoryProps) {
+  const [selectedParentCategory, setSelectedParentCategory] = useState<
+    Option[]
+  >([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState<Option[]>(
+    []
+  );
+  useEffect(() => {
+    console.log("selectedParentCategory: ", selectedParentCategory);
+    console.log("selectedSubCategories: ", selectedSubCategories);
+  });
+
+  let categoryOptions = [];
+  for (const category of categories) {
+    categoryOptions.push({
+      value: category.id,
+      label: category.name,
+    });
+  }
   const [newCategory, setNewCategory] = useState<{
     name: string;
     description: string;
@@ -101,12 +120,12 @@ export default function CreateCategory({ categories }: CreateCategoryProps) {
       console.error("Failed to create category: ", error);
 
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data.message || "Server error, couldn't create category";
+        const errorMessage = error.response?.data.message;
 
         if (errorMessage.includes("Conflict")) {
           toast.error("A category with this name already exists.");
         } else {
-          toast.error(errorMessage);
+          toast.error("Internal server error.");
         }
       } else {
         toast.error("An unknown error occurred.");
@@ -168,32 +187,33 @@ export default function CreateCategory({ categories }: CreateCategoryProps) {
             <div>
               <Label htmlFor="parentCategory">Parent Category</Label>
               <Select
-                value={
-                  newCategory.parentId
-                    ? newCategory.parentId.toString()
-                    : "none"
-                }
-                onValueChange={handleParentCategoryChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select parent category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem
-                      key={category.id}
-                      value={category.id.toString()}
-                    >
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                id="Parent"
+                options={categoryOptions}
+                selectedOptions={selectedParentCategory}
+                onChange={setSelectedParentCategory}
+                loading={categoriesLoading}
+                error={error}
+              />
+            </div>
+            <div>
+              <Label htmlFor="subCategories">Subcategories</Label>
+              <Select
+                id="subcategories"
+                options={categoryOptions}
+                selectedOptions={selectedSubCategories}
+                onChange={setSelectedSubCategories}
+                multiple
+                loading={categoriesLoading}
+                error={error}
+              />
             </div>
           </div>
           <div className="mt-4">
-            <Button type="submit" isLoading={isLoading} loadingText="Please wait">
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              loadingText="Please wait"
+            >
               Create Category
             </Button>
           </div>

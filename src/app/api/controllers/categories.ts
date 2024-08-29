@@ -88,12 +88,23 @@ export async function updateCategory(id: string, data: Partial<Category>) {
     }
     return updatedCategory;
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error(`Error updating category with id ${id}: ${error.message}`);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      // P2002 is the Prisma error code for unique constraint violation
+      console.error(
+        `Conflict: Category with this unique field already exists.`
+      );
+      throw new Error(
+        "Conflict: Category with this unique field already exists."
+      );
+    } else if (error instanceof Error) {
+      console.error(`Error updating category: ${error.message}`);
       throw new Error(`Error updating category: ${error.message}`);
     } else {
-      console.error(`Unknown error updating category with id ${id}`);
-      throw new Error("Unknown error occurred while updating the category");
+      console.error("Unknown error occurred while creating the category");
+      throw new Error("Unknown error occurred while creating the category");
     }
   }
 }
