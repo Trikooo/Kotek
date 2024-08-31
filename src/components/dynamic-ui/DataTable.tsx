@@ -76,7 +76,7 @@ export function DataTable({
       <CardContent>
         {error ? (
           <div className="flex flex-col items-center justify-center text-red-400 ">
-            <CircleAlert className="w-12 h-12 mb-4" />
+            <CircleAlert className="w-8 h-8 mb-4" strokeWidth={1.5}/>
             <h2 className="text-lg font-semibold">Something went wrong</h2>
             <p className="my-2 text-center">We encountered an issue while loading the data. Please try again later.</p>
           </div>
@@ -188,7 +188,7 @@ export function DataTable({
           </Table>
         )}
         {rows.length === 0 && !isLoading && !error && (
-          <div className="text-center text-gray-500">N/A</div>
+          <div className="text-center mt- text-gray-500">No data available</div>
         )}
       </CardContent>
       {footer && <CardFooter className="flex justify-center">{footer}</CardFooter>}

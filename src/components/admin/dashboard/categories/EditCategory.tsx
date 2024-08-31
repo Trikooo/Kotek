@@ -1,60 +1,129 @@
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Select from "@/components/ui/better-select";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { Option } from "@/components/ui/better-select";
+import { Category, useCategoryContext } from "@/context/CategoriesContext";
 import Image from "next/image";
-
-interface Category {
-  id: string;
-  name: string;
-  description?: string;
-  imageUrl: string;
-  parentId?: string;
-}
+import { PenBox, PenBoxIcon, PenIcon, Trash2Icon } from "lucide-react";
+import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 
 interface EditCategoryProps {
   category: Category;
-  categories: Category[]; // List of all categories for parent selection
-  onClose: () => void;
 }
 
-export default function EditCategory({ category, categories, onClose }: EditCategoryProps) {
-  const [name, setName] = useState(category.name);
-  const [description, setDescription] = useState(category.description || "");
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(category.imageUrl);
-  const [tags, setTags] = useState(""); // Initialize tags if needed
-  const [parentId, setParentId] = useState<string | null>(category.parentId || null);
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
+export default function EditCategory({ category }: EditCategoryProps) {
+  const { categoryOptions, error, loading } = useCategoryContext();
+  const [selectedParentCategory, setSelectedParentCategory] = useState<
+    Option[]
+  >([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState<Option[]>(
+    []
+  );
+  const [categoryData, setCategoryData] = useState({
+    name: category.name,
+    description: category.description,
+    image: null as File | null,
+    parentId: category.parentId || null,
+    tags: category.tags,
+    subCategories: category.subCategories,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(category.imageUrl || null);
+
+  useEffect(() => {
+    if (category.subCategories) {
+      setSelectedSubCategories(
+        category.subCategories.map((id) => ({
+          value: id,
+          label: categoryOptions.find((opt) => opt.value === id)?.label || "",
+        }))
+      );
+    } else {
+      setSelectedSubCategories([]);
+    }
+  }, [category, categoryOptions]);
+
+  useEffect(() => {
+    if (selectedParentCategory.length > 0) {
+      setCategoryData((prevCategory) => ({
+        ...prevCategory,
+        parentId: selectedParentCategory[0].value,
+      }));
+    } else {
+      setCategoryData((prevCategory) => ({
+        ...prevCategory,
+        parentId: null,
+      }));
+    }
+  }, [selectedParentCategory]);
+
+  useEffect(() => {
+    const subCategoryIds = selectedSubCategories.map((sub) => sub.value);
+    setCategoryData((prevCategory) => ({
+      ...prevCategory,
+      subCategories: subCategoryIds,
+    }));
+  }, [selectedSubCategories]);
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setCategoryData((prevCategory) => ({
+      ...prevCategory,
+      [name]: value,
+    }));
+  };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setImage(file);
-    setPreview(file ? URL.createObjectURL(file) : category.imageUrl);
+    setCategoryData((prevCategory) => ({
+      ...prevCategory,
+      image: file,
+    }));
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleSave = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
 
     try {
       const formData = new FormData();
-      formData.append("id", category.id);
-      formData.append("name", name);
-      formData.append("description", description);
-      formData.append("tags", tags); // Add tags if needed
-      formData.append("parentId", parentId || ""); // Add parentId
+      formData.append("name", categoryData.name);
+      formData.append("description", categoryData.description || "");
+      formData.append("parentId", categoryData.parentId || "");
+      formData.append("tags", categoryData.tags || "");
+      formData.append(
+        "subCategories",
+        JSON.stringify(categoryData.subCategories)
+      );
 
-      if (image) {
-        formData.append("image", image);
+      if (categoryData.image) {
+        formData.append("image", categoryData.image);
       }
 
-      // Make the API request to update the category
       await axios.put(`/api/categories/${category.id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -62,7 +131,8 @@ export default function EditCategory({ category, categories, onClose }: EditCate
       });
 
       toast.success("Category updated successfully.");
-      onClose(); // Close the editor after saving
+
+      // Reset state or navigate away
     } catch (error) {
       console.error("Failed to update category: ", error);
 
@@ -78,97 +148,106 @@ export default function EditCategory({ category, categories, onClose }: EditCate
         toast.error("An unknown error occurred.");
       }
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Edit Category</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSave}>
-          <div className="grid gap-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Description (optional)</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="image">Image</Label>
-              <Input
-                id="image"
-                name="image"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-              {preview && (
-                <Image
-                  src={preview}
-                  alt="Image preview"
-                  width={50}
-                  height={50}
-                  className="mt-2"
-                />
-              )}
-            </div>
-            <div>
-              <Label htmlFor="tags">Tags (comma-separated)</Label>
-              <Input
-                id="tags"
-                name="tags"
-                type="text"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="parentCategory">Parent Category</Label>
-              <Select
-                value={parentId || "none"}
-                onValueChange={(value) => setParentId(value === "none" ? null : value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select parent category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+    <Dialog>
+      <DialogTrigger className="p-2 hover:bg-accent rounded-md ">
+        <PenBox className="w-5 h-5" strokeWidth={1.5} />
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Edit Category</DialogTitle>
+          <DialogDescription>
+            Update the details of the selected category.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="grid gap-6">
+          <div className="grid gap-3">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              value={categoryData.name}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div className="mt-4 flex gap-4">
-            <Button type="submit" isLoading={isLoading} loadingText="Please wait">
-              Save Changes
-            </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
+          <div className="grid gap-3">
+            <Label htmlFor="description">Description (optional)</Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={categoryData.description}
+              onChange={handleInputChange}
+            />
           </div>
+          <div className="grid gap-3">
+            <Label htmlFor="image">Image (optional)</Label>
+
+            <Input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+            {previewImage && (
+              <Image
+                src={previewImage}
+                alt="Category preview"
+                className="object-cover"
+                width={50}
+                height={50}
+              />
+            )}
+          </div>
+          <div className="grid gap-3">
+            <Label htmlFor="tags">Tags (comma-separated)</Label>
+            <Input
+              id="tags"
+              name="tags"
+              type="text"
+              value={categoryData.tags}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="grid gap-3">
+            <Label htmlFor="parentCategory">Parent Category</Label>
+            <Select
+              options={categoryOptions}
+              selectedOptions={selectedParentCategory}
+              onChange={setSelectedParentCategory}
+              loading={loading}
+              error={error}
+            />
+          </div>
+          <div className="grid gap-3">
+            <Label htmlFor="subCategories">Subcategories</Label>
+            <Select
+              options={categoryOptions}
+              selectedOptions={selectedSubCategories}
+              onChange={setSelectedSubCategories}
+              multiple
+              loading={loading}
+              error={error}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button type="submit" isLoading={isLoading} loadingText="Updating">
+              Update Category
+            </Button>
+          </DialogFooter>
         </form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,36 +1,23 @@
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { FilePenIcon, Search, TrashIcon } from "lucide-react";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+import { Search } from "lucide-react";
 import { DataTable } from "@/components/dynamic-ui/DataTable";
 import Image from "next/image";
 import { useState } from "react";
-import EditCategory from "./EditCategory"; // Import the EditCategory component
 import { DeleteCategory } from "./DeleteCategory";
+import SortBy from "@/components/ui/sort-by";
+import CreateCategory from "./CreateCategory";
+import EditCategory from "./EditCategory";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Category, useCategoryContext } from "@/context/CategoriesContext";
 
-interface Category {
-  id: string;
-  name: string;
-  description?: string;
-  parentId?: string; // Changed to parentId
-  imageUrl: string;
-}
-
-interface ExistingCategoriesProps {
-  categories: Category[];
-  loading: boolean;
-  error: string | null;
-}
-
-export default function ExistingCategories({ categories, loading, error }: ExistingCategoriesProps) {
+export default function ExistingCategories() {
+  const { categories, error, loading } = useCategoryContext();
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null); // State for editing
-
+  const [sortOption, setSortOption] = useState<string>("");
   // Filter categories based on the search term
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -63,60 +50,48 @@ export default function ExistingCategories({ categories, loading, error }: Exist
       : "None",
     actions: (
       <div className="flex items-center gap-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => handleEdit(category)}
-              >
-                <FilePenIcon className="h-4 w-4" strokeWidth={1.5} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-         <DeleteCategory id={category.id}/>
-            </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <EditCategory category={category} />
+          </TooltipTrigger>
+          <TooltipContent>Edit</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger>
+            <DeleteCategory id={category.id} />
+          </TooltipTrigger>
+          <TooltipContent>Delete</TooltipContent>
+        </Tooltip>
       </div>
     ),
   }));
 
-  function handleEdit(category: Category) {
-    setEditingCategory(category); // Set the category to be edited
-  }
-
-  function handleDelete(categoryId: string) {
-    console.log("Delete category with id", categoryId);
-  }
-
   return (
-    <div>
-      {editingCategory ? (
-        <EditCategory
-          category={editingCategory}
-          categories={categories} // Pass the categories for parent selection
-          onClose={() => setEditingCategory(null)}
-        />
-      ) : (
-        <DataTable
-          title={<CategoriesTitle setSearchTerm={setSearchTerm} />}
-          columns={columns}
-          rows={rows}
-          isLoading={loading}
-          error={error}
-        />
-      )}
-    </div>
+    <>
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex space-x-2">
+          <SortBy sortOption={sortOption} setSortOption={setSortOption} />
+        </div>
+        <div>
+          <CreateCategory />
+        </div>
+      </div>
+      <DataTable
+        title={<CategoriesTitle setSearchTerm={setSearchTerm} />}
+        columns={columns}
+        rows={rows}
+        isLoading={loading}
+        error={error}
+      />
+    </>
   );
 }
 
-const CategoriesTitle = ({ setSearchTerm }: { setSearchTerm: (term: string) => void }) => {
+const CategoriesTitle = ({
+  setSearchTerm,
+}: {
+  setSearchTerm: (term: string) => void;
+}) => {
   return (
     <div className="flex items-center justify-between">
       Existing Categories

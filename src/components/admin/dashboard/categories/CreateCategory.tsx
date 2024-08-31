@@ -1,62 +1,68 @@
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Select from "@/components/ui/better-select"; // Updated import
+import Select from "@/components/ui/better-select";
 import { Textarea } from "@/components/ui/textarea";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Option } from "@/components/ui/better-select"; // Updated import
+import { Option } from "@/components/ui/better-select";
+import { useCategoryContext } from "@/context/CategoriesContext";
 
-interface Category {
-  id: string;
-  name: string;
-}
-
-interface CreateCategoryProps {
-  categories: Category[];
-  categoriesLoading: boolean;
-  error: unknown
-}
-
-export default function CreateCategory({
-  categories,
-  categoriesLoading,
-  error
-}: CreateCategoryProps) {
-  const [selectedParentCategory, setSelectedParentCategory] = useState<
-    Option[]
-  >([]);
-  const [selectedSubCategories, setSelectedSubCategories] = useState<Option[]>(
-    []
-  );
-  useEffect(() => {
-    console.log("selectedParentCategory: ", selectedParentCategory);
-    console.log("selectedSubCategories: ", selectedSubCategories);
-  });
-
-  let categoryOptions = [];
-  for (const category of categories) {
-    categoryOptions.push({
-      value: category.id,
-      label: category.name,
-    });
-  }
+export default function CreateCategory() {
+  const { categoryOptions, error, loading } = useCategoryContext();
+  const [selectedParentCategory, setSelectedParentCategory] = useState<Option[]>([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState<Option[]>([]);
   const [newCategory, setNewCategory] = useState<{
     name: string;
     description: string;
     image: File | null;
     parentId: string | null;
     tags: string;
+    subCategories: string[]; // Changed to an array of IDs
   }>({
     name: "",
     description: "",
     image: null,
     parentId: null,
     tags: "",
+    subCategories: [], // Changed to an array of IDs
   });
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Update the parentId in newCategory based on selectedParentCategory
+    if (selectedParentCategory.length > 0) {
+      setNewCategory((prevCategory) => ({
+        ...prevCategory,
+        parentId: selectedParentCategory[0].value, // Assuming value is the ID
+      }));
+    } else {
+      setNewCategory((prevCategory) => ({
+        ...prevCategory,
+        parentId: null,
+      }));
+    }
+  }, [selectedParentCategory]);
+
+  useEffect(() => {
+    // Update the subCategories in newCategory based on selectedSubCategories
+    const subCategoryIds = selectedSubCategories.map(sub => sub.value);
+    setNewCategory((prevCategory) => ({
+      ...prevCategory,
+      subCategories: subCategoryIds, // Changed to array of IDs
+    }));
+  }, [selectedSubCategories]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -76,17 +82,9 @@ export default function CreateCategory({
     }));
   };
 
-  const handleParentCategoryChange = (value: string) => {
-    const newParentCategory = value === "none" ? null : value;
-    setNewCategory((prevCategory) => ({
-      ...prevCategory,
-      parentId: newParentCategory,
-    }));
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
 
     try {
       const formData = new FormData();
@@ -94,12 +92,12 @@ export default function CreateCategory({
       formData.append("description", newCategory.description);
       formData.append("parentId", newCategory.parentId || "");
       formData.append("tags", newCategory.tags);
+      formData.append("subCategories", JSON.stringify(newCategory.subCategories)); // Send as JSON string
 
       if (newCategory.image) {
         formData.append("image", newCategory.image);
       }
 
-      // Make the API request to create the category
       await axios.post("/api/categories", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -108,14 +106,16 @@ export default function CreateCategory({
 
       toast.success("Category created successfully.");
 
-      // Reset form state
       setNewCategory({
         name: "",
         description: "",
         image: null,
         parentId: null,
         tags: "",
+        subCategories: [], // Reset subCategories
       });
+      setSelectedParentCategory([]);
+      setSelectedSubCategories([]);
     } catch (error) {
       console.error("Failed to create category: ", error);
 
@@ -131,94 +131,101 @@ export default function CreateCategory({
         toast.error("An unknown error occurred.");
       }
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Create New Category</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                value={newCategory.name}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Description (optional)</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={newCategory.description}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="image">Image</Label>
-              <Input
-                id="image"
-                name="image"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="tags">Tags (comma-separated)</Label>
-              <Input
-                id="tags"
-                name="tags"
-                type="text"
-                value={newCategory.tags}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="parentCategory">Parent Category</Label>
-              <Select
-                id="Parent"
-                options={categoryOptions}
-                selectedOptions={selectedParentCategory}
-                onChange={setSelectedParentCategory}
-                loading={categoriesLoading}
-                error={error}
-              />
-            </div>
-            <div>
-              <Label htmlFor="subCategories">Subcategories</Label>
-              <Select
-                id="subcategories"
-                options={categoryOptions}
-                selectedOptions={selectedSubCategories}
-                onChange={setSelectedSubCategories}
-                multiple
-                loading={categoriesLoading}
-                error={error}
-              />
-            </div>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>Create New Category</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Create New Category</DialogTitle>
+          <DialogDescription>
+            Fill out the form below to add a new category.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="grid gap-6 py-6">
+          <div className="grid gap-3">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              value={newCategory.name}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div className="mt-4">
+          <div className="grid gap-3">
+            <Label htmlFor="description">Description (optional)</Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={newCategory.description}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="grid gap-3">
+            <Label htmlFor="image">Image</Label>
+            <Input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              required
+            />
+          </div>
+          <div className="grid gap-3">
+            <Label htmlFor="tags">Tags (comma-separated)</Label>
+            <Input
+              id="tags"
+              name="tags"
+              type="text"
+              value={newCategory.tags}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="grid gap-3">
+            <Label htmlFor="parentCategory">Parent Category</Label>
+            <Select
+              options={categoryOptions}
+              selectedOptions={selectedParentCategory}
+              onChange={setSelectedParentCategory}
+              loading={loading}
+              error={error}
+            />
+          </div>
+          <div className="grid gap-3">
+            <Label htmlFor="subCategories">Subcategories</Label>
+            <Select
+              options={categoryOptions}
+              selectedOptions={selectedSubCategories}
+              onChange={setSelectedSubCategories}
+              multiple
+              loading={loading}
+              error={error}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
             <Button
               type="submit"
               isLoading={isLoading}
-              loadingText="Please wait"
+              loadingText="Creating..."
             >
               Create Category
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

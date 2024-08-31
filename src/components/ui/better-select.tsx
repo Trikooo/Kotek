@@ -1,7 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Check, ChevronDown, X, Search, Loader2, AlertCircle } from "lucide-react"; // Added AlertCircle
+import {
+  Check,
+  ChevronDown,
+  X,
+  Search,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { DismissableLayer } from "@radix-ui/react-dismissable-layer";
 
 export type Option = {
   value: string;
@@ -9,25 +17,23 @@ export type Option = {
 };
 
 interface SelectProps {
-  id: string;
   options: Option[];
   selectedOptions: Option[];
   onChange: (selectedOptions: Option[]) => void;
   multiple?: boolean;
   searchable?: boolean;
   loading?: boolean;
-  error?: unknown; // Added error prop
+  error?: unknown;
 }
 
 const Select: React.FC<SelectProps> = ({
-  id,
   options,
   selectedOptions,
   onChange,
   multiple = false,
   searchable = true,
   loading = false,
-  error = false, // Default to false
+  error = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -44,7 +50,9 @@ const Select: React.FC<SelectProps> = ({
       if (option.value === "none") {
         onChange([]);
       } else {
-        const isSelected = selectedOptions.some((o) => o.value === option.value);
+        const isSelected = selectedOptions.some(
+          (o) => o.value === option.value
+        );
         const newSelectedOptions = isSelected
           ? selectedOptions.filter((o) => o.value !== option.value)
           : [...selectedOptions, option];
@@ -60,95 +68,73 @@ const Select: React.FC<SelectProps> = ({
     }
   };
 
-  const handleRemoveSelectedOption = (option: Option, event: React.MouseEvent) => {
+  const handleRemoveSelectedOption = (
+    option: Option,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation();
-    const newSelectedOptions = selectedOptions.filter((o) => o.value !== option.value);
+    const newSelectedOptions = selectedOptions.filter(
+      (o) => o.value !== option.value
+    );
     onChange(newSelectedOptions);
   };
 
   const filteredOptions = searchable
-    ? [{ value: "none", label: "None" }, ...options.filter((option) =>
-        option.label.toLowerCase().includes(search.toLowerCase())
-      )]
+    ? [
+        { value: "none", label: "None" },
+        ...options.filter((option) =>
+          option.label.toLowerCase().includes(search.toLowerCase())
+        ),
+      ]
     : [{ value: "none", label: "None" }, ...options];
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-      setOpen(false);
-      setFocusedIndex(-1);
-      setIsKeyboardNav(false);
-    }
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (!open && event.key === "Enter" && document.activeElement === buttonRef.current) {
-      event.preventDefault();
-      setOpen(true);
-      return;
-    }
-
-    if (!open) return;
-
-    switch (event.key) {
-      case "ArrowDown":
-        event.preventDefault();
-        setIsKeyboardNav(true);
-        setFocusedIndex((prevIndex) =>
-          prevIndex < filteredOptions.length - 1 ? prevIndex + 1 : prevIndex
-        );
-        break;
-      case "ArrowUp":
-        event.preventDefault();
-        setIsKeyboardNav(true);
-        setFocusedIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
-        break;
-      case "Enter":
-        event.preventDefault();
-        if (focusedIndex !== -1) {
-          handleOptionClick(filteredOptions[focusedIndex]);
-        }
-        break;
-      case "Escape":
-        setOpen(false);
-        setFocusedIndex(-1);
-        setIsKeyboardNav(false);
-        break;
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open, focusedIndex, filteredOptions]);
 
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
     }
   }, [open]);
-
   useEffect(() => {
     if (open && containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
-      const availableSpaceBelow = window.innerHeight - containerRect.bottom;
+      const parentRect = containerRef.current.parentElement?.getBoundingClientRect();
+      const availableSpaceBelow = parentRect
+        ? parentRect.bottom - containerRect.bottom
+        : window.innerHeight - containerRect.bottom;
+      const availableSpaceAbove = containerRect.top - (parentRect?.top || 0);
       const dropdownHeight = 240; // Adjust this value based on your dropdown height
 
-      setPositionAbove(availableSpaceBelow < dropdownHeight);
+      if (availableSpaceBelow >= dropdownHeight || availableSpaceBelow > availableSpaceAbove) {
+        setPositionAbove(false);
+      } else {
+        setPositionAbove(true);
+      }
     }
   }, [open]);
 
+
   useEffect(() => {
-    if (optionsRef.current && focusedIndex >= 0) {
-      const focusedOption = optionsRef.current.children[focusedIndex] as HTMLElement;
+    if (optionsRef.current) {
+      const focusedOption = optionsRef.current.children[
+        focusedIndex
+      ] as HTMLElement;
       if (focusedOption) {
-        focusedOption.scrollIntoView({ block: 'nearest', inline: 'start' });
+        focusedOption.scrollIntoView({ block: "nearest", inline: "start" });
       }
     }
   }, [focusedIndex]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="relative w-full" ref={containerRef}>
@@ -183,7 +169,7 @@ const Select: React.FC<SelectProps> = ({
           )}
         </div>
         {error ? (
-          <AlertCircle className="h-4 w-4 text-red-500" /> // Display error icon
+          <AlertCircle className="h-4 w-4 text-red-500" />
         ) : loading ? (
           <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
         ) : (
@@ -191,51 +177,59 @@ const Select: React.FC<SelectProps> = ({
         )}
       </button>
       {open && !loading && !error && (
-        <div
-          className={cn(
-            "absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md",
-            positionAbove ? "bottom-full mb-2 animate-drop-in" : "top-full mt-2 animate-dropdown-in"
-          )}
-        >
-          <div className="sticky top-0 z-10 bg-background p-2">
-            {searchable && (
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="flex h-11 w-full rounded-md bg-transparent py-3 pl-10 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                  ref={inputRef}
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
+        <DismissableLayer onEscapeKeyDown={() => setOpen(false)}>
+          <div
+            className={cn(
+              "absolute z-50 mt-2 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md",
+              positionAbove
+                ? "bottom-full mb-2 animate-drop-in max-h-60"
+                : "top-full mt-2 animate-dropdown-in max-h-60"
             )}
-            <hr className="mt-2" />
+          >
+            <div className="sticky top-0 z-10 bg-background p-2">
+              {searchable && (
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="flex h-11 w-full rounded-md bg-transparent py-3 pl-10 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                    ref={inputRef}
+                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                </div>
+              )}
+              <hr className="mt-2" />
+            </div>
+            <div className="p-1" ref={optionsRef}>
+              {filteredOptions.map((option, index) => (
+                <div
+                  key={option.value}
+                  onClick={() => handleOptionClick(option)}
+                  onMouseEnter={() => {
+                    setFocusedIndex(index);
+                    setIsKeyboardNav(false);
+                  }}
+                  className={cn(
+                    "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm",
+                    isKeyboardNav &&
+                      index === focusedIndex &&
+                      "bg-accent text-accent-foreground",
+                    "hover:bg-accent hover:text-accent-foreground"
+                  )}
+                >
+                  {(option.value === "none"
+                    ? selectedOptions.length === 0
+                    : selectedOptions.some(
+                        (o) => o.value === option.value
+                      )) && <Check className="absolute left-2 h-4 w-4" />}
+                  {option.label}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="p-1" ref={optionsRef}>
-            {filteredOptions.map((option, index) => (
-              <div
-                key={option.value}
-                onClick={() => handleOptionClick(option)}
-                onMouseEnter={() => {
-                  setFocusedIndex(index);
-                  setIsKeyboardNav(false);
-                }}
-                className={cn(
-                  "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm",
-                  (isKeyboardNav && index === focusedIndex) && "bg-accent text-accent-foreground",
-                  "hover:bg-accent hover:text-accent-foreground"
-                )}
-              >
-                {(option.value === "none" ? selectedOptions.length === 0 : selectedOptions.some((o) => o.value === option.value)) && (
-                  <Check className="absolute left-2 h-4 w-4" />
-                )}
-                {option.label}
-              </div>
-            ))}
-          </div>
-        </div>
+        </DismissableLayer>
       )}
     </div>
   );

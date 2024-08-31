@@ -1,80 +1,29 @@
 "use client";
+import { useEffect, useMemo, useState } from "react";
 import { DataTable, Column, Row } from "@/components/dynamic-ui/DataTable";
-import DynamicDropDown, {
-  DropdownItem,
-} from "@/components/dynamic-ui/DynamicDropDown";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, ListFilter, Search, ArrowDownWideNarrow } from "lucide-react";
-import { useMemo, useState } from "react";
-import { STATUSES, SORT_OPTIONS } from "@/lib/constants";
 import CreateProduct from "./CreateProduct";
+import SortBy from "@/components/ui/sort-by";
+import FilterBy from "@/components/ui/filter-by";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { STATUSES } from "@/lib/constants";
 
 interface AllProductsProps {
   products: {
     id: string;
     name: string;
-    price: number; // Integer price in DA
+    price: number;
     stock: number;
     imageUrl: string;
-    status: "ACTIVE" | "INACTIVE" | "DRAFT"; // Adjust to match your enum values
+    status: "ACTIVE" | "INACTIVE" | "DRAFT";
   }[];
 }
 
 export default function AllProducts({ products }: AllProductsProps) {
-  // ------------------ filter by ----------------------------------
-
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(
     new Set()
   );
-
-  const handleStatusChange = (status: string) => {
-    setSelectedStatuses((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(status)) {
-        newSet.delete(status);
-      } else {
-        newSet.add(status);
-      }
-      return newSet;
-    });
-  };
-
-  const filterItems: DropdownItem[] = [
-    {
-      label: "No filter",
-      value: "",
-      checked: selectedStatuses.size === 0,
-      onClick: () => setSelectedStatuses(new Set()),
-    },
-    ...STATUSES.map((status) => ({
-      label: status,
-      value: status,
-      checked: selectedStatuses.has(status),
-      onClick: () => handleStatusChange(status),
-    })),
-  ];
-
-  // ------------------ end of filter by ----------------------------------
-
-  // ------------------ sort by ----------------------------------
-
   const [sortOption, setSortOption] = useState<string>("");
-  function handleSortChange(option: string) {
-    setSortOption(option);
-  }
-
-  const sortItems: DropdownItem[] = SORT_OPTIONS.map((option) => ({
-    label: option.label,
-    value: option.value,
-    checked: sortOption === option.value,
-    onClick: () => handleSortChange(option.value),
-  }));
-
-  // ------------------ end of sort by ----------------------------------
-
-  // ------------------ search ----------------------------------
-
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredProducts = useMemo(() => {
@@ -83,15 +32,15 @@ export default function AllProducts({ products }: AllProductsProps) {
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesStatus =
-        selectedStatuses.size === 0 || selectedStatuses.has(product.status);
+        selectedStatuses.size === 0 ||
+        selectedStatuses.has(product.status.toLowerCase());
+      console.log(product.status);
       return matchesSearch && matchesStatus;
     });
   }, [products, searchTerm, selectedStatuses]);
-
-  // ------------------ end of search ----------------------------------
-
-  // ------------------ dataTable ----------------------------------
-
+  useEffect(() => {
+    console.log(selectedStatuses);
+  });
   const columns: Column[] = [
     { header: "Image", important: true },
     { header: "Name", important: true },
@@ -103,39 +52,31 @@ export default function AllProducts({ products }: AllProductsProps) {
   const rows: Row[] = filteredProducts.map((product) => ({
     image: product.imageUrl,
     name: product.name,
-    price: `${product.price} DA`, // Format price as integer with DA currency
-    stock: `${product.stock}`, // Render stock as a string
+    price: `${product.price} DA`,
+    stock: `${product.stock}`,
     status: { value: product.status.toLowerCase(), filled: true },
   }));
-
-  // ------------------ end of dataTable ----------------------------------
 
   return (
     <>
       <div className="flex justify-between items-center mb-2">
         <div className="flex space-x-2">
-          <DynamicDropDown
-            triggerText="Filter by"
-            TriggerIcon={<ListFilter className="w-4 h-4" strokeWidth={1.5} />}
-            items={filterItems}
+          <FilterBy
+            filterOptions={STATUSES}
+            selectedStatuses={selectedStatuses}
+            setSelectedStatuses={setSelectedStatuses}
           />
-          <DynamicDropDown
-            triggerText="Sort by"
-            TriggerIcon={
-              <ArrowDownWideNarrow className="w-4 h-4" strokeWidth={1.5} />
-            }
-            items={sortItems}
-          />
+          <SortBy sortOption={sortOption} setSortOption={setSortOption} />
         </div>
         <div>
-         <CreateProduct />
+          <CreateProduct />
         </div>
       </div>
       <DataTable
         title={<ProductsTitle setSearchTerm={setSearchTerm} />}
         columns={columns}
         rows={rows}
-        isLoading={false} // Replace with a loading state if necessary
+        isLoading={false}
       />
     </>
   );

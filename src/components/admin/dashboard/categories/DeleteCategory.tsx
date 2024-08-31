@@ -10,7 +10,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { TrashIcon, Loader2 } from "lucide-react"; // Import a loading icon
+import { TrashIcon, Loader2, Trash2Icon } from "lucide-react"; // Import a loading icon
 import axios from "axios";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -37,10 +37,8 @@ export function DeleteCategory({ id }: DeleteCategoryProps) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline" isLoading={isLoading}>
-          <TrashIcon className="h-4 w-4" strokeWidth={1.5} />
-        </Button>
+      <AlertDialogTrigger className="p-2 hover:bg-accent rounded-md ">
+        <Trash2Icon className="w-5 h-5" strokeWidth={1.5} />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -53,7 +51,6 @@ export function DeleteCategory({ id }: DeleteCategoryProps) {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleDelete} disabled={isLoading}>
-            {" "}
             {/* Disable action button when loading */}
             {isLoading ? "Deleting..." : "Continue"}
           </AlertDialogAction>

@@ -6,6 +6,7 @@ import SideBarContext, {
 } from "@/context/SideBarContext";
 import { useContext } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function AdminLayout({
   children,
@@ -13,9 +14,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SideBarContextProvider>
-      <Layout>{children}</Layout>
-    </SideBarContextProvider>
+    <TooltipProvider>
+      <SideBarContextProvider>
+        <Layout>{children}</Layout>
+      </SideBarContextProvider>
+    </TooltipProvider>
   );
 }
 
@@ -31,9 +34,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         }`}
       >
         <Header />
-        <main className="flex items-start gap-4 p-4">
-          {children}
-        </main>
+        <main className="flex items-start gap-4 p-4">{children}</main>
       </div>
     </div>
   );
