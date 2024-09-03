@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { DataTable, Column, Row } from "@/components/dynamic-ui/DataTable";
 import CreateProduct from "./CreateProduct";
 import SortBy from "@/components/ui/sort-by";
@@ -7,6 +7,10 @@ import FilterBy from "@/components/ui/filter-by";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { STATUSES } from "@/lib/constants";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import EditProduct from "./EditProducct";
+import { useProductContext } from "@/context/ProductsContext";
+import { DeleteProduct } from "./DeleteProduct";
 
 interface AllProductsProps {
   products: {
@@ -19,7 +23,8 @@ interface AllProductsProps {
   }[];
 }
 
-export default function AllProducts({ products }: AllProductsProps) {
+export default function AllProducts() {
+  const { products, loading, error } = useProductContext()
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(
     new Set()
   );
@@ -55,6 +60,22 @@ export default function AllProducts({ products }: AllProductsProps) {
     price: `${product.price} DA`,
     stock: `${product.stock}`,
     status: { value: product.status.toLowerCase(), filled: true },
+    actions: (
+      <div className="flex items-center gap-2">
+        <Tooltip>
+          <TooltipTrigger>
+            <EditProduct product={product} />
+          </TooltipTrigger>
+          <TooltipContent>Edit</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger>
+            <DeleteProduct id={product.id} />
+          </TooltipTrigger>
+          <TooltipContent>Delete</TooltipContent>
+        </Tooltip>
+      </div>
+    ),
   }));
 
   return (

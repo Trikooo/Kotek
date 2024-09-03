@@ -1,6 +1,12 @@
 // src/context/CategoryContext.tsx
 "use client";
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 export interface Category {
   id: string;
@@ -19,17 +25,23 @@ interface CategoryContextType {
   error: string | null;
 }
 
-const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
+const CategoryContext = createContext<CategoryContextType | undefined>(
+  undefined
+);
 
 export const useCategoryContext = () => {
   const context = useContext(CategoryContext);
   if (context === undefined) {
-    throw new Error("useCategoryContext must be used within a CategoryProvider");
+    throw new Error(
+      "useCategoryContext must be used within a CategoryProvider"
+    );
   }
   return context;
 };
 
-export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const CategoryProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +69,9 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
   }));
 
   return (
-    <CategoryContext.Provider value={{ categories, categoryOptions, loading, error }}>
+    <CategoryContext.Provider
+      value={{ categories, categoryOptions, loading, error }}
+    >
       {children}
     </CategoryContext.Provider>
   );

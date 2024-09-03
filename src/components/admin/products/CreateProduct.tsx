@@ -8,44 +8,52 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { Plus } from "lucide-react";
-import { useState, ChangeEvent, FormEvent } from "react";
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Select from "@/components/ui/better-select";
+import { Textarea } from "@/components/ui/textarea";
+import { Option } from "@/components/ui/better-select";
+import { useCategoryContext } from "@/context/CategoriesContext";
+import { ChevronsUpDown, Plus } from "lucide-react";
+import { STATUSES } from "@/lib/constants";
+import { useCreateProduct } from "@/hooks/useCreateProduct";
+import { useEffect } from "react";
 
 export default function CreateProduct() {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    quantity: '',
-    category: '',
-  });
+  const { categoryOptions, error, loading } = useCategoryContext();
+  const {
+    newProduct,
+    selectedCategory,
+    setSelectedCategory,
+    selectedStatus,
+    setSelectedStatus,
+    createIsLoading,
+    handleInputChange,
+    handleFileChange,
+    handleSubmit,
+  } = useCreateProduct();
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log(formData);
-  };
+  let statusOptions: Option[] = [];
+  for (const status of STATUSES) {
+    statusOptions.push({
+      value: status.toUpperCase(),
+      label: status.toUpperCase(),
+    });
+  }
+  useEffect(()=>{
+    
+  })
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-1">
+        <Button className="gap-2">
           <Plus className="w-4 h-4" strokeWidth={1.5} />
           Create New Product
         </Button>
@@ -54,81 +62,218 @@ export default function CreateProduct() {
         <DialogHeader>
           <DialogTitle>Create New Product</DialogTitle>
           <DialogDescription>
-            Fill out the form below to add a new product to your inventory.
+            Fill out the form below to add a new product.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-6 py-6">
           <div className="grid gap-3">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Name *</Label>
             <Input
               id="name"
+              name="name"
               type="text"
-              placeholder="Enter product name"
-              value={formData.name}
-              onChange={handleChange}
+              value={newProduct.name}
+              onChange={handleInputChange}
+              required
             />
           </div>
           <div className="grid gap-3">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              placeholder="Enter product description"
-              className="min-h-[100px]"
-              value={formData.description}
-              onChange={handleChange}
+              name="description"
+              value={newProduct.description}
+              onChange={handleInputChange}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="grid gap-3">
-              <Label htmlFor="price">Price</Label>
+          <div className="grid gap-3">
+            <Label htmlFor="image">Image *</Label>
+            <Input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              required
+            />
+          </div>
+          <div className="flex gap-3">
+            <div className=" flex-1 grid gap-3">
+              <Label htmlFor="price">Price *</Label>
               <Input
                 id="price"
+                name="price"
                 type="number"
-                placeholder="Enter price"
-                value={formData.price}
-                onChange={handleChange}
+                value={newProduct.price}
+                onChange={handleInputChange}
+                required
               />
             </div>
-            <div className="grid gap-3">
-              <Label htmlFor="quantity">Quantity</Label>
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="stock">Stock *</Label>
               <Input
-                id="quantity"
+                id="stock"
+                name="stock"
                 type="number"
-                placeholder="Enter quantity"
-                value={formData.quantity}
-                onChange={handleChange}
+                value={newProduct.stock}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="category">Category *</Label>
+              <Select
+                options={categoryOptions}
+                selectedOptions={selectedCategory}
+                onChange={setSelectedCategory}
+                loading={loading}
+                error={error}
+              />
+            </div>
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="status">Status *</Label>
+              <Select
+                options={statusOptions}
+                selectedOptions={selectedStatus}
+                onChange={setSelectedStatus}
+                searchable={false}
               />
             </div>
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="category">Category</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
-            >
-              <SelectTrigger id="category">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="electronics">Electronics</SelectItem>
-                <SelectItem value="clothing">Clothing</SelectItem>
-                <SelectItem value="home">Home</SelectItem>
-                <SelectItem value="toys">Toys</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="barcode">Barcode *</Label>
+            <Input
+              id="barcode"
+              name="barcode"
+              type="text"
+              value={newProduct.barcode || ""}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <DialogFooter>
-            <div>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
+          <div className="grid gap-3">
+            <Label htmlFor="keyFeatures">Key Features (comma-separated)</Label>
+            <Textarea
+              id="keyFeatures"
+              name="keyFeatures"
+              value={newProduct.description}
+              onChange={handleInputChange}
+            />
+          </div>
+          <OptionalFields>
+            <div className="grid gap-3">
+              <Label htmlFor="tags">Tags (comma-separated)</Label>
+              <Input
+                id="tags"
+                name="tags"
+                type="text"
+                value={newProduct.tags} // Display tags as comma-separated string
+                onChange={handleInputChange}
+              />
             </div>
-            <Button type="submit">Save Product</Button>
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="brand">Brand</Label>
+              <Input
+                id="brand"
+                name="brand"
+                type="text"
+                value={newProduct.brand || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex gap-3">
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="length">Length</Label>
+              <Input
+                id="length"
+                name="length"
+                type="number"
+                value={newProduct.length || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="width">Width</Label>
+              <Input
+                id="width"
+                name="width"
+                type="number"
+                value={newProduct.width || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            </div>
+            <div className="flex gap-3">
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="height">Height</Label>
+              <Input
+                id="height"
+                name="height"
+                type="number"
+                value={newProduct.height || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="weight">Weight</Label>
+              <Input
+                id="weight"
+                name="weight"
+                type="number"
+                value={newProduct.weight || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            </div>
+          </OptionalFields>
+          <DialogFooter className="">
+            <DialogClose asChild className="max-sm:flex-1">
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              type="submit"
+              isLoading={createIsLoading}
+              loadingText="Creating..."
+              className="max-sm:flex-1"
+            >
+              Create Product
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface OptionalFieldsProps {
+  children: React.ReactNode;
+}
+function OptionalFields({ children }: OptionalFieldsProps) {
+
+
+
+  return (
+    <Collapsible>
+      <CollapsibleTrigger asChild>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="flex items-center justify-between space-x-4 w-full mb-6"
+        >
+          <h4 className="text-sm font-semibold">Show other optional fields</h4>
+
+          <ChevronsUpDown className="h-4 w-4" />
+          <span className="sr-only">Toggle</span>
+        </Button>
+      </CollapsibleTrigger>
+
+      <CollapsibleContent className="grid gap-y-6">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

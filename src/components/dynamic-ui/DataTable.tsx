@@ -188,7 +188,7 @@ export function DataTable({
           </Table>
         )}
         {rows.length === 0 && !isLoading && !error && (
-          <div className="text-center mt- text-gray-500">No data available</div>
+          <div className="text-center mt-5 text-gray-500">No data available</div>
         )}
       </CardContent>
       {footer && <CardFooter className="flex justify-center">{footer}</CardFooter>}

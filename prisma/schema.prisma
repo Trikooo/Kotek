@@ -50,7 +50,7 @@ model Product {
   price       Int
   imageUrl    String
   stock       Int
-  sku         String        @unique
+  barcode     String?       @unique // Barcode field, optional and unique
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   categoryId  String?       @db.Uuid
@@ -60,11 +60,18 @@ model Product {
   orderItems  OrderItem[]
   cartItems   CartItem[]
   reviews     Review[]
-  brand       String
-  status      ProductStatus @default(ACTIVE) // Set default to ACTIVE
+  brand       String?
+  status      ProductStatus @default(ACTIVE)
+
+  // Dimensions (Optional)
+  length      Float?
+  width       Float?
+  height      Float?
+  weight      Float?
 
   @@index([name])
 }
+
 
 enum ProductStatus {
   ACTIVE

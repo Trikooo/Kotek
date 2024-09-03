@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
 import {
   Check,
   ChevronDown,
@@ -24,6 +24,7 @@ interface SelectProps {
   searchable?: boolean;
   loading?: boolean;
   error?: unknown;
+  required?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -34,6 +35,7 @@ const Select: React.FC<SelectProps> = ({
   searchable = true,
   loading = false,
   error = false,
+  required = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -63,7 +65,7 @@ const Select: React.FC<SelectProps> = ({
         onChange([]);
       } else {
         onChange([option]);
-        setOpen(false);
+        closeDropdown();
       }
     }
   };
@@ -93,24 +95,28 @@ const Select: React.FC<SelectProps> = ({
       inputRef.current.focus();
     }
   }, [open]);
+
   useEffect(() => {
     if (open && containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
-      const parentRect = containerRef.current.parentElement?.getBoundingClientRect();
+      const parentRect =
+        containerRef.current.parentElement?.getBoundingClientRect();
       const availableSpaceBelow = parentRect
         ? parentRect.bottom - containerRect.bottom
         : window.innerHeight - containerRect.bottom;
       const availableSpaceAbove = containerRect.top - (parentRect?.top || 0);
       const dropdownHeight = 240; // Adjust this value based on your dropdown height
 
-      if (availableSpaceBelow >= dropdownHeight || availableSpaceBelow > availableSpaceAbove) {
+      if (
+        availableSpaceBelow >= dropdownHeight ||
+        availableSpaceBelow > availableSpaceAbove
+      ) {
         setPositionAbove(false);
       } else {
         setPositionAbove(true);
       }
     }
   }, [open]);
-
 
   useEffect(() => {
     if (optionsRef.current) {
@@ -124,9 +130,14 @@ const Select: React.FC<SelectProps> = ({
   }, [focusedIndex]);
 
   useEffect(() => {
+    console.log(focusedIndex);
+
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        closeDropdown();
       }
     };
 
@@ -134,10 +145,57 @@ const Select: React.FC<SelectProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  });
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setIsKeyboardNav(true);
+      setFocusedIndex((prevIndex) =>
+        prevIndex < filteredOptions.length - 1 ? prevIndex + 1 : 0
+      );
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setIsKeyboardNav(true);
+      setFocusedIndex((prevIndex) =>
+        prevIndex > 0 ? prevIndex - 1 : options.length
+      );
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      if (!open) {
+        setOpen(true);
+      } else if (focusedIndex !== -1) {
+        handleOptionClick(filteredOptions[focusedIndex]);
+      } else if (open && focusedIndex == -1) {
+        setOpen(false);
+        if (buttonRef.current) {
+          buttonRef.current.focus();
+        }
+      }
+    }
+  };
+
+  const closeDropdown = () => {
+    setOpen(false);
+    setFocusedIndex(-1);
+    setSearch("");
+    if (buttonRef.current) {
+      buttonRef.current.focus();
+    }
+  };
+
+  const handleEscape = (event: any) => {
+    event.preventDefault();
+    closeDropdown();
+    event.stopPropagation();
+  };
 
   return (
-    <div className="relative w-full" ref={containerRef}>
+    <div
+      className="relative w-full"
+      ref={containerRef}
+      onKeyDown={handleKeyDown}
+    >
       <button
         ref={buttonRef}
         type="button"
@@ -177,7 +235,11 @@ const Select: React.FC<SelectProps> = ({
         )}
       </button>
       {open && !loading && !error && (
-        <DismissableLayer onEscapeKeyDown={() => setOpen(false)}>
+        <DismissableLayer
+          onEscapeKeyDown={(event) => {
+            handleEscape(event);
+          }}
+        >
           <div
             className={cn(
               "absolute z-50 mt-2 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md",
@@ -186,8 +248,8 @@ const Select: React.FC<SelectProps> = ({
                 : "top-full mt-2 animate-dropdown-in max-h-60"
             )}
           >
-            <div className="sticky top-0 z-10 bg-background p-2">
-              {searchable && (
+            {searchable && (
+              <div className="sticky top-0 z-10 bg-background p-2">
                 <div className="relative">
                   <input
                     type="text"
@@ -198,10 +260,11 @@ const Select: React.FC<SelectProps> = ({
                     ref={inputRef}
                   />
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <hr className="mt-2" />
                 </div>
-              )}
-              <hr className="mt-2" />
-            </div>
+              </div>
+            )}
+
             <div className="p-1" ref={optionsRef}>
               {filteredOptions.map((option, index) => (
                 <div
