@@ -3,7 +3,11 @@ import prisma from "../lib/prisma";
 
 export async function getAllCategories() {
   try {
-    return await prisma.category.findMany();
+    return await prisma.category.findMany({
+      include: {
+        subcategories: true,
+      },
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error fetching categories", error.message);
@@ -42,21 +46,34 @@ import { unlink, writeFile } from "fs/promises";
 import path from "path";
 import { categorySchema } from "../lib/validation";
 import { NextRequest } from "next/server";
+import { CategoryValidationT } from "@/types/types";
 
-export async function createCategory(data: Category) {
+export async function createCategory(data: CategoryValidationT) {
+  console.log(data);
   try {
-    console.log(data);
-    return await prisma.category.create({
+    const { subcategories, ...categoryData } = data;
+    if(subcategories){
+
+    }
+    const category = await prisma.category.create({
       data: {
-        ...data,
+        ...categoryData,
+        subcategories: {
+          connect: subcategories.map((id) => ({ id })),
+        },
+      },
+      include: {
+        subcategories: true,
       },
     });
-  } catch (error: unknown) {
+
+    console.log("Created category:", category);
+    return category;
+  } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
-      // P2002 is the Prisma error code for unique constraint violation
       console.error(
         `Conflict: Category with this unique field already exists.`
       );
@@ -72,7 +89,6 @@ export async function createCategory(data: Category) {
     }
   }
 }
-
 export async function updateCategory(id: string, data: Partial<Category>) {
   try {
     const updatedCategory = await prisma.category.update({
@@ -129,8 +145,9 @@ export async function deleteCategory(id: string) {
 
 export async function categoryValidation(
   request: NextRequest
-): Promise<Partial<Category>> {
+): Promise<CategoryValidationT> {
   const formData = await request.formData();
+  console.log(formData);
 
   // Utility function to capitalize the first letter of a string
   const capitalizeFirstLetter = (str: string) => {
@@ -141,6 +158,8 @@ export async function categoryValidation(
   let name = formData.get("name")?.toString().trim() || "";
   let description = formData.get("description")?.toString().trim() || "";
   const parentId = formData.get("parentId")?.toString().trim() || "";
+  let subcategories = formData.get("subcategories");
+  if (subcategories) subcategories = JSON.parse(subcategories as string);
   const tags =
     formData
       .get("tags")
@@ -159,23 +178,23 @@ export async function categoryValidation(
     throw new Error("Validation error: Image file is required.");
   }
 
-
   const buffer = Buffer.from(await file.arrayBuffer());
   const filename = file.name.replaceAll(" ", "_");
   const filePath = path.join(process.cwd(), "public/uploads", filename);
   const imageUrl = `/uploads/${filename}`;
-  let data: Partial<Category> = {
-    ...(name && { name }),
-    ...(description && { description }),
-    ...(parentId && parentId !== "" && { parentId }),
-    ...(tags.length > 0 && { tags }),
-    imageUrl: imageUrl
+  let data: CategoryValidationT = {
+    name: name || "", // Provide a default value to avoid `undefined`
+    description: description || "", // Provide a default value if needed
+    parentId: parentId || "", // Provide a default value if needed
+    tags: tags.length > 0 ? tags : [], // Ensure tags is an empty array if no tags
+    subcategories: subcategories as unknown as string[] || "", // Provide a default value if needed
+    imageUrl: imageUrl, // Ensure imageUrl is always provided
   };
+
   categorySchema.parse(data);
 
   await writeFile(filePath, buffer);
   data.imageUrl = imageUrl;
-
 
   return data;
 }

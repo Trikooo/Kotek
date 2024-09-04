@@ -22,21 +22,21 @@ import { useCategoryContext } from "@/context/CategoriesContext";
 export default function CreateCategory() {
   const { categoryOptions, error, loading } = useCategoryContext();
   const [selectedParentCategory, setSelectedParentCategory] = useState<Option[]>([]);
-  const [selectedSubCategories, setSelectedSubCategories] = useState<Option[]>([]);
+  const [selectedSubcategories, setSelectedSubcategories] = useState<Option[]>([]);
   const [newCategory, setNewCategory] = useState<{
     name: string;
     description: string;
     image: File | null;
     parentId: string | null;
     tags: string;
-    subCategories: string[]; // Changed to an array of IDs
+    subcategories: string[]; // Changed to an array of IDs
   }>({
     name: "",
     description: "",
     image: null,
     parentId: null,
     tags: "",
-    subCategories: [], // Changed to an array of IDs
+    subcategories: [], // Changed to an array of IDs
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -56,13 +56,13 @@ export default function CreateCategory() {
   }, [selectedParentCategory]);
 
   useEffect(() => {
-    // Update the subCategories in newCategory based on selectedSubCategories
-    const subCategoryIds = selectedSubCategories.map(sub => sub.value);
+    // Update the subcategories in newCategory based on selectedSubcategories
+    const subCategoryIds = selectedSubcategories.map(sub => sub.value);
     setNewCategory((prevCategory) => ({
       ...prevCategory,
-      subCategories: subCategoryIds, // Changed to array of IDs
+      subcategories: subCategoryIds, // Changed to array of IDs
     }));
-  }, [selectedSubCategories]);
+  }, [selectedSubcategories]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -92,7 +92,7 @@ export default function CreateCategory() {
       formData.append("description", newCategory.description);
       formData.append("parentId", newCategory.parentId || "");
       formData.append("tags", newCategory.tags);
-      formData.append("subCategories", JSON.stringify(newCategory.subCategories)); // Send as JSON string
+      formData.append("subcategories", JSON.stringify(newCategory.subcategories)); // Send as JSON string
 
       if (newCategory.image) {
         formData.append("image", newCategory.image);
@@ -112,10 +112,10 @@ export default function CreateCategory() {
         image: null,
         parentId: null,
         tags: "",
-        subCategories: [], // Reset subCategories
+        subcategories: [], // Reset subcategories
       });
       setSelectedParentCategory([]);
-      setSelectedSubCategories([]);
+      setSelectedSubcategories([]);
     } catch (error) {
       console.error("Failed to create category: ", error);
 
@@ -200,11 +200,11 @@ export default function CreateCategory() {
             />
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="subCategories">Subcategories</Label>
+            <Label htmlFor="subcategories">subcategories</Label>
             <Select
               options={categoryOptions}
-              selectedOptions={selectedSubCategories}
-              onChange={setSelectedSubCategories}
+              selectedOptions={selectedSubcategories}
+              onChange={setSelectedSubcategories}
               multiple
               loading={loading}
               error={error}

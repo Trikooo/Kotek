@@ -1,27 +1,6 @@
-import { $Enums } from "@prisma/client";
+import { CreateProductT } from "@/types/types";
 
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: string;
-  images: File[];
-  stock: string;
-  barcode: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  categoryId: string | null;
-  tags: string;
-  keyFeatures: string[];
-  brand: string | null;
-  status: $Enums.ProductStatus;
-  length: string | null;
-  width: string | null;
-  height: string | null;
-  weight: string | null;
-}
-
-export function createProductFormData(product: Partial<Product>) {
+export function createProductFormData(product: Partial<CreateProductT>) {
   const formData = new FormData();
 
   formData.append("name", product.name ?? "");
@@ -40,9 +19,10 @@ export function createProductFormData(product: Partial<Product>) {
   formData.append("weight", product.weight ?? "");
 
   if (product.images && product.images.length > 0) {
-    product.images.forEach((file, index)=>{
-      formData.append(`images[${index}]`, file)
-    })
+    product.images.forEach((file, index) => {
+      formData.append(`images[${index}]`, file);
+    });
   }
-
 }
+
+export function createCategoryFormData(category: any) {}

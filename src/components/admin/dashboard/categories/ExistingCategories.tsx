@@ -12,7 +12,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Category, useCategoryContext } from "@/context/CategoriesContext";
+import { useCategoryContext } from "@/context/CategoriesContext";
+import { CreateCategoryT } from "@/types/types";
 
 export default function ExistingCategories() {
   const { categories, error, loading } = useCategoryContext();
@@ -39,8 +40,7 @@ export default function ExistingCategories() {
         alt={category.name}
         width={64}
         height={64}
-        className="rounded-md"
-        style={{ aspectRatio: "64/64", objectFit: "cover" }}
+        className="rounded-md object-cover"
       />
     ),
     name: category.name,

@@ -22,8 +22,9 @@ import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import { STATUSES } from "@/lib/constants";
-import { useCreateProduct } from "@/hooks/useCreateProduct";
+
 import { useEffect } from "react";
+import { useCreateProduct } from "@/hooks/products/useCreateProduct";
 
 export default function CreateProduct() {
   const { categoryOptions, error, loading } = useCategoryContext();
@@ -47,7 +48,7 @@ export default function CreateProduct() {
     });
   }
   useEffect(()=>{
-    
+
   })
 
   return (

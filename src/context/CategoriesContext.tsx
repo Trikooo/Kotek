@@ -1,25 +1,16 @@
-// src/context/CategoryContext.tsx
 "use client";
+
+import { useGetAllCategories } from "@/hooks/categories/useGetAllCategories";
+import { CategoryWithSubcategoriesT } from "@/types/types";
+import { Category } from "@prisma/client";
 import React, {
   createContext,
   useContext,
-  useState,
-  useEffect,
   ReactNode,
 } from "react";
 
-export interface Category {
-  id: string;
-  name: string;
-  description?: string;
-  imageUrl: string;
-  tags?: string;
-  parentId?: string;
-  subCategories: string[];
-}
-
 interface CategoryContextType {
-  categories: Category[];
+  categories: CategoryWithSubcategoriesT[];
   categoryOptions: { value: string; label: string }[];
   loading: boolean;
   error: string | null;
@@ -42,26 +33,7 @@ export const useCategoryContext = () => {
 export const CategoryProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        if (!response.ok) throw new Error("Failed to fetch categories");
-        const data: Category[] = await response.json();
-        setCategories(data);
-        setLoading(false);
-      } catch (err) {
-        setError((err as Error).message);
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  const {categories, loading, error } = useGetAllCategories()
 
   const categoryOptions = categories.map((category) => ({
     value: category.id,

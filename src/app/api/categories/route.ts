@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   try {
     const data = await categoryValidation(request)
     // Create category
-    await createCategory(data as Category);
+    await createCategory(data);
 
     return NextResponse.json(
       { message: "Category created successfully" },

@@ -1,12 +1,9 @@
 "use client";
+import { useGetAllProducts } from "@/hooks/products/useGetAllProducts";
 import { Product } from "@prisma/client";
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+
+
+import React, { createContext, useContext, ReactNode } from "react";
 
 interface ProductContextType {
   products: Product[];
@@ -26,25 +23,7 @@ export const useProductContext = () => {
 export const ProductProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<unknown>(null);
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("/api/products");
-        if (!response.ok) throw new Error("Failed to fetch products");
-        const data: Product[] = await response.json();
-        setProducts(data);
-        setLoading(false);
-      } catch (err) {
-        setError((err as Error).message);
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const { products, loading, error } = useGetAllProducts();
 
   return (
     <ProductContext.Provider value={{ products, loading, error }}>

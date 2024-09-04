@@ -17,13 +17,15 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Option } from "@/components/ui/better-select";
-import { Category, useCategoryContext } from "@/context/CategoriesContext";
+
 import Image from "next/image";
-import { PenBox, PenBoxIcon, PenIcon, Trash2Icon } from "lucide-react";
-import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
+import { PenBox } from "lucide-react";
+
+import { useCategoryContext } from "@/context/CategoriesContext";
+import { CategoryWithSubcategoriesT, CreateCategoryT } from "@/types/types";
 
 interface EditCategoryProps {
-  category: Category;
+  category: CategoryWithSubcategoriesT;
 }
 
 export default function EditCategory({ category }: EditCategoryProps) {
@@ -31,33 +33,49 @@ export default function EditCategory({ category }: EditCategoryProps) {
   const [selectedParentCategory, setSelectedParentCategory] = useState<
     Option[]
   >([]);
-  const [selectedSubCategories, setSelectedSubCategories] = useState<Option[]>(
+  const [selectedSubcategories, setSelectedSubcategories] = useState<Option[]>(
     []
   );
+  const subcategoryIds = category.subcategories.map((sub) => sub.id);
   const [categoryData, setCategoryData] = useState({
     name: category.name,
     description: category.description,
     image: null as File | null,
     parentId: category.parentId || null,
-    tags: category.tags,
-    subCategories: category.subCategories,
+    tags: category.tags.join(","),
+    subcategoryIds: subcategoryIds,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(category.imageUrl || null);
 
   useEffect(() => {
-    if (category.subCategories) {
-      setSelectedSubCategories(
-        category.subCategories.map((id) => ({
-          value: id,
-          label: categoryOptions.find((opt) => opt.value === id)?.label || "",
+    if (category.subcategories) {
+      setSelectedSubcategories(
+        category.subcategories.map((subcategory) => ({
+          value: subcategory.id,
+          label: subcategory.name,
         }))
       );
     } else {
-      setSelectedSubCategories([]);
+      setSelectedSubcategories([]);
     }
+    console.log(category.subcategories);
   }, [category, categoryOptions]);
+  // Effect for updating selectedParentCategory
+  useEffect(() => {
+    if (category.parentId) {
+      const preSelectedOption: Option | undefined = categoryOptions.find(
+        (option) => option.value === category.parentId
+      );
+      if (preSelectedOption) {
+        setSelectedParentCategory([preSelectedOption]);
+      } else {
+        setSelectedParentCategory([]);
+      }
+    }
+  }, [category.parentId, categoryOptions]);
 
+  // Effect for updating categoryData
   useEffect(() => {
     if (selectedParentCategory.length > 0) {
       setCategoryData((prevCategory) => ({
@@ -73,12 +91,12 @@ export default function EditCategory({ category }: EditCategoryProps) {
   }, [selectedParentCategory]);
 
   useEffect(() => {
-    const subCategoryIds = selectedSubCategories.map((sub) => sub.value);
+    const subCategoryIds = selectedSubcategories.map((sub) => sub.value);
     setCategoryData((prevCategory) => ({
       ...prevCategory,
-      subCategories: subCategoryIds,
+      subcategories: subCategoryIds,
     }));
-  }, [selectedSubCategories]);
+  }, [selectedSubcategories]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -116,8 +134,8 @@ export default function EditCategory({ category }: EditCategoryProps) {
       formData.append("parentId", categoryData.parentId || "");
       formData.append("tags", categoryData.tags || "");
       formData.append(
-        "subCategories",
-        JSON.stringify(categoryData.subCategories)
+        "subcategories",
+        JSON.stringify(categoryData.subcategoryIds)
       );
 
       if (categoryData.image) {
@@ -181,7 +199,7 @@ export default function EditCategory({ category }: EditCategoryProps) {
             <Textarea
               id="description"
               name="description"
-              value={categoryData.description}
+              value={categoryData.description ?? ""}
               onChange={handleInputChange}
             />
           </div>
@@ -226,11 +244,11 @@ export default function EditCategory({ category }: EditCategoryProps) {
             />
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="subCategories">Subcategories</Label>
+            <Label htmlFor="subcategories">subcategories</Label>
             <Select
               options={categoryOptions}
-              selectedOptions={selectedSubCategories}
-              onChange={setSelectedSubCategories}
+              selectedOptions={selectedSubcategories}
+              onChange={setSelectedSubcategories}
               multiple
               loading={loading}
               error={error}

@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DataTable, Column, Row } from "@/components/dynamic-ui/DataTable";
 import CreateProduct from "./CreateProduct";
 import SortBy from "@/components/ui/sort-by";
@@ -12,16 +12,6 @@ import EditProduct from "./EditProducct";
 import { useProductContext } from "@/context/ProductsContext";
 import { DeleteProduct } from "./DeleteProduct";
 
-interface AllProductsProps {
-  products: {
-    id: string;
-    name: string;
-    price: number;
-    stock: number;
-    imageUrl: string;
-    status: "ACTIVE" | "INACTIVE" | "DRAFT";
-  }[];
-}
 
 export default function AllProducts() {
   const { products, loading, error } = useProductContext()
