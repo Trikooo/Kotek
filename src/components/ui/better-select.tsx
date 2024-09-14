@@ -130,7 +130,6 @@ const Select: React.FC<SelectProps> = ({
   }, [focusedIndex]);
 
   useEffect(() => {
-    console.log(focusedIndex);
 
     const handleClickOutside = (event: MouseEvent) => {
       if (

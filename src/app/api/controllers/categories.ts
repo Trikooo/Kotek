@@ -7,6 +7,7 @@ export async function getAllCategories() {
       include: {
         subcategories: true,
       },
+      cacheStrategy: { ttl: 60 },
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -49,12 +50,8 @@ import { NextRequest } from "next/server";
 import { CategoryValidationT } from "@/types/types";
 
 export async function createCategory(data: CategoryValidationT) {
-  console.log(data);
   try {
     const { subcategories, ...categoryData } = data;
-    if(subcategories){
-
-    }
     const category = await prisma.category.create({
       data: {
         ...categoryData,
@@ -89,14 +86,18 @@ export async function createCategory(data: CategoryValidationT) {
     }
   }
 }
-export async function updateCategory(id: string, data: Partial<Category>) {
+export async function updateCategory(id: string, data: CategoryValidationT) {
+  const { subcategories, ...categoryData } = data;
   try {
     const updatedCategory = await prisma.category.update({
       where: {
         id: id,
       },
       data: {
-        ...data,
+        ...categoryData,
+        subcategories: {
+          connect: subcategories.map((id) => ({ id })),
+        },
       },
     });
     if (!updatedCategory) {
@@ -187,7 +188,7 @@ export async function categoryValidation(
     description: description || "", // Provide a default value if needed
     parentId: parentId || "", // Provide a default value if needed
     tags: tags.length > 0 ? tags : [], // Ensure tags is an empty array if no tags
-    subcategories: subcategories as unknown as string[] || "", // Provide a default value if needed
+    subcategories: (subcategories as unknown as string[]) || "", // Provide a default value if needed
     imageUrl: imageUrl, // Ensure imageUrl is always provided
   };
 

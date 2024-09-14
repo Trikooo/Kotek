@@ -56,10 +56,7 @@ export default function EditCategory({ category }: EditCategoryProps) {
           label: subcategory.name,
         }))
       );
-    } else {
-      setSelectedSubcategories([]);
     }
-    console.log(category.subcategories);
   }, [category, categoryOptions]);
   // Effect for updating selectedParentCategory
   useEffect(() => {
@@ -69,8 +66,6 @@ export default function EditCategory({ category }: EditCategoryProps) {
       );
       if (preSelectedOption) {
         setSelectedParentCategory([preSelectedOption]);
-      } else {
-        setSelectedParentCategory([]);
       }
     }
   }, [category.parentId, categoryOptions]);

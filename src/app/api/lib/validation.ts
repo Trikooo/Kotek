@@ -5,5 +5,7 @@ export const categorySchema = z.object({
   description: z.string().optional(),
   parentId: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  imageUrl: z.string()
+  imageUrl: z.string(),
+  subcategories: z.array(z.string().uuid(), { required_error: "Subcategories must be an array of UUIDs" }).optional(), // Ensure subcategories is an array of UUIDs
+
 })

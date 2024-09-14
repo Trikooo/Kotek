@@ -21,8 +21,12 @@ import { useCategoryContext } from "@/context/CategoriesContext";
 
 export default function CreateCategory() {
   const { categoryOptions, error, loading } = useCategoryContext();
-  const [selectedParentCategory, setSelectedParentCategory] = useState<Option[]>([]);
-  const [selectedSubcategories, setSelectedSubcategories] = useState<Option[]>([]);
+  const [selectedParentCategory, setSelectedParentCategory] = useState<
+    Option[]
+  >([]);
+  const [selectedSubcategories, setSelectedSubcategories] = useState<Option[]>(
+    []
+  );
   const [newCategory, setNewCategory] = useState<{
     name: string;
     description: string;
@@ -57,7 +61,7 @@ export default function CreateCategory() {
 
   useEffect(() => {
     // Update the subcategories in newCategory based on selectedSubcategories
-    const subCategoryIds = selectedSubcategories.map(sub => sub.value);
+    const subCategoryIds = selectedSubcategories.map((sub) => sub.value);
     setNewCategory((prevCategory) => ({
       ...prevCategory,
       subcategories: subCategoryIds, // Changed to array of IDs
@@ -73,7 +77,9 @@ export default function CreateCategory() {
       [name]: value,
     }));
   };
-
+  useEffect(() => {
+    console.log("selectedSubcategories: ", selectedSubcategories);
+  });
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setNewCategory((prevCategory) => ({
@@ -92,7 +98,10 @@ export default function CreateCategory() {
       formData.append("description", newCategory.description);
       formData.append("parentId", newCategory.parentId || "");
       formData.append("tags", newCategory.tags);
-      formData.append("subcategories", JSON.stringify(newCategory.subcategories)); // Send as JSON string
+      formData.append(
+        "subcategories",
+        JSON.stringify(newCategory.subcategories)
+      ); // Send as JSON string
 
       if (newCategory.image) {
         formData.append("image", newCategory.image);

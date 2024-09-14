@@ -57,13 +57,13 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
           <CarouselItem key={index} className="w-full">
 
             <Card className="relative w-full pb-[50%] overflow-hidden">
-              {" "}
               {/* Aspect ratio container */}
               <Image
                 src={image}
                 alt={`Slide ${index + 1}`}
                 className="absolute top-0 left-0 w-full h-full object-cover overflow-hidden"
-                layout="fill" // Ensures the image covers the container
+                width={1080}
+                height={540}
               />
             </Card>
           </CarouselItem>
