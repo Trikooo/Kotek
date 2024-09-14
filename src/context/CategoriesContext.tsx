@@ -2,7 +2,6 @@
 
 import { useGetAllCategories } from "@/hooks/categories/useGetAllCategories";
 import { CategoryWithSubcategoriesT } from "@/types/types";
-import { Category } from "@prisma/client";
 import React, {
   createContext,
   useContext,
@@ -14,6 +13,7 @@ interface CategoryContextType {
   categoryOptions: { value: string; label: string }[];
   loading: boolean;
   error: string | null;
+  refetch: Function
 }
 
 const CategoryContext = createContext<CategoryContextType | undefined>(
@@ -33,7 +33,7 @@ export const useCategoryContext = () => {
 export const CategoryProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const {categories, loading, error } = useGetAllCategories()
+  const {categories, loading, error, refetch } = useGetAllCategories()
 
   const categoryOptions = categories.map((category) => ({
     value: category.id,
@@ -42,7 +42,7 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <CategoryContext.Provider
-      value={{ categories, categoryOptions, loading, error }}
+      value={{ categories, categoryOptions, loading, error, refetch}}
     >
       {children}
     </CategoryContext.Provider>

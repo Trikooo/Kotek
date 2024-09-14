@@ -1,4 +1,3 @@
-import { Category } from "@prisma/client";
 import prisma from "../lib/prisma";
 
 export async function getAllCategories() {
@@ -7,7 +6,6 @@ export async function getAllCategories() {
       include: {
         subcategories: true,
       },
-      cacheStrategy: { ttl: 60 },
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -43,9 +41,9 @@ export async function getCategoryById(id: string) {
 }
 
 import { Prisma } from "@prisma/client";
-import { unlink, writeFile } from "fs/promises";
+import { writeFile } from "fs/promises";
 import path from "path";
-import { categorySchema } from "../lib/validation";
+import { categorySchema, updateCategorySchema } from "../lib/validation";
 import { NextRequest } from "next/server";
 import { CategoryValidationT } from "@/types/types";
 
@@ -55,9 +53,11 @@ export async function createCategory(data: CategoryValidationT) {
     const category = await prisma.category.create({
       data: {
         ...categoryData,
-        subcategories: {
-          connect: subcategories.map((id) => ({ id })),
-        },
+        ...(subcategories && {
+          subcategories: {
+            connect: subcategories.map((id) => ({ id })),
+          },
+        }),
       },
       include: {
         subcategories: true,
@@ -145,57 +145,84 @@ export async function deleteCategory(id: string) {
 }
 
 export async function categoryValidation(
-  request: NextRequest
+  request: NextRequest,
+  method: "POST" | "PUT"
 ): Promise<CategoryValidationT> {
+  const array = ["hello it's me the benevolent.", method];
+  console.log(array, array.length);
   const formData = await request.formData();
-  console.log(formData);
 
   // Utility function to capitalize the first letter of a string
   const capitalizeFirstLetter = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
 
-  // Extract fields
-  let name = formData.get("name")?.toString().trim() || "";
-  let description = formData.get("description")?.toString().trim() || "";
-  const parentId = formData.get("parentId")?.toString().trim() || "";
-  let subcategories = formData.get("subcategories");
-  if (subcategories) subcategories = JSON.parse(subcategories as string);
-  const tags =
-    formData
-      .get("tags")
-      ?.toString()
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag) || [];
+  // Extract fields and ensure they are strings
+  const name = formData.get("name")?.toString().trim() || "";
+  const description = formData.get("description")?.toString().trim() || "";
+  const parentId = formData.get("parentId")?.toString().trim() || null;
 
-  // Capitalize first letter of name and description
-  name = capitalizeFirstLetter(name);
-  description = capitalizeFirstLetter(description);
+  // Handle `subcategories` safely as a string first
+  const subcategoriesField = formData.get("subcategories");
+  let subcategories: string[] = [];
 
-  // Extract and save file
-  const file = formData.get("image") as File;
-  if (!file) {
-    throw new Error("Validation error: Image file is required.");
+  if (typeof subcategoriesField === "string") {
+    subcategories = JSON.parse(subcategoriesField) as string[];
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const filename = file.name.replaceAll(" ", "_");
-  const filePath = path.join(process.cwd(), "public/uploads", filename);
-  const imageUrl = `/uploads/${filename}`;
-  let data: CategoryValidationT = {
-    name: name || "", // Provide a default value to avoid `undefined`
-    description: description || "", // Provide a default value if needed
-    parentId: parentId || "", // Provide a default value if needed
-    tags: tags.length > 0 ? tags : [], // Ensure tags is an empty array if no tags
-    subcategories: (subcategories as unknown as string[]) || "", // Provide a default value if needed
-    imageUrl: imageUrl, // Ensure imageUrl is always provided
-  };
+  // Handle `tags` similarly
+  const tagsField = formData.get("tags");
+  let tags: string[] = [];
 
-  categorySchema.parse(data);
+  if (typeof tagsField === "string") {
+    tags = tagsField
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag);
+  }
 
-  await writeFile(filePath, buffer);
-  data.imageUrl = imageUrl;
+  // Capitalize first letter of name and description
+  const capitalizedName = capitalizeFirstLetter(name);
+  const capitalizedDescription = capitalizeFirstLetter(description);
 
-  return data;
+  // Extract file
+  const file = formData.get("image") as File | null;
+
+  // Use Partial<CategoryValidationT> for temporary incomplete type
+  let data: Partial<CategoryValidationT> = {};
+
+  // Conditionally add fields to data if they have valid values
+  if (capitalizedName) {
+    data.name = capitalizedName;
+  }
+  if (capitalizedDescription) {
+    data.description = capitalizedDescription;
+  }
+  if (parentId) {
+    data.parentId = parentId;
+  }
+  if (tags.length > 0) {
+    data.tags = tags;
+  }
+  if (subcategories.length > 0) {
+    data.subcategories = subcategories;
+  }
+
+  // Conditionally handle file
+  if (file) {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const filename = file.name.replaceAll(" ", "_");
+    const filePath = path.join(process.cwd(), "public/uploads", filename);
+    const imageUrl = `/uploads/${filename}`;
+
+    data.imageUrl = imageUrl; // Add imageUrl to data if file exists
+
+    // Save the image to disk
+    await writeFile(filePath, buffer);
+  }
+
+  // Validate data with the appropriate schema based on request method
+  updateCategorySchema.parse(data as CategoryValidationT);
+
+  return data as CategoryValidationT;
 }

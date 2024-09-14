@@ -22,14 +22,14 @@ import Image from "next/image";
 import { PenBox } from "lucide-react";
 
 import { useCategoryContext } from "@/context/CategoriesContext";
-import { CategoryWithSubcategoriesT, CreateCategoryT } from "@/types/types";
+import { CategoryWithSubcategoriesT } from "@/types/types";
 
 interface EditCategoryProps {
   category: CategoryWithSubcategoriesT;
 }
 
 export default function EditCategory({ category }: EditCategoryProps) {
-  const { categoryOptions, error, loading } = useCategoryContext();
+  const { categoryOptions, error, loading, refetch } = useCategoryContext();
   const [selectedParentCategory, setSelectedParentCategory] = useState<
     Option[]
   >([]);
@@ -142,7 +142,7 @@ export default function EditCategory({ category }: EditCategoryProps) {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      refetch();
       toast.success("Category updated successfully.");
 
       // Reset state or navigate away

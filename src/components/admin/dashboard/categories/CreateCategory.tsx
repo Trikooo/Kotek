@@ -20,7 +20,7 @@ import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
 
 export default function CreateCategory() {
-  const { categoryOptions, error, loading } = useCategoryContext();
+  const { categoryOptions, error, loading, refetch } = useCategoryContext();
   const [selectedParentCategory, setSelectedParentCategory] = useState<
     Option[]
   >([]);
@@ -112,7 +112,8 @@ export default function CreateCategory() {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      // refetch categories
+      refetch();
       toast.success("Category created successfully.");
 
       setNewCategory({

@@ -1,31 +1,37 @@
 import { CategoryWithSubcategoriesT } from "@/types/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
-
-export function useGetAllCategories(){
+export function useGetAllCategories() {
   const [categories, setCategories] = useState<CategoryWithSubcategoriesT[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        if (!response.ok) throw new Error("Failed to fetch categories");
-        const data: CategoryWithSubcategoriesT[] = await response.json();
-        setCategories(data);
-        setLoading(false);
-      } catch (err) {
-        setError((err as Error).message);
-        setLoading(false);
-      }
-    };
+  const fetchCategories = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/categories");
 
-    fetchCategories();
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data: CategoryWithSubcategoriesT[] = await response.json();
+      setCategories(data);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
-  console.log(categories)
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   return {
-    categories, loading, error
-  }
+    categories,
+    loading,
+    error,
+    refetch: fetchCategories,
+  };
 }
