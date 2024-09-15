@@ -1,4 +1,10 @@
 import prisma from "../lib/prisma";
+import { Prisma } from "@prisma/client";
+import { writeFile } from "fs/promises";
+import path from "path";
+import { categorySchema, updateCategorySchema } from "../lib/validation";
+import { NextRequest } from "next/server";
+import { CategoryValidationT } from "@/types/types";
 
 export async function getAllCategories() {
   try {
@@ -12,8 +18,8 @@ export async function getAllCategories() {
       console.error("Error fetching categories", error.message);
       throw new Error(`Error fetching categories ${error.message}`);
     } else {
-      console.error("Error fetching categories");
-      throw new Error("Error fetching categories");
+      console.error("Unknown error occurred while fetching categories");
+      throw new Error("Unknown error occurred while fetching categories");
     }
   }
 }
@@ -39,13 +45,6 @@ export async function getCategoryById(id: string) {
     }
   }
 }
-
-import { Prisma } from "@prisma/client";
-import { writeFile } from "fs/promises";
-import path from "path";
-import { categorySchema, updateCategorySchema } from "../lib/validation";
-import { NextRequest } from "next/server";
-import { CategoryValidationT } from "@/types/types";
 
 export async function createCategory(data: CategoryValidationT) {
   try {
@@ -119,8 +118,8 @@ export async function updateCategory(id: string, data: CategoryValidationT) {
       console.error(`Error updating category: ${error.message}`);
       throw new Error(`Error updating category: ${error.message}`);
     } else {
-      console.error("Unknown error occurred while creating the category");
-      throw new Error("Unknown error occurred while creating the category");
+      console.error("Unknown error occurred while updating the category");
+      throw new Error("Unknown error occurred while updating the category");
     }
   }
 }
