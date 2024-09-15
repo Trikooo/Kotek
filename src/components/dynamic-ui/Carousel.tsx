@@ -38,7 +38,6 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
 
   React.useEffect(() => {
     handleAutoPlay();
-    console.log(isAutoplay);
   });
 
   return (
@@ -55,7 +54,6 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
       <CarouselContent>
         {images.map((image, index) => (
           <CarouselItem key={index} className="w-full">
-
             <Card className="relative w-full pb-[50%] overflow-hidden">
               {/* Aspect ratio container */}
               <Image

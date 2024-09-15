@@ -20,11 +20,12 @@ import Select from "@/components/ui/better-select";
 import { Textarea } from "@/components/ui/textarea";
 import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { BadgePlus, ChevronsUpDown, Plus, RotateCcw, TicketPlus } from "lucide-react";
 import { STATUSES } from "@/lib/constants";
 
 import { useEffect } from "react";
 import { useCreateProduct } from "@/hooks/products/useCreateProduct";
+import generateCode128 from "@/utils/code128DataGenerator";
 
 export default function CreateProduct() {
   const { categoryOptions, error, loading } = useCategoryContext();
@@ -38,6 +39,7 @@ export default function CreateProduct() {
     handleInputChange,
     handleFileChange,
     handleSubmit,
+    handleGenerateBarcode,
   } = useCreateProduct();
 
   let statusOptions: Option[] = [];
@@ -47,9 +49,6 @@ export default function CreateProduct() {
       label: status.toUpperCase(),
     });
   }
-  useEffect(()=>{
-
-  })
 
   return (
     <Dialog>
@@ -145,21 +144,31 @@ export default function CreateProduct() {
           </div>
           <div className="grid gap-3">
             <Label htmlFor="barcode">Barcode *</Label>
-            <Input
-              id="barcode"
-              name="barcode"
-              type="text"
-              value={newProduct.barcode || ""}
-              onChange={handleInputChange}
-              required
-            />
+            <div className="flex gap-3">
+              <Input
+                id="barcode"
+                name="barcode"
+                type="text"
+                value={newProduct.barcode || ""}
+                onChange={handleInputChange}
+                required
+                className="flex-1"
+              />
+              <Button variant="outline" onClick={handleGenerateBarcode}>
+                {newProduct.barcode ? (
+                  <RotateCcw className="w-4 h-4" strokeWidth={1.5} />
+                ) : (
+                  <Plus className="w-4 h-4" strokeWidth={1.5}/>
+                )}
+              </Button>
+            </div>
           </div>
           <div className="grid gap-3">
             <Label htmlFor="keyFeatures">Key Features (comma-separated)</Label>
             <Textarea
               id="keyFeatures"
               name="keyFeatures"
-              value={newProduct.description}
+              value={newProduct.keyFeatures}
               onChange={handleInputChange}
             />
           </div>
@@ -185,48 +194,48 @@ export default function CreateProduct() {
               />
             </div>
             <div className="flex gap-3">
-            <div className="flex-1 grid gap-3">
-              <Label htmlFor="length">Length</Label>
-              <Input
-                id="length"
-                name="length"
-                type="number"
-                value={newProduct.length || ""}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="flex-1 grid gap-3">
-              <Label htmlFor="width">Width</Label>
-              <Input
-                id="width"
-                name="width"
-                type="number"
-                value={newProduct.width || ""}
-                onChange={handleInputChange}
-              />
-            </div>
+              <div className="flex-1 grid gap-3">
+                <Label htmlFor="length">Length</Label>
+                <Input
+                  id="length"
+                  name="length"
+                  type="number"
+                  value={newProduct.length || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="flex-1 grid gap-3">
+                <Label htmlFor="width">Width</Label>
+                <Input
+                  id="width"
+                  name="width"
+                  type="number"
+                  value={newProduct.width || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
             <div className="flex gap-3">
-            <div className="flex-1 grid gap-3">
-              <Label htmlFor="height">Height</Label>
-              <Input
-                id="height"
-                name="height"
-                type="number"
-                value={newProduct.height || ""}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="flex-1 grid gap-3">
-              <Label htmlFor="weight">Weight</Label>
-              <Input
-                id="weight"
-                name="weight"
-                type="number"
-                value={newProduct.weight || ""}
-                onChange={handleInputChange}
-              />
-            </div>
+              <div className="flex-1 grid gap-3">
+                <Label htmlFor="height">Height</Label>
+                <Input
+                  id="height"
+                  name="height"
+                  type="number"
+                  value={newProduct.height || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="flex-1 grid gap-3">
+                <Label htmlFor="weight">Weight</Label>
+                <Input
+                  id="weight"
+                  name="weight"
+                  type="number"
+                  value={newProduct.weight || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
           </OptionalFields>
           <DialogFooter className="">
@@ -254,9 +263,6 @@ interface OptionalFieldsProps {
   children: React.ReactNode;
 }
 function OptionalFields({ children }: OptionalFieldsProps) {
-
-
-
   return (
     <Collapsible>
       <CollapsibleTrigger asChild>

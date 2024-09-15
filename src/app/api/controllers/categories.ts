@@ -64,7 +64,6 @@ export async function createCategory(data: CategoryValidationT) {
       },
     });
 
-    console.log("Created category:", category);
     return category;
   } catch (error) {
     if (
@@ -148,8 +147,6 @@ export async function categoryValidation(
   request: NextRequest,
   method: "POST" | "PUT"
 ): Promise<CategoryValidationT> {
-  const array = ["hello it's me the benevolent.", method];
-  console.log(array, array.length);
   const formData = await request.formData();
 
   // Utility function to capitalize the first letter of a string

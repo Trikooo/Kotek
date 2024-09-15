@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { STATUSES } from "@/lib/constants";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import EditProduct from "./EditProducct";
+import EditProduct from "./EditProduct";
 import { useProductContext } from "@/context/ProductsContext";
 import { DeleteProduct } from "./DeleteProduct";
 
@@ -29,13 +29,9 @@ export default function AllProducts() {
       const matchesStatus =
         selectedStatuses.size === 0 ||
         selectedStatuses.has(product.status.toLowerCase());
-      console.log(product.status);
       return matchesSearch && matchesStatus;
     });
   }, [products, searchTerm, selectedStatuses]);
-  useEffect(() => {
-    console.log(selectedStatuses);
-  });
   const columns: Column[] = [
     { header: "Image", important: true },
     { header: "Name", important: true },
@@ -100,8 +96,10 @@ const ProductsTitle = ({
 }) => {
   return (
     <div className="flex items-center justify-between">
+      <h3 className="flex-1">
       Existing Products
-      <div className="relative flex items-center md:grow-0">
+      </h3>
+      <div className="relative flex items-center flex-1 sm:flex-none">
         <Search
           className="absolute left-2.5 h-4 w-4 text-muted-foreground"
           strokeWidth={1.5}

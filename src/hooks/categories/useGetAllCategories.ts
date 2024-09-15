@@ -2,7 +2,9 @@ import { CategoryWithSubcategoriesT } from "@/types/types";
 import { useEffect, useState, useCallback } from "react";
 
 export function useGetAllCategories() {
-  const [categories, setCategories] = useState<CategoryWithSubcategoriesT[]>([]);
+  const [categories, setCategories] = useState<CategoryWithSubcategoriesT[]>(
+    []
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 

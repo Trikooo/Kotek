@@ -78,7 +78,6 @@ export default function CreateCategory() {
     }));
   };
   useEffect(() => {
-    console.log("selectedSubcategories: ", selectedSubcategories);
   });
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;

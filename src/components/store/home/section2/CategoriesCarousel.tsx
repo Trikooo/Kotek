@@ -34,7 +34,6 @@ export default function CategoriesCarousel() {
 
   React.useEffect(() => {
     handleAutoPlay();
-    console.log(isAutoplay);
   });
 
   return (

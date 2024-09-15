@@ -8,15 +8,12 @@ import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
-    console.log("Received PUT request with params:", params); // Log params
 
     // Validate and extract data from request
     const data = await categoryValidation(request, "PUT");
-    console.log("Validated data:", data); // Log validated data
 
     // Update category
     await updateCategory(params.categoryId, data);
-    console.log("Category updated successfully with ID:", params.categoryId);
 
     return NextResponse.json(
       { message: "Category updated successfully!" },
@@ -41,12 +38,9 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
-    console.log("Received DELETE request with params:", params); // Log params
-    console.log("Deleting category with ID:", params.categoryId);
 
     // Perform deletion
     await deleteCategory(params.categoryId);
-    console.log("Category deleted successfully with ID:", params.categoryId);
 
     return NextResponse.json(
       { message: "Category deleted successfully" },

@@ -1,10 +1,10 @@
-
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Option } from "@/components/ui/better-select";
 import { createProduct } from "@/services/productService";
 import { toast } from "sonner";
 import { ProductStatus } from "@prisma/client";
 import { CreateProductT } from "@/types/types";
+import generateCode128 from "@/utils/code128DataGenerator";
 
 export function useCreateProduct() {
   const defaultProduct: Partial<CreateProductT> = {
@@ -32,6 +32,7 @@ export function useCreateProduct() {
   };
 
   const [createIsLoading, setCreateIsLoading] = useState<boolean>(false);
+  const [barcode, setBarcode] = useState<string | null>(generateCode128());
   const [selectedCategory, setSelectedCategory] = useState<Option[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<Option[]>(
     defaultStatus.value ? [defaultStatus] : []
@@ -45,6 +46,13 @@ export function useCreateProduct() {
       ...prevProduct,
       [name]: value,
     }));
+  };
+
+  const handleGenerateBarcode = (e: any) => {
+    e.preventDefault()
+    setBarcode(generateCode128());
+    newProduct.barcode = barcode;
+    console.log(newProduct.barcode);
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +69,6 @@ export function useCreateProduct() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setCreateIsLoading(true);
-    console.log(newProduct);
     try {
       await createProduct(newProduct);
       toast.success("Product created successfully!");
@@ -100,5 +107,6 @@ export function useCreateProduct() {
     handleInputChange,
     handleFileChange,
     handleSubmit,
+    handleGenerateBarcode,
   };
 }
