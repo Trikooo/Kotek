@@ -99,6 +99,7 @@ export function useCreateProduct() {
 
   return {
     newProduct,
+    setNewProduct,
     selectedCategory,
     setSelectedCategory,
     selectedStatus,

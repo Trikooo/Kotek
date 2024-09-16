@@ -46,9 +46,9 @@ model Category {
 model Product {
   id          String        @id @default(uuid()) @db.Uuid
   name        String
-  description String        @db.Text
+  description String?       @db.Text
   price       Int
-  imageUrl    String
+  imageUrls    String[]
   stock       Int
   barcode     String?       @unique // Barcode field, optional and unique
   createdAt   DateTime      @default(now())

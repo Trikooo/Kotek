@@ -5,6 +5,7 @@ import path from "path";
 import { categorySchema, updateCategorySchema } from "../lib/validation";
 import { NextRequest } from "next/server";
 import { CategoryValidationT } from "@/types/types";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export async function getAllCategories() {
   try {
@@ -148,10 +149,7 @@ export async function categoryValidation(
 ): Promise<CategoryValidationT> {
   const formData = await request.formData();
 
-  // Utility function to capitalize the first letter of a string
-  const capitalizeFirstLetter = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
+
 
   // Extract fields and ensure they are strings
   const name = formData.get("name")?.toString().trim() || "";

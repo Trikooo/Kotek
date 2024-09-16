@@ -1,6 +1,10 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, ProductStatus } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { NextRequest } from "next/server";
+import { capitalizeFirstLetter } from "@/lib/utils";
+import { ProductValidationT } from "@/types/types";
+import { writeFile } from "fs/promises";
+import path from "path";
 
 export async function getAllProducts() {
   try {
@@ -108,7 +112,70 @@ export async function deleteProduct(id: string) {
 export async function productValidation(
   request: NextRequest,
   method: "POST" | "PUT"
-) {
-  
-}
+): Promise<ProductValidationT> {
+  const formData = await request.formData();
 
+  // Extract fields and ensure they are strings
+  const id = formData.get("id")?.toString().trim() || "";
+  const name = formData.get("name")?.toString().trim() || "";
+  const description = formData.get("description")?.toString().trim() || "";
+  const price = parseInt(formData.get("price")?.toString().trim() || "0", 10);
+  const stock = parseInt(formData.get("stock")?.toString().trim() || "0", 10);
+  const barcode = formData.get("barcode")?.toString().trim() || null;
+  const categoryId = formData.get("categoryId")?.toString().trim() || null;
+  const tags =
+    formData.getAll("tags")?.map((tag) => tag.toString().trim()) || [];
+  const keyFeatures =
+    formData
+      .getAll("keyFeatures")
+      ?.map((feature) => feature.toString().trim()) || [];
+  const brand = formData.get("brand")?.toString().trim() || "";
+  const status =
+    (formData.get("status")?.toString().trim() as ProductStatus) ||
+    ("ACTIVE" as ProductStatus);
+  const length = parseFloat(formData.get("length")?.toString().trim() || "0");
+  const width = parseFloat(formData.get("width")?.toString().trim() || "0");
+  const height = parseFloat(formData.get("height")?.toString().trim() || "0");
+  const weight = parseFloat(formData.get("weight")?.toString().trim() || "0");
+
+  const files = formData.getAll("images") as File[]; // Assuming "images" is the field name
+  const imageUrls: string[] = [];
+
+  for (const file of files) {
+    if (file) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const filename = file.name.replaceAll(" ", "_");
+      const filePath = path.join(process.cwd(), "public/uploads", filename);
+      const imageUrl = `/uploads/${filename}`;
+
+      // Save the image to disk
+      await writeFile(filePath, buffer);
+
+      imageUrls.push(imageUrl); // Collect the URL
+    }
+  }
+
+  // Prepare data object
+  const data: Partial<ProductValidationT> = {
+    name: capitalizeFirstLetter(name),
+    description: capitalizeFirstLetter(description),
+    price,
+    stock,
+    barcode,
+    categoryId,
+    tags,
+    keyFeatures,
+    brand,
+    status,
+    length,
+    width,
+    height,
+    weight,
+    imageUrls,
+  };
+
+  // Validate data with the appropriate schema based on request method
+  updateProductSchema.parse(data as ProductValidationT);
+
+  return data as ProductValidationT;
+}

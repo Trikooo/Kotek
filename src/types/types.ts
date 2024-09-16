@@ -1,7 +1,6 @@
 import { $Enums, Category } from "@prisma/client";
 
 export interface CreateProductT {
-  id: string;
   name: string;
   description: string;
   price: string;
@@ -42,4 +41,21 @@ export interface CategoryValidationT {
   parentId?: string;
   tags: string[];
   subcategories: string[];
+}
+export interface ProductValidationT {
+  name: string;
+  description: string;
+  price: number;
+  imageUrls: string[];
+  stock: number;
+  barcode: string | null;
+  categoryId: string | null;
+  tags: string[];
+  keyFeatures: string[];
+  brand: string | null;
+  status: $Enums.ProductStatus;
+  length: number | null;
+  width: number | null;
+  height: number | null;
+  weight: number | null;
 }

@@ -20,24 +20,24 @@ import Select from "@/components/ui/better-select";
 import { Textarea } from "@/components/ui/textarea";
 import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
-import { BadgePlus, ChevronsUpDown, Plus, RotateCcw, TicketPlus } from "lucide-react";
+import { ChevronsUpDown, Plus, RotateCcw } from "lucide-react";
 import { STATUSES } from "@/lib/constants";
 
-import { useEffect } from "react";
 import { useCreateProduct } from "@/hooks/products/useCreateProduct";
-import generateCode128 from "@/utils/code128DataGenerator";
+import ImageUploader from "./ImageUploader";
 
 export default function CreateProduct() {
   const { categoryOptions, error, loading } = useCategoryContext();
   const {
     newProduct,
+    setNewProduct,
     selectedCategory,
     setSelectedCategory,
     selectedStatus,
     setSelectedStatus,
     createIsLoading,
     handleInputChange,
-    handleFileChange,
+
     handleSubmit,
     handleGenerateBarcode,
   } = useCreateProduct();
@@ -49,6 +49,18 @@ export default function CreateProduct() {
       label: status.toUpperCase(),
     });
   }
+  const handleFileChange = (newImages: File[]) => {
+    setNewProduct((prevProduct: any) => ({
+      ...prevProduct,
+      images: newImages,
+    }));
+  };
+  const handleRemoveImage = (index: number) => {
+    setNewProduct((prevProduct: any) => ({
+      ...prevProduct,
+      images: prevProduct.images.filter((_: any , i: any) => i !== index),
+    }));
+  };
 
   return (
     <Dialog>
@@ -87,14 +99,11 @@ export default function CreateProduct() {
             />
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="image">Image *</Label>
-            <Input
-              id="image"
-              name="image"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              required
+            <Label htmlFor="images">Images *</Label>
+            <ImageUploader
+              images={newProduct.images || []}
+              onImagesChange={handleFileChange}
+              onRemoveImage={handleRemoveImage}
             />
           </div>
           <div className="flex gap-3">
@@ -158,7 +167,7 @@ export default function CreateProduct() {
                 {newProduct.barcode ? (
                   <RotateCcw className="w-4 h-4" strokeWidth={1.5} />
                 ) : (
-                  <Plus className="w-4 h-4" strokeWidth={1.5}/>
+                  <Plus className="w-4 h-4" strokeWidth={1.5} />
                 )}
               </Button>
             </div>
