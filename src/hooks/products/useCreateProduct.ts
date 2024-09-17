@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Option } from "@/components/ui/better-select";
-import { createProduct } from "@/services/productService";
+import { sendProduct } from "@/services/productService";
 import { toast } from "sonner";
 import { ProductStatus } from "@prisma/client";
 import { CreateProductT } from "@/types/types";
@@ -49,7 +49,7 @@ export function useCreateProduct() {
   };
 
   const handleGenerateBarcode = (e: any) => {
-    e.preventDefault()
+    e.preventDefault();
     setBarcode(generateCode128());
     newProduct.barcode = barcode;
     console.log(newProduct.barcode);
@@ -70,7 +70,7 @@ export function useCreateProduct() {
     e.preventDefault();
     setCreateIsLoading(true);
     try {
-      await createProduct(newProduct);
+      await sendProduct(newProduct);
       toast.success("Product created successfully!");
       setNewProduct(defaultProduct);
       setSelectedCategory([]);

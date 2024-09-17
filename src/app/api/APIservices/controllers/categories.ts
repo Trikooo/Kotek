@@ -2,7 +2,7 @@ import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
 import { writeFile } from "fs/promises";
 import path from "path";
-import { categorySchema, updateCategorySchema } from "../lib/validation";
+import { categorySchema, updateCategorySchema } from "../lib/validation"
 import { NextRequest } from "next/server";
 import { CategoryValidationT } from "@/types/types";
 import { capitalizeFirstLetter } from "@/lib/utils";
@@ -88,16 +88,17 @@ export async function createCategory(data: CategoryValidationT) {
 export async function updateCategory(id: string, data: CategoryValidationT) {
   const { subcategories, ...categoryData } = data;
   try {
+    const updateData: any = { ...categoryData };
+
+    if (subcategories && subcategories.length > 0) {
+      updateData.subcategories = {
+        connect: subcategories.map((id) => ({ id })),
+      };
+    }
+
     const updatedCategory = await prisma.category.update({
-      where: {
-        id: id,
-      },
-      data: {
-        ...categoryData,
-        subcategories: {
-          connect: subcategories.map((id) => ({ id })),
-        },
-      },
+      where: { id },
+      data: updateData,
     });
     if (!updatedCategory) {
       throw new Error("Category not found");
@@ -148,8 +149,7 @@ export async function categoryValidation(
   method: "POST" | "PUT"
 ): Promise<CategoryValidationT> {
   const formData = await request.formData();
-
-
+  console.log(formData.get("name"));
 
   // Extract fields and ensure they are strings
   const name = formData.get("name")?.toString().trim() || "";
@@ -214,9 +214,15 @@ export async function categoryValidation(
     // Save the image to disk
     await writeFile(filePath, buffer);
   }
-
   // Validate data with the appropriate schema based on request method
-  updateCategorySchema.parse(data as CategoryValidationT);
-
+  if (method === "PUT") {
+    updateCategorySchema.parse(data as CategoryValidationT);
+  } else if (method === "POST") {
+    categorySchema.parse(data as CategoryValidationT);
+  } else {
+    console.error("Method not supported for validation.");
+    throw new Error("Method not supported for validation.");
+  }
+  console.log(data);
   return data as CategoryValidationT;
 }

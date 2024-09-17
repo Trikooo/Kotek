@@ -122,6 +122,7 @@ export default function EditCategory({ category }: EditCategoryProps) {
     e.preventDefault();
     setIsLoading(true);
 
+
     try {
       const formData = new FormData();
       formData.append("name", categoryData.name);
@@ -136,7 +137,6 @@ export default function EditCategory({ category }: EditCategoryProps) {
       if (categoryData.image) {
         formData.append("image", categoryData.image);
       }
-
       await axios.put(`/api/categories/${category.id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",

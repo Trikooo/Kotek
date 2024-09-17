@@ -1,5 +1,6 @@
 import { CreateProductT } from "@/types/types";
 
+
 export function createProductFormData(product: Partial<CreateProductT>) {
   const formData = new FormData();
 
@@ -13,16 +14,17 @@ export function createProductFormData(product: Partial<CreateProductT>) {
   formData.append("keyFeatures", JSON.stringify(product.keyFeatures) ?? "[]");
   formData.append("brand", product.brand ?? "");
   formData.append("status", product.status ?? "ACTIVE");
-  formData.append("length", product.length ?? "");
-  formData.append("width", product.width ?? "");
-  formData.append("height", product.height ?? "");
-  formData.append("weight", product.weight ?? "");
+  formData.append("length", product.length?.toString() ?? "");
+  formData.append("width", product.width?.toString() ?? "");
+  formData.append("height", product.height?.toString() ?? "");
+  formData.append("weight", product.weight?.toString() ?? "");
 
   if (product.images && product.images.length > 0) {
-    product.images.forEach((file, index) => {
-      formData.append(`images[${index}]`, file);
+    product.images.forEach((file) => {
+      formData.append("images[]", file);
     });
   }
-}
 
+  return formData;
+}
 export function createCategoryFormData(category: any) {}

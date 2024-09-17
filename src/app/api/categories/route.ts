@@ -3,7 +3,7 @@ import {
   getAllCategories,
   createCategory,
   categoryValidation,
-} from "../controllers/categories";
+} from "../APIservices/controllers/categories";
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     await createCategory(data);
 
     return NextResponse.json(
-      { message: "Category created successfully" },
+      { message: "Category created successfully." },
       { status: 201 }
     );
   } catch (error: unknown) {

@@ -5,7 +5,7 @@ import { capitalizeFirstLetter } from "@/lib/utils";
 import { ProductValidationT } from "@/types/types";
 import { writeFile } from "fs/promises";
 import path from "path";
-
+import { productSchema, updateProductSchema } from "../lib/validation";
 export async function getAllProducts() {
   try {
     return await prisma.product.findMany();
@@ -40,7 +40,7 @@ export async function getProductById(id: string) {
   }
 }
 
-export async function createProduct(data: any) {
+export async function createProduct(data: ProductValidationT) {
   try {
     const product = prisma.product.create({
       data: data,
@@ -98,6 +98,7 @@ export async function updateProduct(id: string, data: any) {
 export async function deleteProduct(id: string) {
   try {
     const deletedProduct = await prisma.product.delete({ where: { id: id } });
+    return deletedProduct;
   } catch (error) {
     if (error instanceof Error) {
       console.error(`Error deleting product with id ${id}: ${error.message}`);
@@ -116,7 +117,6 @@ export async function productValidation(
   const formData = await request.formData();
 
   // Extract fields and ensure they are strings
-  const id = formData.get("id")?.toString().trim() || "";
   const name = formData.get("name")?.toString().trim() || "";
   const description = formData.get("description")?.toString().trim() || "";
   const price = parseInt(formData.get("price")?.toString().trim() || "0", 10);
@@ -175,7 +175,13 @@ export async function productValidation(
   };
 
   // Validate data with the appropriate schema based on request method
-  updateProductSchema.parse(data as ProductValidationT);
-
+  if (method === "POST") {
+    productSchema;
+  } else if (method === "PUT") {
+    updateProductSchema.parse(data as ProductValidationT);
+  } else {
+    console.error("Method not allowed.");
+    throw new Error("Method not allowed.");
+  }
   return data as ProductValidationT;
 }
