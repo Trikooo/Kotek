@@ -18,6 +18,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
+import { Plus } from "lucide-react";
 
 export default function CreateCategory() {
   const { categoryOptions, error, loading, refetch } = useCategoryContext();
@@ -77,8 +78,7 @@ export default function CreateCategory() {
       [name]: value,
     }));
   };
-  useEffect(() => {
-  });
+  useEffect(() => {});
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setNewCategory((prevCategory) => ({
@@ -147,7 +147,10 @@ export default function CreateCategory() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Create New Category</Button>
+        <Button className="flex gap-2">
+          <Plus className="w-4 h-4" />
+          Create New Category
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>

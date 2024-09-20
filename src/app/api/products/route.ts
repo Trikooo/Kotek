@@ -1,11 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createProduct, getAllProducts, productValidation } from "../APIservices/controllers/products";
+import {
+  createProduct,
+  getAllProducts,
+  productValidation,
+} from "../APIservices/controllers/products";
 import { createCategory } from "../APIservices/controllers/categories";
 
 export async function GET(request: NextRequest) {
   try {
-    const products = await getAllProducts();
-    return new Response(JSON.stringify(products), { status: 200 });
+    let data;
+    const searchParams = request.nextUrl.searchParams;
+    const page = Number(searchParams.get("page"));
+    const pageSize = Number(searchParams.get("pageSize"));
+    if (page && pageSize) {
+      data = await getAllProducts(page, pageSize);
+    } else {
+      data = await getAllProducts(0, 0);
+    }
+
+    return new Response(JSON.stringify({ products: data.products, total: data.total }), {
+      status: 200,
+    });
   } catch (error) {
     console.error("Error fetching categories:", error);
     // Return a generic error message for unknown errors
@@ -21,7 +36,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await productValidation(request, "POST");
-    console.log(data)
     await createProduct(data);
     return NextResponse.json(
       { message: "Product created successfully." },

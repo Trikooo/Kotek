@@ -52,7 +52,6 @@ export function useCreateProduct() {
     e.preventDefault();
     setBarcode(generateCode128());
     newProduct.barcode = barcode;
-    console.log(newProduct.barcode);
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {

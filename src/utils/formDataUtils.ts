@@ -24,7 +24,6 @@ export function createProductFormData(product: Partial<CreateProductT>) {
       formData.append("images[]", file);
     });
   }
-
   return formData;
 }
 export function createCategoryFormData(category: any) {}

@@ -1,30 +1,28 @@
-
-
-import { Product } from "@prisma/client";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { ProductData } from "@/types/types";
 
-export function useGetAllProducts(){
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+export const useGetAllProducts = (page: number, pageSize: number) => {
+  const [data, setData] = useState<ProductData>({ products: [], total: 0 });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
+
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
+      setLoading(true);
+      console.log(loading)
       try {
-        const response = await fetch("/api/products");
-        if (!response.ok) throw new Error("Failed to fetch products");
-        const data: Product[] = await response.json();
-        setProducts(data);
-        setLoading(false);
+        const response = await axios.get(`/api/products?page=${page}&pageSize=${pageSize}`);
+        setData(response.data);
       } catch (err) {
-        setError((err as Error).message);
+        setError(err);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
-  }, []);
+    fetchData();
+  }, [page, pageSize]); // Watch for changes to page and pageSize
 
-  return {
-    products, loading, error
-  }
-}
+  return { data, loading, error };
+};

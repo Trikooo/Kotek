@@ -9,10 +9,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Trash2Icon } from "lucide-react"; // Use Trash2Icon for consistency
+import { Loader2, Trash2Icon } from "lucide-react"; // Use Trash2Icon for consistency
 import axios from "axios";
 import { toast } from "sonner";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface DeleteProductProps {
   id: string;
@@ -36,8 +37,14 @@ export function DeleteProduct({ id }: DeleteProductProps) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger className="p-2 hover:bg-accent rounded-md">
-        <Trash2Icon className="w-5 h-5" strokeWidth={1.5} />
+      <AlertDialogTrigger>
+        <Button variant="ghost">
+          {isLoading ? (
+            <Loader2 className="w-5 h-5 animate-spin" strokeWidth={1.5} />
+          ) : (
+            <Trash2Icon className="w-5 h-5 text-red-500" strokeWidth={1.5} />
+          )}
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

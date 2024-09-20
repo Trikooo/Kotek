@@ -149,8 +149,6 @@ export async function categoryValidation(
   method: "POST" | "PUT"
 ): Promise<CategoryValidationT> {
   const formData = await request.formData();
-  console.log(formData.get("name"));
-
   // Extract fields and ensure they are strings
   const name = formData.get("name")?.toString().trim() || "";
   const description = formData.get("description")?.toString().trim() || "";
@@ -223,6 +221,5 @@ export async function categoryValidation(
     console.error("Method not supported for validation.");
     throw new Error("Method not supported for validation.");
   }
-  console.log(data);
   return data as CategoryValidationT;
 }

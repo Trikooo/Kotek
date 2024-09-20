@@ -122,7 +122,6 @@ export default function EditCategory({ category }: EditCategoryProps) {
     e.preventDefault();
     setIsLoading(true);
 
-
     try {
       const formData = new FormData();
       formData.append("name", categoryData.name);
@@ -167,8 +166,10 @@ export default function EditCategory({ category }: EditCategoryProps) {
 
   return (
     <Dialog>
-      <DialogTrigger className="p-2 hover:bg-accent rounded-md ">
+      <DialogTrigger>
+        <Button variant="ghost">
         <PenBox className="w-5 h-5" strokeWidth={1.5} />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>

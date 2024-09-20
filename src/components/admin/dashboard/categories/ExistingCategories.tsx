@@ -36,7 +36,7 @@ export default function ExistingCategories() {
   const rows = filteredCategories.map((category) => ({
     image: (
       <Image
-        src={category.imageUrl || "/placeholder.svg"}
+        src={category.imageUrl || "/placeholder/placeholder.svg"}
         alt={category.name}
         width={64}
         height={64}

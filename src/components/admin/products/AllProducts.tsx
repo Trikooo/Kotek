@@ -7,20 +7,26 @@ import FilterBy from "@/components/ui/filter-by";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { STATUSES } from "@/lib/constants";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import EditProduct from "./EditProduct";
 import { useProductContext } from "@/context/ProductsContext";
 import { DeleteProduct } from "./DeleteProduct";
-
+import Image from "next/image";
+import Link from "next/link";
 
 export default function AllProducts() {
-  const { products, loading, error } = useProductContext()
+  const { data, loading, error, page, setPage } = useProductContext();
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(
     new Set()
   );
   const [sortOption, setSortOption] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const {products, total } = data
+  const totalPages = Math.ceil(total / 10)
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesSearch = product.name
@@ -35,19 +41,40 @@ export default function AllProducts() {
   const columns: Column[] = [
     { header: "Image", important: true },
     { header: "Name", important: true },
-    { header: "Price", important: true },
     { header: "Stock" },
     { header: "Status", badge: true },
+    { header: "Actions", important: true },
   ];
 
   const rows: Row[] = filteredProducts.map((product) => ({
-    image: product.imageUrl,
+    image: (
+      <Tooltip>
+        <TooltipTrigger>
+          <Link
+            href={`/admin/products/manage/${product.id}`}
+            className="hover:opacity-50"
+          >
+            <Image
+              src={product.imageUrls[0] || "/placeholder/placeholder.svg"}
+              alt={product.name}
+              width={64}
+              height={64}
+              className="rounded-md object-cover"
+            />
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent>View Details</TooltipContent>
+      </Tooltip>
+    ),
     name: product.name,
-    price: `${product.price} DA`,
+    price: `${product.price}DA`,
     stock: `${product.stock}`,
-    status: { value: product.status.toLowerCase(), filled: true },
+    status: {
+      value: product.status,
+      filled: product.status === "ACTIVE" ? true : false,
+    },
     actions: (
-      <div className="flex items-center gap-2">
+      <div className="flex-row sm:flex items-center gap-2">
         <Tooltip>
           <TooltipTrigger>
             <EditProduct product={product} />
@@ -83,7 +110,12 @@ export default function AllProducts() {
         title={<ProductsTitle setSearchTerm={setSearchTerm} />}
         columns={columns}
         rows={rows}
-        isLoading={false}
+        isLoading={loading}
+        error={error}
+        currentPage={page}
+        totalPages={totalPages}
+        setPage={setPage}
+
       />
     </>
   );
@@ -96,9 +128,7 @@ const ProductsTitle = ({
 }) => {
   return (
     <div className="flex items-center justify-between">
-      <h3 className="flex-1">
-      Existing Products
-      </h3>
+      <h3 className="flex-1">Existing Products</h3>
       <div className="relative flex items-center flex-1 sm:flex-none">
         <Search
           className="absolute left-2.5 h-4 w-4 text-muted-foreground"

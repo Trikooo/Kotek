@@ -1,4 +1,4 @@
-import { $Enums, Category } from "@prisma/client";
+import { $Enums, Category, Product } from "@prisma/client";
 
 export interface CreateProductT {
   name: string;
@@ -58,4 +58,9 @@ export interface ProductValidationT {
   width: number | null;
   height: number | null;
   weight: number | null;
+}
+
+export interface ProductData {
+  products: Product [],
+  total: number
 }

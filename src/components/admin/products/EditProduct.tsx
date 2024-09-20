@@ -18,12 +18,12 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
-import { Plus } from "lucide-react";
+import { PenBox, Plus } from "lucide-react";
 import Image from "next/image";
 import { Product } from "@prisma/client";
 
 interface EditProductProps {
-  product: Product
+  product: Product;
 }
 
 export default function EditProduct({ product }: EditProductProps) {
@@ -48,11 +48,20 @@ export default function EditProduct({ product }: EditProductProps) {
     weight: product.weight || undefined,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(product.imageUrl);
+  const [previewImage, setPreviewImage] = useState<string | null>(
+    product.imageUrls[0]
+  );
 
   useEffect(() => {
     if (product.categoryId) {
-      setSelectedCategory([{ value: product.categoryId, label: categoryOptions.find((opt) => opt.value === product.categoryId)?.label || "" }]);
+      setSelectedCategory([
+        {
+          value: product.categoryId,
+          label:
+            categoryOptions.find((opt) => opt.value === product.categoryId)
+              ?.label || "",
+        },
+      ]);
     }
     const tagOptions = product.tags.map((tag) => ({ value: tag, label: tag }));
     setSelectedTags(tagOptions);
@@ -118,7 +127,10 @@ export default function EditProduct({ product }: EditProductProps) {
       formData.append("barcode", updatedProduct.barcode || "");
       formData.append("categoryId", updatedProduct.categoryId || "");
       formData.append("tags", updatedProduct.tags.join(","));
-      formData.append("keyFeatures", JSON.stringify(updatedProduct.keyFeatures));
+      formData.append(
+        "keyFeatures",
+        JSON.stringify(updatedProduct.keyFeatures)
+      );
       formData.append("brand", updatedProduct.brand || "");
       formData.append("status", updatedProduct.status);
 
@@ -165,10 +177,9 @@ export default function EditProduct({ product }: EditProductProps) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" strokeWidth={1.5} />
-          Edit Product
+      <DialogTrigger>
+        <Button variant="ghost">
+          <PenBox className="w-5 h-5" strokeWidth={1.5} />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">

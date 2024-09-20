@@ -6,13 +6,26 @@ import { ProductValidationT } from "@/types/types";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { productSchema, updateProductSchema } from "../lib/validation";
-export async function getAllProducts() {
+import fs from "node:fs";
+export async function getAllProducts(page: number, pageSize: number) {
   try {
-    return await prisma.product.findMany();
+    // Calculate the offset
+    const skip = (page - 1) * pageSize;
+
+    // Fetch products with pagination
+    const products = await prisma.product.findMany({
+      skip,
+      take: pageSize,
+    });
+
+    // Get total count of products for pagination calculations
+    const total = await prisma.product.count();
+
+    return { products, total };
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error fetching products", error.message);
-      throw new Error(`Error fetching products ${error.message}`);
+      throw new Error(`Error fetching products: ${error.message}`);
     } else {
       console.error("Unknown error occurred while fetching products");
       throw new Error("Unknown error occurred while fetching products");
@@ -115,7 +128,7 @@ export async function productValidation(
   method: "POST" | "PUT"
 ): Promise<ProductValidationT> {
   const formData = await request.formData();
-
+  console.log(formData);
   // Extract fields and ensure they are strings
   const name = formData.get("name")?.toString().trim() || "";
   const description = formData.get("description")?.toString().trim() || "";
@@ -133,50 +146,77 @@ export async function productValidation(
   const status =
     (formData.get("status")?.toString().trim() as ProductStatus) ||
     ("ACTIVE" as ProductStatus);
-  const length = parseFloat(formData.get("length")?.toString().trim() || "0");
-  const width = parseFloat(formData.get("width")?.toString().trim() || "0");
-  const height = parseFloat(formData.get("height")?.toString().trim() || "0");
-  const weight = parseFloat(formData.get("weight")?.toString().trim() || "0");
 
-  const files = formData.getAll("images") as File[]; // Assuming "images" is the field name
+  const lengthValue = formData.get("length");
+  const length =
+    lengthValue !== null ? parseFloat(lengthValue.toString().trim()) : null;
+
+  const widthValue = formData.get("width");
+  const width =
+    widthValue !== null ? parseFloat(widthValue.toString().trim()) : null;
+
+  const heightValue = formData.get("height");
+  const height =
+    heightValue !== null ? parseFloat(heightValue.toString().trim()) : null;
+
+  const weightValue = formData.get("weight");
+  const weight =
+    weightValue !== null ? parseFloat(weightValue.toString().trim()) : null;
+
+  const files = formData.getAll("images[]") as File[]; // Assuming "images" is the field name
   const imageUrls: string[] = [];
-
+  const productDir = path.join(process.cwd(), "public/uploads/products", name);
+  ensureDirectoryExists(productDir);
   for (const file of files) {
     if (file) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = file.name.replaceAll(" ", "_");
-      const filePath = path.join(process.cwd(), "public/uploads", filename);
-      const imageUrl = `/uploads/${filename}`;
+      try {
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const filename = file.name.replaceAll(" ", "_");
+        const filePath = path.join(
+          process.cwd(),
+          "public/uploads/products",
+          name,
+          filename
+        );
+        const imageUrl = `/uploads/products/${name}/${filename}`;
 
-      // Save the image to disk
-      await writeFile(filePath, buffer);
+        // Save the image to disk
+        await writeFile(filePath, buffer);
 
-      imageUrls.push(imageUrl); // Collect the URL
+        imageUrls.push(imageUrl); // Collect the URL
+      } catch (error) {
+        console.error(`Failed to process file ${file.name}:`, error);
+        throw new Error(
+          `Failed to process file ${file.name}: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
+      }
     }
   }
 
   // Prepare data object
   const data: Partial<ProductValidationT> = {
-    name: capitalizeFirstLetter(name),
-    description: capitalizeFirstLetter(description),
-    price,
-    stock,
-    barcode,
-    categoryId,
-    tags,
-    keyFeatures,
-    brand,
-    status,
-    length,
-    width,
-    height,
-    weight,
-    imageUrls,
+    ...(name && { name: capitalizeFirstLetter(name) }),
+    ...(description && { description: capitalizeFirstLetter(description) }),
+    ...(price && { price }),
+    ...(stock && { stock }),
+    ...(barcode && { barcode }),
+    ...(categoryId && { categoryId }),
+    ...(tags.length > 0 && { tags }),
+    ...(keyFeatures.length > 0 && { keyFeatures }),
+    ...(brand && { brand }),
+    ...(status && { status }),
+    ...(length && { length }),
+    ...(width && { width }),
+    ...(height && { height }),
+    ...(weight && { weight }),
+    ...(imageUrls.length > 0 && { imageUrls }),
   };
 
   // Validate data with the appropriate schema based on request method
   if (method === "POST") {
-    productSchema;
+    productSchema.parse(data as ProductValidationT);
   } else if (method === "PUT") {
     updateProductSchema.parse(data as ProductValidationT);
   } else {
@@ -184,4 +224,10 @@ export async function productValidation(
     throw new Error("Method not allowed.");
   }
   return data as ProductValidationT;
+}
+
+function ensureDirectoryExists(dirPath: string) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
 }

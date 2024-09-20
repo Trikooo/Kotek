@@ -39,7 +39,7 @@ export const productSchema = z.object({
   width: z.number().nonnegative().optional(), // Optional non-negative number for width
   height: z.number().nonnegative().optional(), // Optional non-negative number for height
   weight: z.number().nonnegative().optional(), // Optional non-negative number for weight
-  imageUrls: z.array(z.string()) // Optional array of image URLs
+  imageUrls: z.array(z.string()).nonempty() 
 });
 
 // Type inference for TypeScript
@@ -61,5 +61,5 @@ export const updateProductSchema = z.object({
   width: z.number().nonnegative().optional(), // Optional non-negative number for width
   height: z.number().nonnegative().optional(), // Optional non-negative number for height
   weight: z.number().nonnegative().optional(), // Optional non-negative number for weight
-  imageUrls: z.array(z.string()) // Optional array of image URLs
+  imageUrls: z.array(z.string()).nonempty()
 });

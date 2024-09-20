@@ -1,14 +1,24 @@
 "use client";
+
+import React, { createContext, useContext, ReactNode, useState, useEffect } from "react";
 import { useGetAllProducts } from "@/hooks/products/useGetAllProducts";
-import { Product } from "@prisma/client";
+import { ProductData } from "@/types/types";
 
 
-import React, { createContext, useContext, ReactNode } from "react";
+
+const defaultData: ProductData = {
+  products: [],
+  total: 0
+};
 
 interface ProductContextType {
-  products: Product[];
+  data: ProductData;
   loading: boolean;
   error: unknown;
+  page: number;
+  pageSize: number;
+  setPage: (page: number) => void;
+  setPageSize: (pageSize: number) => void;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -20,13 +30,22 @@ export const useProductContext = () => {
   }
   return context;
 };
-export const ProductProvider: React.FC<{ children: ReactNode }> = ({
+
+export const ProductProvider: React.FC<{ children: ReactNode; initialPage?: number; initialPageSize?: number }> = ({
   children,
+  initialPage = 1,
+  initialPageSize = 10
 }) => {
-  const { products, loading, error } = useGetAllProducts();
+  const [page, setPage] = useState(initialPage);
+  const [pageSize, setPageSize] = useState(initialPageSize);
+  const { data = defaultData, loading, error } = useGetAllProducts(page, pageSize); // Ensure defaultData is used if undefined
+
+  useEffect(() => {
+    // Optional: You can add logic here to react to page or pageSize changes
+  }, [page, pageSize]);
 
   return (
-    <ProductContext.Provider value={{ products, loading, error }}>
+    <ProductContext.Provider value={{ data, loading, error, page, pageSize, setPage, setPageSize }}>
       {children}
     </ProductContext.Provider>
   );

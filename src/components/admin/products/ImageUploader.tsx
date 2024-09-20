@@ -19,14 +19,12 @@ export default function ImageUploader({
 }: ImageUploaderProps) {
   // Handle file change and store File objects
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("hello");
     const files = e.target.files;
     if (files) {
       const fileArray = Array.from(files);
 
       // Filter out files that are already in the images array by comparing names
       const newFiles = fileArray.filter((file) => {
-        console.log("hello");
         return !images.some((image) => {
           return image.name === file.name;
         });
@@ -71,6 +69,7 @@ export default function ImageUploader({
             className="absolute inset-0 cursor-pointer opacity-0 w-full h-full"
             onChange={handleFileChange}
             multiple
+            required
           />
         </Card>
       </div>
