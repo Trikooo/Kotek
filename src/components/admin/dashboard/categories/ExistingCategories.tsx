@@ -82,6 +82,11 @@ export default function ExistingCategories() {
         rows={rows}
         isLoading={loading}
         error={error}
+        currentPage={0}
+        totalPages={0}
+        setPage={() => {
+          console.log("");
+        }}
       />
     </>
   );

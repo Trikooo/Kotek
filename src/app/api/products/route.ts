@@ -4,7 +4,6 @@ import {
   getAllProducts,
   productValidation,
 } from "../APIservices/controllers/products";
-import { createCategory } from "../APIservices/controllers/categories";
 
 export async function GET(request: NextRequest) {
   try {

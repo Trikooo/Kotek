@@ -65,6 +65,11 @@ export default function RecentOrders({ className = "" }: RecentOrdersProps) {
       columns={columns}
       rows={rows}
       className={className}
+      currentPage={0}
+      totalPages={0}
+      setPage={() => {
+        console.log("");
+      }}
     />
   );
 }

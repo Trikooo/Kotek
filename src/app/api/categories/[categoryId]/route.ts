@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  categoryValidation,
-  deleteCategory,
-  updateCategory,
-} from "../../controllers/categories";
+
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
+import { categoryValidation, deleteCategory, updateCategory } from "../../APIservices/controllers/categories";
 
 export async function PUT(request: NextRequest, { params }: Params) {
   try {

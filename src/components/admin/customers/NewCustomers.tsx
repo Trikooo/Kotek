@@ -12,7 +12,7 @@ interface NewCustomersProps {
 // Updated headers to use Column object with `important` flag
 const columns = [
   { header: "Customer", important: true }, // Important column to show on small screens
-  { header: "Origin", important: true},
+  { header: "Origin", important: true },
 ];
 
 const rows = [
@@ -59,6 +59,11 @@ export default function NewCustomers({ className = "" }: NewCustomersProps) {
           </Link>
         </Button>
       }
+      currentPage={0}
+      totalPages={0}
+      setPage={() => {
+        console.log("");
+      }}
     />
   );
 }

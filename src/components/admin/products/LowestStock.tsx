@@ -140,12 +140,11 @@ export default function LowestStock() {
       description="Manage your products and view their sales performance."
       columns={columns}
       rows={rows}
-      footer={
-        <div className="text-xs text-muted-foreground">
-          Showing <strong>1-10</strong> of <strong>32</strong> products
-        </div>
-      }
-    />
+      footer={<div className="text-xs text-muted-foreground">
+        Showing <strong>1-10</strong> of <strong>32</strong> products
+      </div>} currentPage={0} totalPages={0} setPage={()=>{
+        console.log("not implemented in LowestStock.tsx");
+      }}    />
   );
 }
 
