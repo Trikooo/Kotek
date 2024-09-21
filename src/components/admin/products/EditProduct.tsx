@@ -206,7 +206,7 @@ export default function EditProduct({ product }: EditProductProps) {
             <Textarea
               id="description"
               name="description"
-              value={updatedProduct.description}
+              value={updatedProduct.description as string}
               onChange={handleInputChange}
             />
           </div>
