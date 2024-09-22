@@ -1,6 +1,5 @@
 import { CreateProductT } from "@/types/types";
 
-
 export function createProductFormData(product: Partial<CreateProductT>) {
   const formData = new FormData();
 
@@ -10,7 +9,7 @@ export function createProductFormData(product: Partial<CreateProductT>) {
   formData.append("stock", product.stock?.toString() ?? "");
   formData.append("barcode", product.barcode ?? "");
   formData.append("categoryId", product.categoryId ?? "");
-  formData.append("tags", product.tags ?? "");
+  formData.append("tags", product.tags ?? "[]");
   formData.append("keyFeatures", JSON.stringify(product.keyFeatures) ?? "[]");
   formData.append("brand", product.brand ?? "");
   formData.append("status", product.status ?? "ACTIVE");

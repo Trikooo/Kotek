@@ -8,6 +8,11 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,9 +23,10 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
-import { PenBox, Plus } from "lucide-react";
-import Image from "next/image";
+import { ChevronsUpDown, PenBox, Plus, RotateCcw } from "lucide-react";
+import { STATUSES } from "@/lib/constants";
 import { Product } from "@prisma/client";
+import ImageUploader from "./ImageUploader";
 
 interface EditProductProps {
   product: Product;
@@ -29,17 +35,17 @@ interface EditProductProps {
 export default function EditProduct({ product }: EditProductProps) {
   const { categoryOptions, error, loading } = useCategoryContext();
   const [selectedCategory, setSelectedCategory] = useState<Option[]>([]);
-  const [selectedTags, setSelectedTags] = useState<Option[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<Option[]>([]);
   const [updatedProduct, setUpdatedProduct] = useState({
     name: product.name,
     description: product.description,
     price: product.price,
-    image: null as File | null,
+    images: [] as File[],
     stock: product.stock,
     barcode: product.barcode,
     categoryId: product.categoryId,
-    tags: product.tags,
-    keyFeatures: product.keyFeatures,
+    tags: product.tags.join(", "),
+    keyFeatures: product.keyFeatures.join(", "),
     brand: product.brand,
     status: product.status,
     length: product.length || undefined,
@@ -48,9 +54,6 @@ export default function EditProduct({ product }: EditProductProps) {
     weight: product.weight || undefined,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(
-    product.imageUrls[0]
-  );
 
   useEffect(() => {
     if (product.categoryId) {
@@ -63,31 +66,13 @@ export default function EditProduct({ product }: EditProductProps) {
         },
       ]);
     }
-    const tagOptions = product.tags.map((tag) => ({ value: tag, label: tag }));
-    setSelectedTags(tagOptions);
+    setSelectedStatus([
+      {
+        value: product.status,
+        label: product.status,
+      },
+    ]);
   }, [product, categoryOptions]);
-
-  useEffect(() => {
-    if (selectedCategory.length > 0) {
-      setUpdatedProduct((prevProduct) => ({
-        ...prevProduct,
-        categoryId: selectedCategory[0].value,
-      }));
-    } else {
-      setUpdatedProduct((prevProduct) => ({
-        ...prevProduct,
-        categoryId: null,
-      }));
-    }
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    const tagValues = selectedTags.map((tag) => tag.value);
-    setUpdatedProduct((prevProduct) => ({
-      ...prevProduct,
-      tags: tagValues,
-    }));
-  }, [selectedTags]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -99,19 +84,27 @@ export default function EditProduct({ product }: EditProductProps) {
     }));
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
+  const handleFileChange = (newImages: File[]) => {
     setUpdatedProduct((prevProduct) => ({
       ...prevProduct,
-      image: file,
+      images: newImages,
     }));
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setUpdatedProduct((prevProduct) => ({
+      ...prevProduct,
+      images: prevProduct.images.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleGenerateBarcode = () => {
+    // Implement barcode generation logic here
+    const generatedBarcode = Math.random().toString(36).substring(7);
+    setUpdatedProduct((prevProduct) => ({
+      ...prevProduct,
+      barcode: generatedBarcode,
+    }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -120,32 +113,15 @@ export default function EditProduct({ product }: EditProductProps) {
 
     try {
       const formData = new FormData();
-      formData.append("name", updatedProduct.name);
-      formData.append("description", updatedProduct.description || "");
-      formData.append("price", updatedProduct.price.toString());
-      formData.append("stock", updatedProduct.stock.toString());
-      formData.append("barcode", updatedProduct.barcode || "");
-      formData.append("categoryId", updatedProduct.categoryId || "");
-      formData.append("tags", updatedProduct.tags.join(","));
-      formData.append(
-        "keyFeatures",
-        JSON.stringify(updatedProduct.keyFeatures)
-      );
-      formData.append("brand", updatedProduct.brand || "");
-      formData.append("status", updatedProduct.status);
-
-      if (updatedProduct.length)
-        formData.append("length", updatedProduct.length.toString());
-      if (updatedProduct.width)
-        formData.append("width", updatedProduct.width.toString());
-      if (updatedProduct.height)
-        formData.append("height", updatedProduct.height.toString());
-      if (updatedProduct.weight)
-        formData.append("weight", updatedProduct.weight.toString());
-
-      if (updatedProduct.image) {
-        formData.append("image", updatedProduct.image);
-      }
+      Object.entries(updatedProduct).forEach(([key, value]) => {
+        if (key === "images") {
+          value.forEach((image: File) => {
+            formData.append("images", image);
+          });
+        } else if (value !== undefined) {
+          formData.append(key, value.toString());
+        }
+      });
 
       await axios.put(`/api/products/${product.id}`, formData, {
         headers: {
@@ -154,8 +130,6 @@ export default function EditProduct({ product }: EditProductProps) {
       });
 
       toast.success("Product updated successfully.");
-
-      // Optionally reset state or navigate away
     } catch (error) {
       console.error("Failed to update product: ", error);
 
@@ -174,6 +148,11 @@ export default function EditProduct({ product }: EditProductProps) {
       setIsLoading(false);
     }
   };
+
+  let statusOptions: Option[] = STATUSES.map((status) => ({
+    value: status.toUpperCase(),
+    label: status.toUpperCase(),
+  }));
 
   return (
     <Dialog>
@@ -211,23 +190,12 @@ export default function EditProduct({ product }: EditProductProps) {
             />
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="image">Image *</Label>
-            <Input
-              id="image"
-              name="image"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
+            <Label htmlFor="images">Images *</Label>
+            <ImageUploader
+              images={updatedProduct.images}
+              onImagesChange={handleFileChange}
+              onRemoveImage={handleRemoveImage}
             />
-            {previewImage && (
-              <Image
-                src={previewImage}
-                alt="Product preview"
-                className="object-cover"
-                width={50}
-                height={50}
-              />
-            )}
           </div>
           <div className="flex gap-3">
             <div className="flex-1 grid gap-3">
@@ -262,75 +230,67 @@ export default function EditProduct({ product }: EditProductProps) {
                 onChange={setSelectedCategory}
                 loading={loading}
                 error={error}
-                multiple
               />
             </div>
             <div className="flex-1 grid gap-3">
               <Label htmlFor="status">Status *</Label>
-              <Input
-                id="status"
-                name="status"
-                type="text"
-                value={updatedProduct.status}
-                onChange={handleInputChange}
-                required
+              <Select
+                options={statusOptions}
+                selectedOptions={selectedStatus}
+                onChange={setSelectedStatus}
+                searchable={false}
               />
             </div>
           </div>
           <div className="grid gap-3">
             <Label htmlFor="barcode">Barcode *</Label>
-            <Input
-              id="barcode"
-              name="barcode"
-              type="text"
-              value={updatedProduct.barcode || ""}
-              onChange={handleInputChange}
-              required
-            />
+            <div className="flex gap-3">
+              <Input
+                id="barcode"
+                name="barcode"
+                type="text"
+                value={updatedProduct.barcode || ""}
+                onChange={handleInputChange}
+                required
+                className="flex-1"
+              />
+              <Button variant="outline" onClick={handleGenerateBarcode}>
+                <RotateCcw className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+            </div>
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="tags">Tags</Label>
-            <Select
-              options={categoryOptions.map((category) => ({
-                value: category.value,
-                label: category.label,
-              }))}
-              selectedOptions={selectedTags}
-              onChange={setSelectedTags}
-              loading={loading}
-              error={error}
-              multiple
-            />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="keyFeatures">Key Features</Label>
+            <Label htmlFor="keyFeatures">Key Features (comma-separated)</Label>
             <Textarea
               id="keyFeatures"
               name="keyFeatures"
-              value={updatedProduct.keyFeatures.join("\n")}
-              onChange={(e) =>
-                setUpdatedProduct((prev) => ({
-                  ...prev,
-                  keyFeatures: e.target.value.split("\n"),
-                }))
-              }
-            />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="brand">Brand *</Label>
-            <Input
-              id="brand"
-              name="brand"
-              type="text"
-              value={updatedProduct.brand || ""}
+              value={updatedProduct.keyFeatures}
               onChange={handleInputChange}
-              required
             />
           </div>
-          <div className="grid gap-3">
-            <Label htmlFor="dimensions">Dimensions (Optional)</Label>
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="grid gap-3">
+          <OptionalFields>
+            <div className="grid gap-3">
+              <Label htmlFor="tags">Tags (comma-separated)</Label>
+              <Input
+                id="tags"
+                name="tags"
+                type="text"
+                value={updatedProduct.tags}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex-1 grid gap-3">
+              <Label htmlFor="brand">Brand</Label>
+              <Input
+                id="brand"
+                name="brand"
+                type="text"
+                value={updatedProduct.brand || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex gap-3">
+              <div className="flex-1 grid gap-3">
                 <Label htmlFor="length">Length</Label>
                 <Input
                   id="length"
@@ -340,7 +300,7 @@ export default function EditProduct({ product }: EditProductProps) {
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="grid gap-3">
+              <div className="flex-1 grid gap-3">
                 <Label htmlFor="width">Width</Label>
                 <Input
                   id="width"
@@ -350,7 +310,9 @@ export default function EditProduct({ product }: EditProductProps) {
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="grid gap-3">
+            </div>
+            <div className="flex gap-3">
+              <div className="flex-1 grid gap-3">
                 <Label htmlFor="height">Height</Label>
                 <Input
                   id="height"
@@ -360,7 +322,7 @@ export default function EditProduct({ product }: EditProductProps) {
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="grid gap-3">
+              <div className="flex-1 grid gap-3">
                 <Label htmlFor="weight">Weight</Label>
                 <Input
                   id="weight"
@@ -371,17 +333,49 @@ export default function EditProduct({ product }: EditProductProps) {
                 />
               </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Updating..." : "Update Product"}
-            </Button>
-            <DialogClose asChild>
-              <Button type="button">Cancel</Button>
+          </OptionalFields>
+          <DialogFooter className="">
+            <DialogClose asChild className="max-sm:flex-1">
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
             </DialogClose>
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              loadingText="Updating..."
+              className="max-sm:flex-1"
+            >
+              Update Product
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface OptionalFieldsProps {
+  children: React.ReactNode;
+}
+
+function OptionalFields({ children }: OptionalFieldsProps) {
+  return (
+    <Collapsible>
+      <CollapsibleTrigger asChild>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="flex items-center justify-between space-x-4 w-full mb-6"
+        >
+          <h4 className="text-sm font-semibold">Show other optional fields</h4>
+          <ChevronsUpDown className="h-4 w-4" />
+          <span className="sr-only">Toggle</span>
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="grid gap-y-6">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

@@ -37,7 +37,6 @@ export default function CreateProduct() {
     setSelectedStatus,
     createIsLoading,
     handleInputChange,
-
     handleSubmit,
     handleGenerateBarcode,
   } = useCreateProduct();

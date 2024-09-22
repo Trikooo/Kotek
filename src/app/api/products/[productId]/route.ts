@@ -1,21 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import { categoryValidation, deleteCategory, updateCategory, getCategoryById } from "../../APIservices/controllers/categories";
+import {
+  productValidation,
+  deleteProduct,
+  updateProduct,
+  getProductById,
+} from "../../APIservices/controllers/products";
+
+export async function GET(request: NextRequest, { params }: Params) {
+  try {
+    // Get product by ID
+    const product = await getProductById(params.productId);
+
+    if (!product) {
+      return NextResponse.json(
+        { message: "Product not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(product, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching product:", error);
+
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: 500 }
+      );
+    }
+
+    console.error("Unexpected error type:", error);
+    return NextResponse.json(
+      { message: "An unexpected error occurred" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     // Validate and extract data from request
-    const data = await categoryValidation(request, "PUT");
+    const data = await productValidation(request, "PUT");
 
-    // Update category
-    await updateCategory(params.categoryId, data);
+    // Update product
+    await updateProduct(params.productId, data);
 
     return NextResponse.json(
-      { message: "Category updated successfully!" },
+      { message: "Product updated successfully!" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error updating category:", error); // Log error details
+    console.error("Error updating product:", error); // Log error details
 
     if (error instanceof Error) {
       let status = 500;
@@ -35,14 +71,14 @@ export async function PUT(request: NextRequest, { params }: Params) {
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     // Perform deletion
-    await deleteCategory(params.categoryId);
+    await deleteProduct(params.productId);
 
     return NextResponse.json(
-      { message: "Category deleted successfully" },
+      { message: "Product deleted successfully" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error occurred while deleting category:", error); // Log error details
+    console.error("Error occurred while deleting product:", error);
 
     if (error instanceof Error) {
       let status = 500;
@@ -51,37 +87,6 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       if (message.includes("not found")) status = 404;
 
       return NextResponse.json({ message: message }, { status: status });
-    }
-
-    console.error("Unexpected error type:", error); // Log unexpected error types
-    return NextResponse.json(
-      { message: "An unexpected error occurred" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET(request: NextRequest, { params }: Params) {
-  try {
-    // Get category by ID
-    const category = await getCategoryById(params.categoryId);
-
-    if (!category) {
-      return NextResponse.json(
-        { message: "Category not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(category, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching category:", error); // Log error details
-
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: 500 }
-      );
     }
 
     console.error("Unexpected error type:", error); // Log unexpected error types

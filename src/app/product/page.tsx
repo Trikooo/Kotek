@@ -1,17 +1,15 @@
-import ProductDetailsCard from "@/components/store/product-page/ProductDetailsCard";
+import ProductDetailsImages from "@/components/store/product-page/ProductDetailsImages";
 import StoreLayout from "../store/StoreLayout";
 import ProductInformation from "@/components/store/product-page/ProductInformation";
 import FeaturedItemCard from "@/components/store/home/section2/FeaturedItemCard";
 
-import { ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
 export default function ProductPage() {
+  const thumbnails = ["products/image.png", "products/image.png"];
   return (
     <StoreLayout>
       <div className="flex flex-col md:flex-row gap-8 pt-14">
         <div className="w-full md:flex-1">
-          <ProductDetailsCard />
+          <ProductDetailsImages thumbnails={thumbnails} />
         </div>
         <div className="w-full md:flex-1 mt-8 md:mt-0">
           <ProductInformation />
