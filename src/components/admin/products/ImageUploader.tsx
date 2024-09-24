@@ -1,13 +1,12 @@
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { CopyPlus, ImagePlus, Plus, X } from "lucide-react";
+import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
-import { toast } from "sonner";
 
 interface ImageUploaderProps {
-  images: File[]; // Now it's an array of files
+  images: (File | string)[];
   onImagesChange: (newImages: File[]) => void;
   onRemoveImage: (index: number) => void;
 }
@@ -17,20 +16,18 @@ export default function ImageUploader({
   onImagesChange,
   onRemoveImage,
 }: ImageUploaderProps) {
-  // Handle file change and store File objects
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
       const fileArray = Array.from(files);
-
-      // Filter out files that are already in the images array by comparing names
       const newFiles = fileArray.filter((file) => {
-        return !images.some((image) => {
-          return image.name === file.name;
-        });
+        return !images.some(
+          (image) => image instanceof File && image.name === file.name
+        );
       });
+      console.log(images);
       if (newFiles.length > 0) {
-        onImagesChange([...images, ...newFiles]); // Only add new files
+        onImagesChange(newFiles);
       }
     }
   };
@@ -44,7 +41,7 @@ export default function ImageUploader({
             className="relative group w-20 rounded overflow-hidden"
           >
             <Image
-              src={URL.createObjectURL(image)} // Create URL from file object
+              src={image instanceof File ? URL.createObjectURL(image) : image}
               alt={`Uploaded image ${index + 1}`}
               className="w-20 h-20 object-cover group-hover:opacity-80 duration-100"
               height={80}
@@ -69,7 +66,6 @@ export default function ImageUploader({
             className="absolute inset-0 cursor-pointer opacity-0 w-full h-full"
             onChange={handleFileChange}
             multiple
-            required
           />
         </Card>
       </div>

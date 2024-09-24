@@ -18,15 +18,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Select from "@/components/ui/better-select";
 import { Textarea } from "@/components/ui/textarea";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import axios from "axios";
-import { toast } from "sonner";
-import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
-import { ChevronsUpDown, PenBox, Plus, RotateCcw } from "lucide-react";
-import { STATUSES } from "@/lib/constants";
+import { ChevronsUpDown, PenBox, RotateCcw } from "lucide-react";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { Product } from "@prisma/client";
 import ImageUploader from "./ImageUploader";
+import { useEditProduct } from "@/hooks/products/useEditProduct";
 
 interface EditProductProps {
   product: Product;
@@ -34,125 +31,22 @@ interface EditProductProps {
 
 export default function EditProduct({ product }: EditProductProps) {
   const { categoryOptions, error, loading } = useCategoryContext();
-  const [selectedCategory, setSelectedCategory] = useState<Option[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<Option[]>([]);
-  const [updatedProduct, setUpdatedProduct] = useState({
-    name: product.name,
-    description: product.description,
-    price: product.price,
-    images: [] as File[],
-    stock: product.stock,
-    barcode: product.barcode,
-    categoryId: product.categoryId,
-    tags: product.tags.join(", "),
-    keyFeatures: product.keyFeatures.join(", "),
-    brand: product.brand,
-    status: product.status,
-    length: product.length || undefined,
-    width: product.width || undefined,
-    height: product.height || undefined,
-    weight: product.weight || undefined,
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    updatedProduct,
+    selectedCategory,
+    setSelectedCategory,
+    selectedStatus,
+    setSelectedStatus,
+    updateIsLoading,
+    displayedImages,
+    handleInputChange,
+    handleFileChange,
+    handleRemoveImage,
+    handleGenerateBarcode,
+    handleSubmit,
+  } = useEditProduct(product)
 
-  useEffect(() => {
-    if (product.categoryId) {
-      setSelectedCategory([
-        {
-          value: product.categoryId,
-          label:
-            categoryOptions.find((opt) => opt.value === product.categoryId)
-              ?.label || "",
-        },
-      ]);
-    }
-    setSelectedStatus([
-      {
-        value: product.status,
-        label: product.status,
-      },
-    ]);
-  }, [product, categoryOptions]);
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setUpdatedProduct((prevProduct) => ({
-      ...prevProduct,
-      [name]: name === "price" || name === "stock" ? Number(value) : value,
-    }));
-  };
-
-  const handleFileChange = (newImages: File[]) => {
-    setUpdatedProduct((prevProduct) => ({
-      ...prevProduct,
-      images: newImages,
-    }));
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setUpdatedProduct((prevProduct) => ({
-      ...prevProduct,
-      images: prevProduct.images.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleGenerateBarcode = () => {
-    // Implement barcode generation logic here
-    const generatedBarcode = Math.random().toString(36).substring(7);
-    setUpdatedProduct((prevProduct) => ({
-      ...prevProduct,
-      barcode: generatedBarcode,
-    }));
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const formData = new FormData();
-      Object.entries(updatedProduct).forEach(([key, value]) => {
-        if (key === "images") {
-          value.forEach((image: File) => {
-            formData.append("images", image);
-          });
-        } else if (value !== undefined) {
-          formData.append(key, value.toString());
-        }
-      });
-
-      await axios.put(`/api/products/${product.id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      toast.success("Product updated successfully.");
-    } catch (error) {
-      console.error("Failed to update product: ", error);
-
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data.message;
-
-        if (errorMessage.includes("Conflict")) {
-          toast.error("A product with this barcode already exists.");
-        } else {
-          toast.error("Internal server error.");
-        }
-      } else {
-        toast.error("An unknown error occurred.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  let statusOptions: Option[] = STATUSES.map((status) => ({
-    value: status.toUpperCase(),
-    label: status.toUpperCase(),
-  }));
 
   return (
     <Dialog>
@@ -192,7 +86,7 @@ export default function EditProduct({ product }: EditProductProps) {
           <div className="grid gap-3">
             <Label htmlFor="images">Images *</Label>
             <ImageUploader
-              images={updatedProduct.images}
+              images={displayedImages}
               onImagesChange={handleFileChange}
               onRemoveImage={handleRemoveImage}
             />
@@ -235,7 +129,7 @@ export default function EditProduct({ product }: EditProductProps) {
             <div className="flex-1 grid gap-3">
               <Label htmlFor="status">Status *</Label>
               <Select
-                options={statusOptions}
+                options={STATUS_OPTIONS}
                 selectedOptions={selectedStatus}
                 onChange={setSelectedStatus}
                 searchable={false}
@@ -342,7 +236,7 @@ export default function EditProduct({ product }: EditProductProps) {
             </DialogClose>
             <Button
               type="submit"
-              isLoading={isLoading}
+              isLoading={updateIsLoading}
               loadingText="Updating..."
               className="max-sm:flex-1"
             >

@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
 import { ChevronsUpDown, Plus, RotateCcw } from "lucide-react";
-import { STATUSES } from "@/lib/constants";
+import { STATUS_OPTIONS } from "@/lib/constants";
 
 import { useCreateProduct } from "@/hooks/products/useCreateProduct";
 import ImageUploader from "./ImageUploader";
@@ -39,27 +39,10 @@ export default function CreateProduct() {
     handleInputChange,
     handleSubmit,
     handleGenerateBarcode,
+    handleFileChange,
+    handleRemoveImage,
   } = useCreateProduct();
 
-  let statusOptions: Option[] = [];
-  for (const status of STATUSES) {
-    statusOptions.push({
-      value: status.toUpperCase(),
-      label: status.toUpperCase(),
-    });
-  }
-  const handleFileChange = (newImages: File[]) => {
-    setNewProduct((prevProduct: any) => ({
-      ...prevProduct,
-      images: newImages,
-    }));
-  };
-  const handleRemoveImage = (index: number) => {
-    setNewProduct((prevProduct: any) => ({
-      ...prevProduct,
-      images: prevProduct.images.filter((_: any , i: any) => i !== index),
-    }));
-  };
 
   return (
     <Dialog>
@@ -143,7 +126,7 @@ export default function CreateProduct() {
             <div className="flex-1 grid gap-3">
               <Label htmlFor="status">Status *</Label>
               <Select
-                options={statusOptions}
+                options={STATUS_OPTIONS}
                 selectedOptions={selectedStatus}
                 onChange={setSelectedStatus}
                 searchable={false}

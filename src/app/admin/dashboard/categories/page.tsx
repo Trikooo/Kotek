@@ -1,4 +1,4 @@
-// src/pages/admin/dashboard/categories/Page.tsx
+
 "use client";
 import AdminLayout from "../../AdminLayout";
 import ExistingCategories from "@/components/admin/dashboard/categories/ExistingCategories";

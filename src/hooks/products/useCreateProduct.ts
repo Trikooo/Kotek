@@ -53,18 +53,6 @@ export function useCreateProduct() {
     setBarcode(generateCode128());
     newProduct.barcode = barcode;
   };
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files: FileList | null = e.target.files;
-    if (files && files.length > 0) {
-      const imageFiles: File[] = Array.from(files);
-
-      setNewProduct((prevProduct) => ({
-        ...prevProduct,
-        images: imageFiles,
-      }));
-    }
-  };
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setCreateIsLoading(true);
@@ -94,7 +82,21 @@ export function useCreateProduct() {
         status: selectedStatus[0].value as ProductStatus,
       }));
     }
-  }, [selectedCategory, selectedStatus]);
+  }, [selectedCategory, selectedStatus, setNewProduct, defaultStatus.value]);
+
+  const handleFileChange = (newImages: File[]) => {
+    setNewProduct((prevProduct: any) => ({
+      ...prevProduct,
+      images: newImages,
+    }));
+  };
+  const handleRemoveImage = (index: number) => {
+    setNewProduct((prevProduct: any) => ({
+      ...prevProduct,
+      images: prevProduct.images.filter((_: any, i: any) => i !== index),
+    }));
+  };
+
 
   return {
     newProduct,
@@ -106,6 +108,7 @@ export function useCreateProduct() {
     createIsLoading,
     handleInputChange,
     handleFileChange,
+    handleRemoveImage,
     handleSubmit,
     handleGenerateBarcode,
   };
