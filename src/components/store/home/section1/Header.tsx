@@ -4,19 +4,23 @@ import { Menu, Search, ShoppingCart, CircleUserRound } from "lucide-react";
 import AnnouncementBanner from "@/components/dynamic-ui/AnnouncementBanner";
 import SearchPopup from "./SearchPopup";
 import { useHeaderContext } from "@/context/HeaderContext";
+import DynamicDropdownMenu from "@/components/dynamic-ui/DropDownMenu";
+import { useRouter } from "next/navigation";
 
 const useOS = () => {
   const [os, setOS] = useState("loading");
 
   useEffect(() => {
     const detectOS = () => {
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      if (userAgent.includes("mac")) {
-        setOS("mac");
-      } else if (userAgent.includes("win")) {
-        setOS("windows");
-      } else {
-        setOS("other");
+      if (window) {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        if (userAgent.includes("mac")) {
+          setOS("mac");
+        } else if (userAgent.includes("win")) {
+          setOS("windows");
+        } else {
+          setOS("other");
+        }
       }
     };
 
@@ -37,8 +41,8 @@ const SearchField = ({ onClick }: { onClick: () => void }) => {
           ...
         </span>
       ) : (
-        <kbd className="pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100  ">
-          <span className="text-xs">{os === "mac" ? "⌘" : "Ctrl"}</span>K
+        <kbd className="pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+          <span className="text-xs">{os === "mac" ? "⌘" : "ctrl"}</span>K
         </kbd>
       )}
     </button>
@@ -54,10 +58,12 @@ const navigation = [
 const Header = ({ setMobileMenuOpen }: any) => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isAtTop, setIsAtTop] = useState(true); // New state for checking top position
   const { searchFieldVisible, setSearchFieldVisible } = useHeaderContext();
 
   useEffect(() => {
     const controlHeader = () => {
+      setIsAtTop(window.scrollY === 0); // Check if at the top
       if (window.scrollY < lastScrollY || window.scrollY < 100) {
         setIsVisible(true);
       } else {
@@ -82,21 +88,20 @@ const Header = ({ setMobileMenuOpen }: any) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [searchFieldVisible]);
+  }, [searchFieldVisible, setSearchFieldVisible]);
 
   return (
     <>
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           isVisible
-            ? "translate-y-0 bg-white/50 backdrop-blur-lg"
+            ? isAtTop
+              ? "bg-transparent backdrop-blur-none"
+              : "bg-white/50 backdrop-blur-lg"
             : "-translate-y-full bg-transparent"
         }`}
       >
-        <nav
-          aria-label="Global"
-          className="flex items-center justify-between p-6 lg:px-8"
-        >
+        <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
           <div className="flex lg:flex-1">
             <a href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">KOTEK</span>
@@ -130,11 +135,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
             </div>
             <div className="hidden lg:flex lg:gap-x-6 items-center">
               {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-sm font-semibold"
-                >
+                <a key={item.name} href={item.href} className="text-sm font-semibold">
                   {item.name}
                 </a>
               ))}
@@ -145,9 +146,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
             <a href="/cart">
               <ShoppingCart strokeWidth={1.5} className="w-5 h-5" />
             </a>
-            <a href="#">
-              <CircleUserRound strokeWidth={1.5} className="w-5 h-5" />
-            </a>
+            <AccountDropDown />
           </div>
         </nav>
       </header>
@@ -161,3 +160,14 @@ const Header = ({ setMobileMenuOpen }: any) => {
 };
 
 export default Header;
+
+function AccountDropDown() {
+  const router = useRouter();
+
+  const items = [
+    { label: "Log in", onClick: () => router.push("/login") },
+    { label: "Register", onClick: () => router.push("/register") },
+  ];
+
+  return <DynamicDropdownMenu label="Account" items={items} />;
+}

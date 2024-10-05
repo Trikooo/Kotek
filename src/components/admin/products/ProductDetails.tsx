@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Card,
@@ -38,6 +38,9 @@ export default function AdminProductDetail({
         return "outline";
     }
   };
+  useEffect(()=>{
+    console.log(product.tags)
+  })
 
   return (
 

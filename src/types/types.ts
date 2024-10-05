@@ -11,7 +11,7 @@ export interface CreateProductT {
   updatedAt: Date;
   categoryId: string | null;
   tags: string;
-  keyFeatures: string[];
+  keyFeatures: string;
   brand: string | null;
   status: $Enums.ProductStatus;
   length: string | null;

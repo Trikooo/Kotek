@@ -2,15 +2,15 @@ import { CreateProductT } from "@/types/types";
 
 export function createProductFormData(product: Partial<CreateProductT>) {
   const formData = new FormData();
-
+  console.log(product.tags);
   formData.append("name", product.name ?? "");
   formData.append("description", product.description ?? "");
   formData.append("price", product.price?.toString() ?? "");
   formData.append("stock", product.stock?.toString() ?? "");
   formData.append("barcode", product.barcode ?? "");
   formData.append("categoryId", product.categoryId ?? "");
-  formData.append("tags", product.tags ?? "[]");
-  formData.append("keyFeatures", JSON.stringify(product.keyFeatures) ?? "[]");
+  formData.append("tags", product.tags ?? "");
+  formData.append("keyFeatures", product.keyFeatures ?? "");
   formData.append("brand", product.brand ?? "");
   formData.append("status", product.status ?? "ACTIVE");
   formData.append("length", product.length?.toString() ?? "");
@@ -33,12 +33,13 @@ export function updateProductFormData(updatedProduct: any) {
       (value as File[]).forEach((image: File) => {
         formData.append("images[]", image);
       });
+    } else if (key === "imageUrls") {
+      formData.append(key, JSON.stringify(value));
     } else if (value !== undefined && value !== null) {
       formData.append(key, value.toString());
     }
   });
   return formData;
 }
-
 
 export function createCategoryFormData(category: any) {}

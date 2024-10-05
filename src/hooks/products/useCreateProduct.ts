@@ -16,7 +16,7 @@ export function useCreateProduct() {
     barcode: "",
     categoryId: null,
     tags: "",
-    keyFeatures: [],
+    keyFeatures: "",
     brand: "",
     status: "ACTIVE",
     length: "",
@@ -71,14 +71,14 @@ export function useCreateProduct() {
 
   useEffect(() => {
     if (selectedCategory[0]) {
-      setNewProduct((prevCategory) => ({
-        ...prevCategory,
+      setNewProduct((prevProduct) => ({
+        ...prevProduct,
         categoryId: selectedCategory[0].value,
       }));
     }
     if (selectedStatus[0].value !== defaultStatus.value) {
-      setNewProduct((prevCategory) => ({
-        ...prevCategory,
+      setNewProduct((prevProduct) => ({
+        ...prevProduct,
         status: selectedStatus[0].value as ProductStatus,
       }));
     }
@@ -87,7 +87,7 @@ export function useCreateProduct() {
   const handleFileChange = (newImages: File[]) => {
     setNewProduct((prevProduct: any) => ({
       ...prevProduct,
-      images: newImages,
+      images: [...prevProduct.images, ...newImages],
     }));
   };
   const handleRemoveImage = (index: number) => {
@@ -96,7 +96,6 @@ export function useCreateProduct() {
       images: prevProduct.images.filter((_: any, i: any) => i !== index),
     }));
   };
-
 
   return {
     newProduct,

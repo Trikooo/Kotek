@@ -86,6 +86,7 @@ export default function CreateProduct() {
               images={newProduct.images || []}
               onImagesChange={handleFileChange}
               onRemoveImage={handleRemoveImage}
+              required
             />
           </div>
           <div className="flex gap-3">

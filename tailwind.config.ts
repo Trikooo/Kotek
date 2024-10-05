@@ -26,6 +26,9 @@ const config = {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       colors: {
+        facebookBlue: '#0765FF',
+        discordBlue: '#5865F2',
+        googleBlue: "#4285F4",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

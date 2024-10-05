@@ -12,18 +12,23 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid()) @db.Uuid
-  username     String    @unique
-  email        String    @unique
-  passwordHash String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  role         String    @default("user")
-  orders       Order[]
-  cart         Cart?
-  addresses    Address[]
-  reviews      Review[]
+  id            String   @id @default(uuid()) @db.Uuid
+  username      String   @unique
+  email         String   @unique
+  gender        String?  // Optional field for gender
+  birthday      String?  // Optional field for birthday (String format)
+  location      String?  // Optional field for location
+  friends       Json?    @db.JsonB // Using jsonb for friends/connections
+  guilds        Json?    @db.JsonB // Using jsonb for guild memberships
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  role          String   @default("user")
+  orders        Order[]
+  cart          Cart?
+  addresses     Address[]
+  reviews       Review[]
 }
+
 
 model Category {
   id            String     @id @default(uuid()) @db.Uuid

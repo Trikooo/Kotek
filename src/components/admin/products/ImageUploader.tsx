@@ -9,12 +9,14 @@ interface ImageUploaderProps {
   images: (File | string)[];
   onImagesChange: (newImages: File[]) => void;
   onRemoveImage: (index: number) => void;
+  required? : boolean
 }
 
 export default function ImageUploader({
   images,
   onImagesChange,
   onRemoveImage,
+  required = false
 }: ImageUploaderProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -25,7 +27,6 @@ export default function ImageUploader({
           (image) => image instanceof File && image.name === file.name
         );
       });
-      console.log(images);
       if (newFiles.length > 0) {
         onImagesChange(newFiles);
       }
@@ -66,6 +67,7 @@ export default function ImageUploader({
             className="absolute inset-0 cursor-pointer opacity-0 w-full h-full"
             onChange={handleFileChange}
             multiple
+            required={required}
           />
         </Card>
       </div>

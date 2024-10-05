@@ -6,7 +6,7 @@ import { ProductValidationT } from "@/types/types";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { productSchema, updateProductSchema } from "../lib/validation";
-import fs from "node:fs";
+import fs from "fs/promises";
 export async function getAllProducts(page: number, pageSize: number) {
   try {
     // Calculate the offset
@@ -110,7 +110,28 @@ export async function updateProduct(id: string, data: any) {
 
 export async function deleteProduct(id: string) {
   try {
-    const deletedProduct = await prisma.product.delete({ where: { id: id } });
+    // Fetch the product to get the name or any unique identifier for the directory
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+
+    // Delete the product from the database
+    const deletedProduct = await prisma.product.delete({
+      where: { id },
+    });
+
+    // If the product has a name or directory identifier, delete the associated image directory
+    try{
+      await deleteProductImagesDir(product.name);
+    }catch(error){
+      console.error("couldn't delete product image directory: ", error)
+    }
+
+
     return deletedProduct;
   } catch (error) {
     if (error instanceof Error) {
@@ -128,7 +149,7 @@ export async function productValidation(
   method: "POST" | "PUT"
 ): Promise<ProductValidationT> {
   const formData = await request.formData();
-  console.log(formData);
+
   // Extract fields and ensure they are strings
   const name = formData.get("name")?.toString().trim() || "";
   const description = formData.get("description")?.toString().trim() || "";
@@ -137,63 +158,48 @@ export async function productValidation(
   const barcode = formData.get("barcode")?.toString().trim() || null;
   const categoryId = formData.get("categoryId")?.toString().trim() || null;
   const tags =
-    formData.getAll("tags")?.map((tag) => tag.toString().trim()) || [];
+    (formData.get("tags") as string).split(",").map((tag) => tag.trim()) || [];
   const keyFeatures =
-    formData
-      .getAll("keyFeatures")
-      ?.map((feature) => feature.toString().trim()) || [];
+    (formData.get("keyFeatures") as string)
+      .split(",")
+      .map((keyFeature) => keyFeature.trim()) || [];
   const brand = formData.get("brand")?.toString().trim() || "";
   const status =
     (formData.get("status")?.toString().trim() as ProductStatus) ||
     ("ACTIVE" as ProductStatus);
 
-  const lengthValue = formData.get("length");
   const length =
-    lengthValue !== null ? parseFloat(lengthValue.toString().trim()) : null;
-
-  const widthValue = formData.get("width");
+    parseFloat(formData.get("length")?.toString().trim() || "0") || null;
   const width =
-    widthValue !== null ? parseFloat(widthValue.toString().trim()) : null;
-
-  const heightValue = formData.get("height");
+    parseFloat(formData.get("width")?.toString().trim() || "0") || null;
   const height =
-    heightValue !== null ? parseFloat(heightValue.toString().trim()) : null;
-
-  const weightValue = formData.get("weight");
+    parseFloat(formData.get("height")?.toString().trim() || "0") || null;
   const weight =
-    weightValue !== null ? parseFloat(weightValue.toString().trim()) : null;
+    parseFloat(formData.get("weight")?.toString().trim() || "0") || null;
 
-  const files = formData.getAll("images[]") as File[]; // Assuming "images" is the field name
-  const imageUrls: string[] = [];
-  const productDir = path.join(process.cwd(), "public/uploads/products", name);
-  ensureDirectoryExists(productDir);
-  for (const file of files) {
-    if (file) {
-      try {
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = file.name.replaceAll(" ", "_");
-        const filePath = path.join(
-          process.cwd(),
-          "public/uploads/products",
-          name,
-          filename
-        );
-        const imageUrl = `/uploads/products/${name}/${filename}`;
-
-        // Save the image to disk
-        await writeFile(filePath, buffer);
-
-        imageUrls.push(imageUrl); // Collect the URL
-      } catch (error) {
-        console.error(`Failed to process file ${file.name}:`, error);
-        throw new Error(
-          `Failed to process file ${file.name}: ${
-            error instanceof Error ? error.message : "Unknown error"
-          }`
-        );
-      }
-    }
+  // Handle remainingUrls parsing and validation
+  let remainingUrls: string[] = [];
+  try {
+    const imageUrlsString = formData.get("imageUrls") as string;
+    remainingUrls = imageUrlsString ? JSON.parse(imageUrlsString) : [];
+  } catch (error) {
+    console.error("Error parsing imageUrls:", error);
+    remainingUrls = [];
   }
+
+  const files = formData.getAll("images[]") as File[];
+
+  if (method === "PUT") {
+    console.log(await deleteImages(name, remainingUrls));
+  }
+
+  const imageUrls = [
+    ...remainingUrls,
+    ...(await saveProductImages(files, name)),
+  ];
+
+  console.log("tags: ", tags);
+  console.log("keyFeatures: ", keyFeatures);
 
   // Prepare data object
   const data: Partial<ProductValidationT> = {
@@ -223,11 +229,100 @@ export async function productValidation(
     console.error("Method not allowed.");
     throw new Error("Method not allowed.");
   }
+
   return data as ProductValidationT;
 }
 
-function ensureDirectoryExists(dirPath: string) {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
+async function saveProductImages(
+  files: File[],
+  name: string
+): Promise<string[]> {
+  const imageUrls: string[] = [];
+  name = name.replaceAll(" ", "_").toLowerCase();
+  const productDir = path.join(process.cwd(), "public/uploads/products", name);
+  await ensureDirectoryExists(productDir);
+
+  for (const file of files) {
+    if (file) {
+      try {
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const filename = file.name.replaceAll(" ", "_");
+        const filePath = path.join(productDir, filename);
+        const imageUrl = `/uploads/products/${name}/${filename}`;
+        // Save the image to disk
+        await writeFile(filePath, buffer);
+        imageUrls.push(imageUrl); // Collect the URL
+      } catch (error) {
+        console.error(`Failed to process file ${file.name}:`, error);
+        throw new Error(
+          `Failed to process file ${file.name}: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
+      }
+    }
+  }
+
+  return imageUrls;
+}
+
+async function ensureDirectoryExists(dirPath: string): Promise<void> {
+  try {
+    await fs.access(dirPath);
+  } catch (error) {
+    // Directory doesn't exist, so create it
+    await fs.mkdir(dirPath, { recursive: true });
+  }
+}
+
+async function deleteImages(dirName: string, imageUrls: string[]) {
+  dirName = dirName.replaceAll(" ", "_").toLowerCase();
+  const dirPath = path.join(process.cwd(), "public/uploads/products", dirName);
+
+  try {
+    const files = await fs.readdir(dirPath);
+    const filePaths = files.map((file) =>
+      path.join("/uploads/products", dirName, file)
+    );
+
+    // TODO: Implement delete functionality here
+    // You can use fs.unlink() to delete files that match imageUrls
+    let numberOfDeletedImages = 0;
+    for (const filePath of filePaths) {
+      if (!imageUrls.includes(filePath)) {
+        try {
+          await fs.unlink(filePath);
+          numberOfDeletedImages++;
+        } catch (error) {
+          console.error("Error deleting file: ", error);
+        }
+      }
+    }
+    return numberOfDeletedImages;
+  } catch (error) {
+    console.error("Error reading directory:", error);
+    throw error;
+  }
+}
+
+async function  deleteProductImagesDir(dirName: string): Promise<void> {
+  dirName = dirName.replaceAll(" ", "_").toLowerCase();
+  const dirPath = path.join(process.cwd(), "public/uploads/products", dirName);
+
+  try {
+    // Check if the directory exists
+    await fs.access(dirPath);
+
+    // Remove the directory and its contents
+    await fs.rm(dirPath, { recursive: true, force: true });
+
+    console.log(`Deleted directory: ${dirPath}`);
+  } catch (error) {
+    console.error(`Error deleting directory ${dirPath}:`, error);
+    throw new Error(
+      `Error deleting directory ${dirPath}: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
   }
 }

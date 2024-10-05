@@ -14,12 +14,14 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useProductContext } from "@/context/ProductsContext";
 
 interface DeleteProductProps {
   id: string;
 }
 
 export function DeleteProduct({ id }: DeleteProductProps) {
+  const { data, setData } = useProductContext();
   const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   const handleDelete = async () => {
@@ -27,6 +29,11 @@ export function DeleteProduct({ id }: DeleteProductProps) {
     try {
       await axios.delete(`/api/products/${id}`);
       toast.success("Product deleted successfully.");
+      // Inside DeleteProduct component
+      const updatedProducts = data.products.filter(
+        (product) => product.id !== id
+      );
+      setData({ ...data, products: updatedProducts });
     } catch (error) {
       console.error("Failed to delete product: ", error);
       toast.error("Failed to delete product.");

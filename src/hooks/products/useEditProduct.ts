@@ -1,4 +1,4 @@
-import { Product } from "@prisma/client";
+import { Product, ProductStatus } from "@prisma/client";
 import { FormEvent, useEffect, useState } from "react";
 import { Option } from "@/components/ui/better-select";
 import { useCategoryContext } from "@/context/CategoriesContext";
@@ -55,17 +55,38 @@ export function useEditProduct(product: Product) {
       ]);
     }
   }, [product, categoryOptions]);
+  useEffect(() => {
+    if (selectedCategory[0]) {
+      setUpdatedProduct((prevProduct) => ({
+        ...prevProduct,
+        categoryId: selectedCategory[0].value,
+      }));
+    }
+    if (selectedStatus[0]?.value !== product.status) {
+      setUpdatedProduct((prevProduct) => ({
+        ...prevProduct,
+        status: selectedStatus[0]?.value as ProductStatus,
+      }));
+    }
+  }, [selectedCategory, selectedStatus, setUpdatedProduct, product.status]);
 
-  const handleInputChange = () => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
     setUpdatedProduct((prevProduct) => ({
       ...prevProduct,
+      [name]: value,
     }));
   };
+
   const handleFileChange = (newImages: File[]) => {
-    setUpdatedProduct((prevProduct) => ({
-      ...prevProduct,
-      newImages: [...prevProduct.newImages, ...newImages],
-    }));
+    setUpdatedProduct((prevProduct) => {
+      return {
+        ...prevProduct,
+        newImages: [...prevProduct.newImages, ...newImages],
+      };
+    });
   };
 
   useEffect(() => {
@@ -102,7 +123,7 @@ export function useEditProduct(product: Product) {
     setUpdateIsLoading(true);
 
     try {
-      await sendUpdateProduct(updatedProduct, product.id)
+      await sendUpdateProduct(updatedProduct, product.id);
       toast.success("Product updated successfully.");
     } catch (error) {
       console.error("Failed to update product: ", error);
@@ -138,6 +159,6 @@ export function useEditProduct(product: Product) {
     handleFileChange,
     handleRemoveImage,
     handleGenerateBarcode,
-    handleSubmit
+    handleSubmit,
   };
 }
