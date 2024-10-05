@@ -37,7 +37,7 @@ export default function RegisterPage() {
   );
 }
 
-export function LoginComponent() {
+function LoginComponent() {
   const { data: session } = useSession();
   return (
     <>

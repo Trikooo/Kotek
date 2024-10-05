@@ -35,8 +35,7 @@ export default function RegisterPage() {
   );
 }
 
-''
-export function RegisterComponent() {
+ function RegisterComponent() {
   return (
     <>
       <h3 className="text-3xl font-bold">Create your account</h3>
