@@ -34,35 +34,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full h-[80vh]">
-      <Background heightPercentage={109} />
-      <div className="flex lg:flex-1 items-center justify-between p-6 lg:px-8">
-        <Link href="/" className="-m-1.5 p-1.5">
-          <span className="sr-only">Kotek</span>
-          <Image
-            alt="logo"
-            src="/kotek.png"
-            className="h-6 w-auto"
-            width={200}
-            height={100}
-          />
-        </Link>
-        <Button onClick={toggleAccountCreation} variant="outline">
-          {isCreatingAccount ? "Log in" : "Sign up"}
-        </Button>
-      </div>
+    <Suspense>
+      <div className="w-full h-[80vh]">
+        <Background heightPercentage={109} />
+        <div className="flex lg:flex-1 items-center justify-between p-6 lg:px-8">
+          <Link href="/" className="-m-1.5 p-1.5">
+            <span className="sr-only">Kotek</span>
+            <Image
+              alt="logo"
+              src="/kotek.png"
+              className="h-6 w-auto"
+              width={200}
+              height={100}
+            />
+          </Link>
+          <Button onClick={toggleAccountCreation} variant="outline">
+            {isCreatingAccount ? "Log in" : "Sign up"}
+          </Button>
+        </div>
 
-      <main className="w-full h-full flex flex-col justify-center items-center gap-8">
-        <h3 className="text-3xl font-bold">
-          {isCreatingAccount ? "Create your account" : "Log in to your account"}
-        </h3>
-        {/* Wrap LoginComponent in Suspense */}
-        <Suspense fallback={<div>Loading login options...</div>}>
+        <main className="w-full h-full flex flex-col justify-center items-center gap-8">
+          <h3 className="text-3xl font-bold">
+            {isCreatingAccount
+              ? "Create your account"
+              : "Log in to your account"}
+          </h3>
+
           <LoginComponent status={status} />
-        </Suspense>
-      </main>
-      <Footer />
-    </div>
+        </main>
+        <Footer />
+      </div>
+    </Suspense>
   );
 }
 
