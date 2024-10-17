@@ -1,17 +1,67 @@
 -- CreateEnum
+CREATE TYPE "ProductStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'DRAFT');
+
+-- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'PROCESSING', 'DISPATCHED', 'DELIVERED', 'CANCELED');
+
+-- CreateTable
+CREATE TABLE "Account" (
+    "id" UUID NOT NULL,
+    "userId" UUID NOT NULL,
+    "providerType" TEXT NOT NULL,
+    "providerId" TEXT NOT NULL,
+    "providerAccountId" TEXT NOT NULL,
+    "refreshToken" TEXT,
+    "accessToken" TEXT,
+    "accessTokenExpires" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" UUID NOT NULL,
+    "userId" UUID NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+    "sessionToken" TEXT NOT NULL,
+    "accessToken" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "User" (
     "id" UUID NOT NULL,
-    "username" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "passwordHash" TEXT NOT NULL,
+    "name" TEXT,
+    "email" TEXT,
+    "emailVerified" TIMESTAMP(3),
+    "image" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'user',
+    "gender" TEXT,
+    "birthday" TEXT,
+    "location" TEXT,
+    "friends" JSONB,
+    "guilds" JSONB,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "VerificationRequest" (
+    "id" UUID NOT NULL,
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "VerificationRequest_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -32,16 +82,22 @@ CREATE TABLE "Category" (
 CREATE TABLE "Product" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
     "price" INTEGER NOT NULL,
-    "imageUrl" TEXT NOT NULL,
+    "imageUrls" TEXT[],
     "stock" INTEGER NOT NULL,
-    "sku" TEXT NOT NULL,
+    "barcode" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "categoryId" UUID,
     "tags" TEXT[],
     "keyFeatures" TEXT[],
+    "brand" TEXT,
+    "status" "ProductStatus" NOT NULL DEFAULT 'ACTIVE',
+    "length" DOUBLE PRECISION,
+    "width" DOUBLE PRECISION,
+    "height" DOUBLE PRECISION,
+    "weight" DOUBLE PRECISION,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -120,10 +176,22 @@ CREATE TABLE "Review" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+CREATE UNIQUE INDEX "Account_providerId_providerAccountId_key" ON "Account"("providerId", "providerAccountId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_accessToken_key" ON "Session"("accessToken");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationRequest_token_key" ON "VerificationRequest"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationRequest_identifier_token_key" ON "VerificationRequest"("identifier", "token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
@@ -138,7 +206,7 @@ CREATE INDEX "Category_imageUrl_idx" ON "Category"("imageUrl");
 CREATE INDEX "Category_name_imageUrl_idx" ON "Category"("name", "imageUrl");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Product_sku_key" ON "Product"("sku");
+CREATE UNIQUE INDEX "Product_barcode_key" ON "Product"("barcode");
 
 -- CreateIndex
 CREATE INDEX "Product_name_idx" ON "Product"("name");
@@ -172,6 +240,12 @@ CREATE INDEX "Review_userId_idx" ON "Review"("userId");
 
 -- CreateIndex
 CREATE INDEX "Review_productId_idx" ON "Review"("productId");
+
+-- AddForeignKey
+ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Category" ADD CONSTRAINT "Category_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;

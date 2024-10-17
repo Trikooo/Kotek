@@ -85,12 +85,17 @@ const config = {
           "0%": { transform: "scale(0.95) translateY(+15px)", opacity: "0" },
           "100%": { transform: "scale(1) translateY(0)", opacity: "1" },
         },
+        'slide-down': {
+          '0%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "dropdown-in": "dropdown-in 0.1s ease-out forwards",
-        "drop-in": "drop-in 0.1s ease-out forwards", // Added "s" for seconds
+        "drop-in": "drop-in 0.1s ease-out forwards",
+        'slide-down': 'slide-down 0.3s ease-out',
       },
     },
   },

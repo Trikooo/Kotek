@@ -11,24 +11,65 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
+model Account {
+  id                 String    @id @default(uuid()) @db.Uuid
+  userId             String    @db.Uuid
+  providerType       String
+  providerId         String
+  providerAccountId  String
+  refreshToken       String?
+  accessToken        String?
+  accessTokenExpires DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User      @relation(fields: [userId], references: [id])
+
+  @@unique([providerId, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  expires      DateTime
+  sessionToken String   @unique
+  accessToken  String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
+}
+
 model User {
-  id            String   @id @default(uuid()) @db.Uuid
-  username      String   @unique
-  email         String   @unique
-  gender        String?  // Optional field for gender
-  birthday      String?  // Optional field for birthday (String format)
-  location      String?  // Optional field for location
-  friends       Json?    @db.JsonB // Using jsonb for friends/connections
-  guilds        Json?    @db.JsonB // Using jsonb for guild memberships
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  role          String   @default("user")
+  id            String    @id @default(uuid()) @db.Uuid
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  role          String    @default("user")
   orders        Order[]
   cart          Cart?
   addresses     Address[]
   reviews       Review[]
+  gender        String? // Optional field for gender
+  birthday      String? // Optional field for birthday (String format)
+  location      String? // Optional field for location
+  friends       Json?     @db.JsonB // Using jsonb for friends/connections
+  guilds        Json?     @db.JsonB // Using jsonb for guild memberships
 }
 
+model VerificationRequest {
+  id         String   @id @default(uuid()) @db.Uuid
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, token])
+}
 
 model Category {
   id            String     @id @default(uuid()) @db.Uuid
@@ -39,7 +80,7 @@ model Category {
   updatedAt     DateTime   @updatedAt
   parentId      String?    @db.Uuid
   parent        Category?  @relation("CategoryParent", fields: [parentId], references: [id])
-  subcategories Category[] @relation("CategoryParent")
+  subcategories Category[]  @relation("CategoryParent")
   products      Product[]
   tags          String[]
 
@@ -53,7 +94,7 @@ model Product {
   name        String
   description String?       @db.Text
   price       Int
-  imageUrls    String[]
+  imageUrls   String[]
   stock       Int
   barcode     String?       @unique // Barcode field, optional and unique
   createdAt   DateTime      @default(now())

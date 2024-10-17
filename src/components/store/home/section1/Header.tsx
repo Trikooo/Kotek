@@ -166,7 +166,7 @@ function AccountDropDown() {
 
   const items = [
     { label: "Log in", onClick: () => router.push("/login") },
-    { label: "Register", onClick: () => router.push("/register") },
+    { label: "Register", onClick: () => router.push("/login?create=true") },
   ];
 
   return <DynamicDropdownMenu label="Account" items={items} />;

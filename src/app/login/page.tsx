@@ -1,18 +1,41 @@
 "use client";
 
-import Background from "@/components/store/home/section1/Background";
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
-
 import { Button } from "@/components/ui/button";
 import { FaDiscord, FaFacebook } from "react-icons/fa";
-import Image from "next/image";
-import GoogleIcon from "@/components/icons/Google";
+import Background from "@/components/store/home/section1/Background";
 import Footer from "@/components/store/home/footer/Footer";
-export default function RegisterPage() {
+import GoogleIcon from "@/components/icons/Google";
+import { LoaderCircle } from "lucide-react";
+import { Toast } from "@/components/ui/myToast";
+
+export default function LoginPage() {
+  const [isCreatingAccount, setIsCreatingAccount] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    console.log("Session data:", session);
+    console.log("Session status:", status);
+
+    const create = searchParams.get("create");
+    setIsCreatingAccount(create === "true");
+  }, [searchParams, session, status]);
+
+  const toggleAccountCreation = () => {
+    const newIsCreatingAccount = !isCreatingAccount;
+    setIsCreatingAccount(newIsCreatingAccount);
+    router.push(`/login${newIsCreatingAccount ? "?create=true" : ""}`);
+  };
+
   return (
     <div className="w-full h-[80vh]">
-      <Background heightPercentage={115} />
+      <Background heightPercentage={109} />
       <div className="flex lg:flex-1 items-center justify-between p-6 lg:px-8">
         <Link href="/" className="-m-1.5 p-1.5">
           <span className="sr-only">Kotek</span>
@@ -24,45 +47,98 @@ export default function RegisterPage() {
             height={100}
           />
         </Link>
-        <Link href="/register">
-          <Button variant="outline">Sign up</Button>
-        </Link>
+        <Button onClick={toggleAccountCreation} variant="outline">
+          {isCreatingAccount ? "Log in" : "Sign up"}
+        </Button>
       </div>
 
       <main className="w-full h-full flex flex-col justify-center items-center gap-8">
-        <LoginComponent />
+        <h3 className="text-3xl font-bold">
+          {isCreatingAccount ? "Create your account" : "Log in to your account"}
+        </h3>
+        <LoginComponent status={status} />
       </main>
       <Footer />
     </div>
   );
 }
 
-function LoginComponent() {
-  const { data: session } = useSession();
+type LoginComponentProps = {
+  status: "loading" | "authenticated" | "unauthenticated";
+};
+
+function LoginComponent({ status }: LoginComponentProps) {
+  const [loadingProvider, setLoadingProvider] = useState<string | null>(null); // Track which provider is loading
+  const [error, setError] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      setError(true);
+      router.replace("/login");
+    }
+  }, [searchParams, router]);
+
+  const handleSignIn = async (provider: string) => {
+    setLoadingProvider(provider);
+    try {
+      await signIn(provider);
+    } finally {
+      setLoadingProvider(null); // Reset loading state after sign-in is attempted
+    }
+  };
+
   return (
     <>
-      <h3 className="text-3xl font-bold">Log in to your account</h3>
+      {error && (
+        <Toast
+          type={"error"}
+          message={"Please try again or use a different provider"}
+        />
+      )}
       <div className="flex flex-col items-center justify-center gap-3 w-80">
         <Button
           variant="outline"
-          className="flex items-center justify-center gap-2 text-lg p-6 w-full"
-          onClick={() => signIn("google")}
+          className="flex items-center justify-center gap-2 text-lg p-7 w-full"
+          onClick={() => handleSignIn("google")}
+          disabled={loadingProvider === "google" || status === "loading"} // Disable when loading
         >
-          <GoogleIcon className="w-5 h-5" /> Continue with Google
+          {loadingProvider === "google" || status === "loading" ? (
+            <LoaderCircle className="w-5 h-5 animate-spin" />
+          ) : (
+            <GoogleIcon className="w-5 h-5" />
+          )}
+          Continue with Google
         </Button>
+
         <Button
           variant="outline"
-          className="flex items-center justify-center gap-2  text-lg p-6 w-full"
+          className="flex items-center justify-center gap-2 text-lg p-7 w-full"
+          onClick={() => handleSignIn("facebook")}
+          disabled={loadingProvider === "facebook" || status === "loading"}
         >
-          <FaFacebook className="w-5 h-5 text-facebookBlue" /> Continue with
-          Facebook
+          {loadingProvider === "facebook" || status === "loading" ? (
+            <LoaderCircle className="w-5 h-5 animate-spin" />
+          ) : (
+            <FaFacebook className="w-5 h-5 text-facebookBlue" />
+          )}
+          Continue with Facebook
         </Button>
+
         <Button
           variant="outline"
-          className="flex items-center justify-center gap-2 text-lg p-6 w-full"
+          className="flex items-center justify-center gap-2 text-lg p-7 w-full"
+          onClick={() => handleSignIn("discord")}
+          disabled={loadingProvider === "discord" || status === "loading"}
         >
-          <FaDiscord className="w-5 h-5 text-discordBlue" /> Continue with
-          Discord
+          {loadingProvider === "discord" || status === "loading" ? (
+            <LoaderCircle className="w-5 h-5 animate-spin" />
+          ) : (
+            <FaDiscord className="w-5 h-5 text-discordBlue" />
+          )}
+          Continue with Discord
         </Button>
       </div>
       <Link href={"#"} className="underline hover:text-indigo-600">
