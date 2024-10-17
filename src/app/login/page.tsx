@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -56,7 +56,10 @@ export default function LoginPage() {
         <h3 className="text-3xl font-bold">
           {isCreatingAccount ? "Create your account" : "Log in to your account"}
         </h3>
-        <LoginComponent status={status} />
+        {/* Wrap LoginComponent in Suspense */}
+        <Suspense fallback={<div>Loading login options...</div>}>
+          <LoginComponent status={status} />
+        </Suspense>
       </main>
       <Footer />
     </div>
@@ -68,7 +71,7 @@ type LoginComponentProps = {
 };
 
 function LoginComponent({ status }: LoginComponentProps) {
-  const [loadingProvider, setLoadingProvider] = useState<string | null>(null); // Track which provider is loading
+  const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -86,7 +89,7 @@ function LoginComponent({ status }: LoginComponentProps) {
     try {
       await signIn(provider);
     } finally {
-      setLoadingProvider(null); // Reset loading state after sign-in is attempted
+      setLoadingProvider(null);
     }
   };
 
@@ -103,7 +106,7 @@ function LoginComponent({ status }: LoginComponentProps) {
           variant="outline"
           className="flex items-center justify-center gap-2 text-lg p-7 w-full"
           onClick={() => handleSignIn("google")}
-          disabled={loadingProvider === "google" || status === "loading"} // Disable when loading
+          disabled={loadingProvider === "google" || status === "loading"}
         >
           {loadingProvider === "google" || status === "loading" ? (
             <LoaderCircle className="w-5 h-5 animate-spin" />
