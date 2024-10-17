@@ -15,26 +15,13 @@ import { Toast } from "@/components/ui/myToast";
 
 export default function LoginPage() {
   const [isCreatingAccount, setIsCreatingAccount] = useState<boolean>(false);
-  const searchParams = useSearchParams();
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  useEffect(() => {
-    console.log("Session data:", session);
-    console.log("Session status:", status);
-
-    const create = searchParams.get("create");
-    setIsCreatingAccount(create === "true");
-  }, [searchParams, session, status]);
-
-  const toggleAccountCreation = () => {
-    const newIsCreatingAccount = !isCreatingAccount;
-    setIsCreatingAccount(newIsCreatingAccount);
-    router.push(`/login${newIsCreatingAccount ? "?create=true" : ""}`);
-  };
-
+  // Wrap the search params usage in a Suspense boundary
   return (
-    <Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchParamsHandler setIsCreatingAccount={setIsCreatingAccount} />
       <div className="w-full h-[80vh]">
         <Background heightPercentage={109} />
         <div className="flex lg:flex-1 items-center justify-between p-6 lg:px-8">
@@ -48,16 +35,14 @@ export default function LoginPage() {
               height={100}
             />
           </Link>
-          <Button onClick={toggleAccountCreation} variant="outline">
+          <Button onClick={() => setIsCreatingAccount((prev) => !prev)} variant="outline">
             {isCreatingAccount ? "Log in" : "Sign up"}
           </Button>
         </div>
 
         <main className="w-full h-full flex flex-col justify-center items-center gap-8">
           <h3 className="text-3xl font-bold">
-            {isCreatingAccount
-              ? "Create your account"
-              : "Log in to your account"}
+            {isCreatingAccount ? "Create your account" : "Log in to your account"}
           </h3>
 
           <LoginComponent status={status} />
@@ -66,6 +51,17 @@ export default function LoginPage() {
       </div>
     </Suspense>
   );
+}
+
+function SearchParamsHandler({ setIsCreatingAccount }: { setIsCreatingAccount: React.Dispatch<React.SetStateAction<boolean>> }) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const create = searchParams.get("create");
+    setIsCreatingAccount(create === "true");
+  }, [searchParams, setIsCreatingAccount]);
+
+  return null; // This component doesn't need to render anything
 }
 
 type LoginComponentProps = {
