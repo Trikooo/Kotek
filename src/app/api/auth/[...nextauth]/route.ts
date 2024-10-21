@@ -21,7 +21,7 @@ declare module "next-auth/jwt" {
 }
 
 const ADMIN_EMAIL = "trikooplays@gmail.com";
-export const authOptions = {
+const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
