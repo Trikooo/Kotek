@@ -10,7 +10,7 @@ import { FaDiscord, FaFacebook } from "react-icons/fa";
 import Background from "@/components/store/home/section1/Background";
 import Footer from "@/components/store/home/footer/Footer";
 import GoogleIcon from "@/components/icons/Google";
-import { LoaderCircle } from "lucide-react";
+import { Loader2, LoaderCircle } from "lucide-react";
 import { Toast } from "@/components/ui/myToast";
 
 export default function LoginPage() {
@@ -18,9 +18,26 @@ export default function LoginPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  useEffect(() => {
+    if (status === "loading") {
+      console.log("Session is loading...");
+    } else if (status === "authenticated") {
+      console.log("Session: ", session);
+    } else {
+      console.log("No session found");
+      console.log("status: ", status)
+    }
+  }, [session, status]);
+
   // Wrap the search params usage in a Suspense boundary
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="w-full h-[100vh] flex justify-center items-center animate-spin">
+          <Loader2 className="w-8 h-8" strokeWidth={1.5} />
+        </div>
+      }
+    >
       <SearchParamsHandler setIsCreatingAccount={setIsCreatingAccount} />
       <div className="w-full h-[80vh]">
         <Background heightPercentage={109} />
@@ -35,14 +52,19 @@ export default function LoginPage() {
               height={100}
             />
           </Link>
-          <Button onClick={() => setIsCreatingAccount((prev) => !prev)} variant="outline">
+          <Button
+            onClick={() => setIsCreatingAccount((prev) => !prev)}
+            variant="outline"
+          >
             {isCreatingAccount ? "Log in" : "Sign up"}
           </Button>
         </div>
 
         <main className="w-full h-full flex flex-col justify-center items-center gap-8">
           <h3 className="text-3xl font-bold">
-            {isCreatingAccount ? "Create your account" : "Log in to your account"}
+            {isCreatingAccount
+              ? "Create your account"
+              : "Log in to your account"}
           </h3>
 
           <LoginComponent status={status} />
@@ -53,7 +75,11 @@ export default function LoginPage() {
   );
 }
 
-function SearchParamsHandler({ setIsCreatingAccount }: { setIsCreatingAccount: React.Dispatch<React.SetStateAction<boolean>> }) {
+function SearchParamsHandler({
+  setIsCreatingAccount,
+}: {
+  setIsCreatingAccount: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const searchParams = useSearchParams();
 
   useEffect(() => {

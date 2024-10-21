@@ -3,23 +3,25 @@ import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import DiscordProvider from "next-auth/providers/discord";
-import {PrismaAdapter} from "@auth/prisma-adapter"
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "../../APIservices/lib/prisma";
-
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     accessToken?: string;
+    role?: "ADMIN" | "MOD" | "USER";
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     accessToken?: string;
+    role?: "ADMIN" | "MOD" | "USER";
   }
 }
 
-const handler = NextAuth({
+const ADMIN_EMAIL = "trikooplays@gmail.com";
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -45,23 +47,37 @@ const handler = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, account }: { token: JWT; account: Account | null }) {
-      if (account) {
-        token.accessToken = account.access_token;
+  events: {
+    createUser: async ({ user }: { user: User }) => {
+      if (user.email === ADMIN_EMAIL) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { role: "ADMIN" },
+        });
+      } else {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { role: "USER" },
+        });
       }
-      return token;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
-      session.accessToken = token.accessToken;
+  },
+  callbacks: {
+    async session({ session }: { session: Session }) {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user?.email as string },
+        select: { role: true },
+      });
+      session.role = user?.role;
       return session;
     },
   },
-  secret: process.env.NEXT_AUTH_SECRET as string,
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
-    error: '/login'
-  }
-});
+    error: "/login",
+  },
+};
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

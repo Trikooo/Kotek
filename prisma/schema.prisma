@@ -1,88 +1,139 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// ------------------------------
+// CONFIGURATION
+// ------------------------------
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  url       = env("POSTGRES_PRISMA_URL")     // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model Account {
-  id                 String    @id @default(uuid()) @db.Uuid
-  userId             String    @db.Uuid
-  providerType       String
-  providerId         String
-  providerAccountId  String
-  refreshToken       String?
-  accessToken        String?
-  accessTokenExpires DateTime?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  user               User      @relation(fields: [userId], references: [id])
-
-  @@unique([providerId, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(uuid()) @db.Uuid
-  userId       String   @db.Uuid
-  expires      DateTime
-  sessionToken String   @unique
-  accessToken  String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id])
-}
+// ------------------------------
+// AUTHENTICATION & USER MODELS
+// ------------------------------
 
 model User {
-  id            String    @id @default(uuid()) @db.Uuid
+  id            String          @id @default(uuid()) @db.Uuid
   name          String?
-  email         String?   @unique
+  email         String?         @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  gender        String?         // Optional field for gender
+  birthday      String?         // Optional field for birthday (String format)
+  location      String?         // Optional field for location
+  friends       Json?           @db.JsonB // Using jsonb for friends/connections
+  guilds        Json?           @db.JsonB // Using jsonb for guild memberships
+
+  // Timestamps
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relations
+  Authenticator Authenticator[]
   accounts      Account[]
   sessions      Session[]
-  role          String    @default("user")
   orders        Order[]
   cart          Cart?
   addresses     Address[]
   reviews       Review[]
-  gender        String? // Optional field for gender
-  birthday      String? // Optional field for birthday (String format)
-  location      String? // Optional field for location
-  friends       Json?     @db.JsonB // Using jsonb for friends/connections
-  guilds        Json?     @db.JsonB // Using jsonb for guild memberships
+  role      UserRole @default(USER)
 }
 
-model VerificationRequest {
-  id         String   @id @default(uuid()) @db.Uuid
+model Account {
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+enum UserRole{
+  ADMIN
+  MOD
+  USER
+
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String @db.Uuid
+  expires      DateTime
+
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
   identifier String
-  token      String   @unique
+  token      String
   expires    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 
-  @@unique([identifier, token])
+  @@id([identifier, token])
 }
+
+model Authenticator {
+  credentialID         String
+  userId               String @db.Uuid
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  // Relations
+  user                 User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+  @@unique([credentialID])
+}
+
+// ------------------------------
+// PRODUCT & CATEGORY MODELS
+// ------------------------------
 
 model Category {
   id            String     @id @default(uuid()) @db.Uuid
   name          String     @unique
   description   String?
   imageUrl      String
+  tags          String[]
+
+  // Timestamps
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+
+  // Relations
   parentId      String?    @db.Uuid
   parent        Category?  @relation("CategoryParent", fields: [parentId], references: [id])
-  subcategories Category[]  @relation("CategoryParent")
+  subcategories Category[] @relation("CategoryParent")
   products      Product[]
-  tags          String[]
 
   @@index([name])
   @@index([imageUrl])
@@ -96,24 +147,28 @@ model Product {
   price       Int
   imageUrls   String[]
   stock       Int
-  barcode     String?       @unique // Barcode field, optional and unique
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  categoryId  String?       @db.Uuid
-  category    Category?     @relation(fields: [categoryId], references: [id])
+  barcode     String?       @unique
+  brand       String?
+  status      ProductStatus @default(ACTIVE)
   tags        String[]
   keyFeatures String[]
+
+  // Dimensions
+  length      Float?
+  width       Float?
+  height      Float?
+  weight      Float?
+
+  // Timestamps
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  categoryId  String?       @db.Uuid
+  category    Category?     @relation(fields: [categoryId], references: [id])
   orderItems  OrderItem[]
   cartItems   CartItem[]
   reviews     Review[]
-  brand       String?
-  status      ProductStatus @default(ACTIVE)
-
-  // Dimensions (Optional)
-  length Float?
-  width  Float?
-  height Float?
-  weight Float?
 
   @@index([name])
 }
@@ -124,14 +179,22 @@ enum ProductStatus {
   DRAFT
 }
 
+// ------------------------------
+// ORDER & CART MODELS
+// ------------------------------
+
 model Order {
   id          String      @id @default(uuid()) @db.Uuid
-  userId      String      @db.Uuid
-  user        User        @relation(fields: [userId], references: [id])
   status      OrderStatus
   totalAmount Int
+
+  // Timestamps
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
+  // Relations
+  userId      String      @db.Uuid
+  user        User        @relation(fields: [userId], references: [id])
   items       OrderItem[]
 
   @@index([userId])
@@ -139,12 +202,14 @@ model Order {
 
 model OrderItem {
   id        String  @id @default(uuid()) @db.Uuid
+  quantity  Int
+  price     Int
+
+  // Relations
   orderId   String  @db.Uuid
   order     Order   @relation(fields: [orderId], references: [id])
   productId String  @db.Uuid
   product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Int
 
   @@index([orderId])
   @@index([productId])
@@ -160,10 +225,14 @@ enum OrderStatus {
 
 model Cart {
   id        String     @id @default(uuid()) @db.Uuid
-  userId    String     @unique @db.Uuid
-  user      User       @relation(fields: [userId], references: [id])
+
+  // Timestamps
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
+  // Relations
+  userId    String     @unique @db.Uuid
+  user      User       @relation(fields: [userId], references: [id])
   items     CartItem[]
 
   @@index([userId])
@@ -171,43 +240,57 @@ model Cart {
 
 model CartItem {
   id        String  @id @default(uuid()) @db.Uuid
+  quantity  Int
+  price     Int
+
+  // Relations
   cartId    String  @db.Uuid
   cart      Cart    @relation(fields: [cartId], references: [id])
   productId String  @db.Uuid
   product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Int
 
   @@index([cartId])
   @@index([productId])
 }
 
+// ------------------------------
+// USER RELATED MODELS
+// ------------------------------
+
 model Address {
   id          String   @id @default(uuid()) @db.Uuid
-  userId      String   @db.Uuid
-  user        User     @relation(fields: [userId], references: [id])
   fullName    String
   phoneNumber String
   wilaya      String
   commune     String
   address     String
   isPrimary   Boolean  @default(false)
+
+  // Timestamps
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
 model Review {
   id        String   @id @default(uuid()) @db.Uuid
+  rating    Int
+  comment   String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
   userId    String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id])
   productId String   @db.Uuid
   product   Product  @relation(fields: [productId], references: [id])
-  rating    Int
-  comment   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([productId])

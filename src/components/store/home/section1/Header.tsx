@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Menu, Search, ShoppingCart, CircleUserRound } from "lucide-react";
+import {
+  Menu,
+  Search,
+  ShoppingCart,
+  CircleUserRound,
+  LogOut,
+  Settings,
+  Heart,
+  User,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 import AnnouncementBanner from "@/components/dynamic-ui/AnnouncementBanner";
 import SearchPopup from "./SearchPopup";
 import { useHeaderContext } from "@/context/HeaderContext";
 import DynamicDropdownMenu from "@/components/dynamic-ui/DropDownMenu";
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 
 const useOS = () => {
   const [os, setOS] = useState("loading");
@@ -101,7 +113,10 @@ const Header = ({ setMobileMenuOpen }: any) => {
             : "-translate-y-full bg-transparent"
         }`}
       >
-        <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
+        <nav
+          aria-label="Global"
+          className="flex items-center justify-between p-6 lg:px-8"
+        >
           <div className="flex lg:flex-1">
             <a href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">KOTEK</span>
@@ -135,7 +150,11 @@ const Header = ({ setMobileMenuOpen }: any) => {
             </div>
             <div className="hidden lg:flex lg:gap-x-6 items-center">
               {navigation.map((item) => (
-                <a key={item.name} href={item.href} className="text-sm font-semibold">
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-sm font-semibold"
+                >
                   {item.name}
                 </a>
               ))}
@@ -163,11 +182,77 @@ export default Header;
 
 function AccountDropDown() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const [userImage, setUserImage] = useState<string | null>(null);
 
+  // Options for logged-out users
   const items = [
-    { label: "Log in", onClick: () => router.push("/login") },
-    { label: "Register", onClick: () => router.push("/login?create=true") },
+    {
+      label: "Log in",
+      onClick: () => router.push("/login"),
+      icon: <LogIn strokeWidth={1.5} />,
+    },
+    {
+      label: "Register",
+      onClick: () => router.push("/login?create=true"),
+      icon: <UserPlus strokeWidth={1.5} />,
+    },
   ];
 
-  return <DynamicDropdownMenu label="Account" items={items} />;
+  // Options for logged-in users with icons
+  const authItems = [
+    {
+      label: "Profile",
+      onClick: () => router.push("/profile"),
+      icon: <User />,
+    },
+    {
+      label: "My Orders",
+      onClick: () => router.push("/orders"),
+      icon: <ShoppingCart />,
+    },
+    {
+      label: "Settings",
+      onClick: () => router.push("/settings"),
+      icon: <Settings />,
+    },
+    { label: "Log Out", onClick: () => signOut(), icon: <LogOut /> },
+  ];
+
+  // Items to display based on authentication status
+  const itemsToDisplay = status === "authenticated" ? authItems : items;
+
+  // Load image from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedImage = localStorage.getItem("userImage");
+      if (storedImage) {
+        setUserImage(storedImage); // Set from storage
+      }
+    }
+  }, []);
+
+  // Update user image only if it changes or user logs in/out
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (status === "authenticated" && session?.user?.image) {
+        const currentStoredImage = localStorage.getItem("userImage");
+        if (!currentStoredImage || currentStoredImage !== session.user.image) {
+          setUserImage(session.user.image);
+          localStorage.setItem("userImage", session.user.image); // Update localStorage
+        }
+      } else if (status === "unauthenticated") {
+        setUserImage(null);
+        localStorage.removeItem("userImage"); // Clear storage
+      }
+    }
+  }, [session, status]);
+
+  return (
+    <DynamicDropdownMenu
+      label="Account"
+      items={itemsToDisplay}
+      image={userImage || undefined} // Pass the image if available
+    />
+  );
 }

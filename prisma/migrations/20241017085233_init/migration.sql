@@ -9,7 +9,7 @@ CREATE TABLE "Account" (
     "id" UUID NOT NULL,
     "userId" UUID NOT NULL,
     "providerType" TEXT NOT NULL,
-    "providerId" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
     "providerAccountId" TEXT NOT NULL,
     "refreshToken" TEXT,
     "accessToken" TEXT,
@@ -176,7 +176,7 @@ CREATE TABLE "Review" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Account_providerId_providerAccountId_key" ON "Account"("providerId", "providerAccountId");
+CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
