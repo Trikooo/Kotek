@@ -4,6 +4,7 @@ import { HeaderProvider } from "../../context/HeaderContext";
 import Header from "@/components/store/home/section1/Header";
 import MobileMenu from "@/components/store/home/section1/MobileMenu";
 import Footer from "@/components/store/home/footer/Footer";
+import { ProductProvider } from "@/context/ProductsContext";
 
 export default function StoreLayout({ children }: { children: ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

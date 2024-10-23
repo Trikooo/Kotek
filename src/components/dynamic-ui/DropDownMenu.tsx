@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CircleUserRound } from "lucide-react";
 import React from "react";
+import Image from "next/image";
 
 interface DropdownMenuItem {
   label: string;
@@ -33,10 +34,12 @@ export default function DynamicDropdownMenu({
       <DropdownMenuTrigger asChild>
         <div className="flex items-center">
           {image ? (
-            <img
+            <Image
               src={image}
               alt="User avatar"
               className="h-5 w-5 rounded-full cursor-pointer"
+              width={50}
+              height={50}
             />
           ) : (
             <CircleUserRound

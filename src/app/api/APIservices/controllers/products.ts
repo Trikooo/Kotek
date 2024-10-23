@@ -125,12 +125,11 @@ export async function deleteProduct(id: string) {
     });
 
     // If the product has a name or directory identifier, delete the associated image directory
-    try{
+    try {
       await deleteProductImagesDir(product.name);
-    }catch(error){
-      console.error("couldn't delete product image directory: ", error)
+    } catch (error) {
+      console.error("couldn't delete product image directory: ", error);
     }
-
 
     return deletedProduct;
   } catch (error) {
@@ -146,7 +145,8 @@ export async function deleteProduct(id: string) {
 
 export async function productValidation(
   request: NextRequest,
-  method: "POST" | "PUT"
+  method: "POST" | "PUT",
+  id: string
 ): Promise<ProductValidationT> {
   const formData = await request.formData();
 
@@ -190,6 +190,7 @@ export async function productValidation(
   const files = formData.getAll("images[]") as File[];
 
   if (method === "PUT") {
+    await renameDir(name, id);
     console.log(await deleteImages(name, remainingUrls));
   }
 
@@ -249,8 +250,12 @@ async function saveProductImages(
         const filename = file.name.replaceAll(" ", "_");
         const filePath = path.join(productDir, filename);
         const imageUrl = `/uploads/products/${name}/${filename}`;
+
+        // Convert buffer to Uint8Array
+        const uint8Array = new Uint8Array(buffer);
+
         // Save the image to disk
-        await writeFile(filePath, buffer);
+        await writeFile(filePath, uint8Array); // Use Uint8Array here
         imageUrls.push(imageUrl); // Collect the URL
       } catch (error) {
         console.error(`Failed to process file ${file.name}:`, error);
@@ -305,7 +310,7 @@ async function deleteImages(dirName: string, imageUrls: string[]) {
   }
 }
 
-async function  deleteProductImagesDir(dirName: string): Promise<void> {
+async function deleteProductImagesDir(dirName: string): Promise<void> {
   dirName = dirName.replaceAll(" ", "_").toLowerCase();
   const dirPath = path.join(process.cwd(), "public/uploads/products", dirName);
 
@@ -324,5 +329,57 @@ async function  deleteProductImagesDir(dirName: string): Promise<void> {
         error instanceof Error ? error.message : "Unknown error"
       }`
     );
+  }
+}
+async function renameDir(name: string, id: string) {
+  try {
+    const oldProduct = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!oldProduct || !oldProduct.name) {
+      throw new Error("Product not found");
+    }
+
+    // Replace spaces with underscores and convert to lowercase
+    const oldDirName = oldProduct.name.replaceAll(" ", "_").toLowerCase();
+    const newDirName = name.replaceAll(" ", "_").toLowerCase();
+
+    // Check if names match; if so, don't rename
+    if (oldDirName === newDirName) {
+      console.log("Old name and new name are the same. No renaming required.");
+      return { oldDirPath: null, newDirPath: null }; // Return null to indicate no renaming occurred
+    }
+
+    // Define directory paths
+    const oldDirPath = path.join(
+      process.cwd(),
+      "public/uploads/products",
+      oldDirName
+    );
+    const newDirPath = path.join(
+      process.cwd(),
+      "public/uploads/products",
+      newDirName
+    );
+
+    // Check if the old directory exists, then rename it
+    try {
+      await fs.access(oldDirPath); // Check if old directory exists
+      await fs.rename(oldDirPath, newDirPath); // Rename directory
+      console.log(`Directory renamed from ${oldDirName} to ${newDirName}`);
+    } catch (err) {
+      throw new Error("Old directory not found or renaming failed");
+    }
+
+    return { oldDirPath, newDirPath };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Error renaming directory: ${error.message}`);
+      throw new Error(`Error renaming directory: ${error.message}`);
+    } else {
+      console.error(`Unknown error renaming directory`);
+      throw new Error(`Unknown Error renaming directory`);
+    }
   }
 }

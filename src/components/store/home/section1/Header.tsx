@@ -11,6 +11,7 @@ import {
   User,
   LogIn,
   UserPlus,
+  LayoutDashboard,
 } from "lucide-react";
 import AnnouncementBanner from "@/components/dynamic-ui/AnnouncementBanner";
 import SearchPopup from "./SearchPopup";
@@ -179,10 +180,14 @@ const Header = ({ setMobileMenuOpen }: any) => {
 };
 
 export default Header;
-
 function AccountDropDown() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      setUserImage("");
+    },
+  });
   const [userImage, setUserImage] = useState<string | null>(null);
 
   // Options for logged-out users
@@ -219,6 +224,15 @@ function AccountDropDown() {
     { label: "Log Out", onClick: () => signOut(), icon: <LogOut /> },
   ];
 
+  // Add "Dashboard" for ADMIN role
+  if (status === "authenticated" && session?.user?.role === "ADMIN") {
+    authItems.unshift({
+      label: "Dashboard",
+      onClick: () => router.push("/admin/dashboard"),
+      icon: <LayoutDashboard strokeWidth={1.5} />,
+    });
+  }
+
   // Items to display based on authentication status
   const itemsToDisplay = status === "authenticated" ? authItems : items;
 
@@ -236,14 +250,7 @@ function AccountDropDown() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       if (status === "authenticated" && session?.user?.image) {
-        const currentStoredImage = localStorage.getItem("userImage");
-        if (!currentStoredImage || currentStoredImage !== session.user.image) {
-          setUserImage(session.user.image);
-          localStorage.setItem("userImage", session.user.image); // Update localStorage
-        }
-      } else if (status === "unauthenticated") {
-        setUserImage(null);
-        localStorage.removeItem("userImage"); // Clear storage
+        setUserImage(session.user.image);
       }
     }
   }, [session, status]);

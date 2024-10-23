@@ -25,8 +25,8 @@ export default function AllProducts() {
   );
   const [sortOption, setSortOption] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
-  const {products, total } = data
-  const totalPages = Math.ceil(total / 10)
+  const { products, total } = data;
+  const totalPages = Math.ceil(total / 10);
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesSearch = product.name
@@ -115,7 +115,6 @@ export default function AllProducts() {
         currentPage={page}
         totalPages={totalPages}
         setPage={setPage}
-
       />
     </>
   );

@@ -41,7 +41,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
     // Validate and extract data from request
-    const data = await productValidation(request, "PUT");
+    const data = await productValidation(request, "PUT", params.productId);
 
     // Update product
     await updateProduct(params.productId, data);
