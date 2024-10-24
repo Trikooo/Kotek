@@ -146,7 +146,7 @@ export async function deleteProduct(id: string) {
 export async function productValidation(
   request: NextRequest,
   method: "POST" | "PUT",
-  id: string
+  id: string | undefined
 ): Promise<ProductValidationT> {
   const formData = await request.formData();
 
@@ -190,7 +190,7 @@ export async function productValidation(
   const files = formData.getAll("images[]") as File[];
 
   if (method === "PUT") {
-    await renameDir(name, id);
+    if (id) await renameDir(name, id);
     console.log(await deleteImages(name, remainingUrls));
   }
 
