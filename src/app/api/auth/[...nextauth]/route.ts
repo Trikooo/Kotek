@@ -38,7 +38,7 @@ type Role = "ADMIN" | "MOD" | "USER";
 
 const ADMIN_EMAIL = "trikooplays@gmail.com";
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
