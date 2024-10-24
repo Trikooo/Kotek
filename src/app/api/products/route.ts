@@ -17,9 +17,12 @@ export async function GET(request: NextRequest) {
       data = await getAllProducts(0, 0);
     }
 
-    return new Response(JSON.stringify({ products: data.products, total: data.total }), {
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ products: data.products, total: data.total }),
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error("Error fetching categories:", error);
     // Return a generic error message for unknown errors
@@ -34,7 +37,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await productValidation(request, "POST");
+    const data = await productValidation(request, "POST", undefined);
     await createProduct(data);
     return NextResponse.json(
       { message: "Product created successfully." },
