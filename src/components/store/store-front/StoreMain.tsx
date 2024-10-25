@@ -34,8 +34,8 @@ export default function StoreMain() {
       <div className="flex flex-col mt-5 gap-4">
         <StoreCardList
           products={data.products}
-          loading={loading}
           error={error as boolean}
+          loading={loading}
         />
       </div>
     </div>

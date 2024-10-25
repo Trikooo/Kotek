@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { AlertCircle, CircleCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Product } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 // Interface for StoreCard props
 interface StoreCardProps {
@@ -14,6 +15,7 @@ interface StoreCardProps {
   price: number;
   originalPrice?: number;
   inStock: boolean;
+  id: string;
 }
 
 // Skeleton component for loading state
@@ -39,6 +41,7 @@ const SkeletonCard = () => (
 );
 
 // StoreCard component
+
 const StoreCard = ({
   imageUrls,
   title,
@@ -46,10 +49,16 @@ const StoreCard = ({
   price,
   originalPrice,
   inStock,
+  id, // Add productId prop
 }: StoreCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
 
   const hasMultipleImages = imageUrls.length > 1; // Check if there are multiple images
+
+  const handleRedirect = () => {
+    router.push(`/store/${id}`);
+  };
 
   return (
     <Card>
@@ -58,8 +67,9 @@ const StoreCard = ({
           className="w-full md:w-[200px] flex justify-center md:justify-start pb-6 md:pb-0"
           onMouseEnter={() => hasMultipleImages && setIsHovered(true)} // Only set hovered state if multiple images exist
           onMouseLeave={() => hasMultipleImages && setIsHovered(false)}
+          onClick={handleRedirect} // Redirect on image click
         >
-          <div className="w-[200px] h-[200px] relative">
+          <div className="w-[200px] h-[200px] relative cursor-pointer">
             <Image
               src={imageUrls[0]}
               layout="fill"
@@ -83,7 +93,12 @@ const StoreCard = ({
           </div>
         </div>
         <div className="flex-1">
-          <h3 className="text-xl md:text-2xl font-semibold pb-2">{title}</h3>
+          <h3
+            className="text md:text-2xl font-semibold pb-2 cursor-pointer hover:text-indigo-600 hover:underline "
+            onClick={handleRedirect} // Redirect on title click
+          >
+            {title}
+          </h3>
           <ul className="text-sm md:text-base list-disc pl-5">
             {features.map((feature, index) => (
               <li key={index}>{feature}</li>
@@ -146,7 +161,7 @@ export default function StoreCardList({
     return (
       <Card className="w-full text-red-500 flex items-center justify-center flex-col p-8">
         <AlertCircle className="w-8 h-8" strokeWidth={1.5} />
-        <span>An error has occurred, reload to retry.</span>
+        <span>An error has occurred, please reload to retry.</span>
       </Card>
     );
 
@@ -154,6 +169,7 @@ export default function StoreCardList({
     <div className="flex flex-col gap-4">
       {products.map((product) => (
         <StoreCard
+          id={product.id}
           key={product.id}
           imageUrls={product.imageUrls}
           title={product.name}

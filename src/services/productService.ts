@@ -23,3 +23,7 @@ export async function sendUpdateProduct(product: any, id: string) {
     headers: { "Content-Type": "multipart/form-data" },
   });
 }
+
+export async function frontGetProductById() {
+  
+}

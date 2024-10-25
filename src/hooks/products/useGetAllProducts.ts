@@ -4,15 +4,16 @@ import { ProductData } from "@/types/types";
 
 export const useGetAllProducts = (page: number, pageSize: number) => {
   const [data, setData] = useState<ProductData>({ products: [], total: 0 });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      console.log(loading)
+      console.log(loading);
       try {
-        const response = await axios.get(`/api/products?page=${page}&pageSize=${pageSize}`);
+        const response = await axios.get(
+          `/api/products?page=${page}&pageSize=${pageSize}`
+        );
         setData(response.data);
       } catch (err) {
         setError(err);
