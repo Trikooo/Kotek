@@ -2,10 +2,16 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import { AlertCircle, CircleCheck } from "lucide-react";
+import { AlertCircle, CheckCircle, CircleCheck, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Product } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useCreateOrUpdateCart } from "@/hooks/cart/useCart";
+import { useToast } from "@/hooks/use-toast";
+import { Cart, FetchCart } from "@/types/types";
+import { useSession } from "next-auth/react";
+import { useCart } from "@/context/CartContext";
 
 // Interface for StoreCard props
 interface StoreCardProps {
@@ -41,7 +47,6 @@ const SkeletonCard = () => (
 );
 
 // StoreCard component
-
 const StoreCard = ({
   imageUrls,
   title,
@@ -53,11 +58,100 @@ const StoreCard = ({
 }: StoreCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
+  const { handleCreateOrUpdate, loading, error } = useCreateOrUpdateCart();
+  const { cart, setCart } = useCart();
+  const session = useSession();
+  const userId = session.data?.user?.id;
+  const { toast } = useToast();
 
-  const hasMultipleImages = imageUrls.length > 1; // Check if there are multiple images
+  // Check if the product is already in the cart
+
+
+  const isProductInCart = cart?.items.some((item) => item.productId === id);
+
+  const hasMultipleImages = imageUrls.length > 1;
 
   const handleRedirect = () => {
     router.push(`/store/${id}`);
+  };
+
+  const handleAddToCart = async () => {
+    if (userId) {
+      const cartData: Omit<Cart, "id" | "createdAt" | "updatedAt"> = {
+        userId: userId,
+        items: [{ productId: id, quantity: 1, price: price }],
+      };
+
+      try {
+        await handleCreateOrUpdate(cartData);
+        toast({
+          title: (
+            <>
+              <CircleCheck className="w-5 h-5" strokeWidth={1.5} />
+              Success!
+            </>
+          ),
+          description: "Item has been added to cart.",
+        });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: (
+            <>
+              <AlertCircle className="w-5 h-5" strokeWidth={1.5} />
+              Uh oh, there was a problem
+            </>
+          ),
+          description: "Couldn't add item to cart, please try again.",
+        });
+      }
+
+      setCart(
+        (prevCart) =>
+          ({
+            ...prevCart,
+            id: prevCart?.id ?? null,
+            userId: prevCart?.userId ?? null,
+            items: [...(prevCart?.items || []), ...cartData.items],
+          } as FetchCart)
+      );
+    } else {
+      // For guests (no userId)
+      if (typeof window !== "undefined" && window.localStorage) {
+        const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+
+        const newItem = {
+          productId: id,
+          quantity: 1,
+          price: price,
+          product: {
+            name: title,
+            imageUrls: imageUrls,
+          },
+        };
+        const updatedCart = [...guestCart, newItem];
+
+        localStorage.setItem("guestCart", JSON.stringify(updatedCart));
+
+        toast({
+          title: (
+            <>
+              <CircleCheck className="w-5 h-5" strokeWidth={1.5} />
+              Success!
+            </>
+          ),
+          description: "Item has been added to cart.",
+        });
+
+        setCart(
+          (prevCart) =>
+            ({
+              ...prevCart,
+              items: [...(prevCart?.items || []), newItem],
+            } as FetchCart)
+        );
+      }
+    }
   };
 
   return (
@@ -65,9 +159,9 @@ const StoreCard = ({
       <div className="flex flex-col md:flex-row gap-4 p-5">
         <div
           className="w-full md:w-[200px] flex justify-center md:justify-start pb-6 md:pb-0"
-          onMouseEnter={() => hasMultipleImages && setIsHovered(true)} // Only set hovered state if multiple images exist
+          onMouseEnter={() => hasMultipleImages && setIsHovered(true)}
           onMouseLeave={() => hasMultipleImages && setIsHovered(false)}
-          onClick={handleRedirect} // Redirect on image click
+          onClick={handleRedirect}
         >
           <div className="w-[200px] h-[200px] relative cursor-pointer">
             <Image
@@ -77,7 +171,7 @@ const StoreCard = ({
               alt={title}
               className={`rounded-md transition-opacity duration-300 ${
                 hasMultipleImages && isHovered ? "opacity-0" : "opacity-100"
-              }`} // Fade out first image only if multiple images are present
+              }`}
             />
             {hasMultipleImages && imageUrls[1] && (
               <Image
@@ -87,18 +181,18 @@ const StoreCard = ({
                 alt={title}
                 className={`rounded-md absolute top-0 left-0 transition-opacity duration-300 ${
                   isHovered ? "opacity-100" : "opacity-0"
-                }`} // Fade in second image on hover only if multiple images are present
+                }`}
               />
             )}
           </div>
         </div>
         <div className="flex-1">
-          <h3
-            className="text md:text-2xl font-semibold pb-2 cursor-pointer hover:text-indigo-600 hover:underline "
-            onClick={handleRedirect} // Redirect on title click
+          <Link
+            className="text md:text-2xl font-semibold pb-2 cursor-pointer hover:text-indigo-600 hover:underline w-max"
+            href={`/store/${id}`}
           >
             {title}
-          </h3>
+          </Link>
           <ul className="text-sm md:text-base list-disc pl-5">
             {features.map((feature, index) => (
               <li key={index}>{feature}</li>
@@ -125,9 +219,25 @@ const StoreCard = ({
             </div>
           </div>
           <div className="flex flex-col gap-2 mt-4">
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-500">
-              Add to cart
-            </Button>
+            {!isProductInCart ? (
+              <Button
+                className="w-full"
+                onClick={handleAddToCart}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
+                ) : (
+                  "Add to cart"
+                )}
+              </Button>
+            ) : (
+              <Link href="/cart">
+                <Button variant="outline" className="w-full" disabled={loading}>
+                  View Cart
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

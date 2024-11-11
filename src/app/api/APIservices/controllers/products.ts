@@ -40,7 +40,6 @@ export async function getProductById(id: string) {
         id: id,
       },
     });
-    if (!product) throw new Error(`product with id ${id} not found`);
     return product;
   } catch (error) {
     if (error instanceof Error) {
@@ -191,7 +190,6 @@ export async function productValidation(
 
   if (method === "PUT") {
     if (id) await renameDir(name, id);
-    console.log(await deleteImages(name, remainingUrls));
   }
 
   const imageUrls = [
@@ -199,8 +197,6 @@ export async function productValidation(
     ...(await saveProductImages(files, name)),
   ];
 
-  console.log("tags: ", tags);
-  console.log("keyFeatures: ", keyFeatures);
 
   // Prepare data object
   const data: Partial<ProductValidationT> = {
@@ -321,7 +317,6 @@ async function deleteProductImagesDir(dirName: string): Promise<void> {
     // Remove the directory and its contents
     await fs.rm(dirPath, { recursive: true, force: true });
 
-    console.log(`Deleted directory: ${dirPath}`);
   } catch (error) {
     console.error(`Error deleting directory ${dirPath}:`, error);
     throw new Error(
@@ -347,7 +342,6 @@ async function renameDir(name: string, id: string) {
 
     // Check if names match; if so, don't rename
     if (oldDirName === newDirName) {
-      console.log("Old name and new name are the same. No renaming required.");
       return { oldDirPath: null, newDirPath: null }; // Return null to indicate no renaming occurred
     }
 
@@ -367,7 +361,6 @@ async function renameDir(name: string, id: string) {
     try {
       await fs.access(oldDirPath); // Check if old directory exists
       await fs.rename(oldDirPath, newDirPath); // Rename directory
-      console.log(`Directory renamed from ${oldDirName} to ${newDirName}`);
     } catch (err) {
       throw new Error("Old directory not found or renaming failed");
     }

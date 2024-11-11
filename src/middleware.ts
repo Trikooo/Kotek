@@ -5,10 +5,8 @@ import { type NextRequestWithAuth } from "next-auth/middleware"
 export default withAuth(
   function middleware(req: NextRequestWithAuth) {
     const token = req.nextauth.token
-    console.log("Middleware token:", token) // Debug log
 
     if (token?.role !== "ADMIN") {
-      console.log("Non-admin access attempted:", token?.role) // Debug log
       return NextResponse.redirect(new URL("/access-denied", req.url))
     }
 

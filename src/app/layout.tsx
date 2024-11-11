@@ -3,9 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Toaster } from "sonner";
+import { Toaster as SonnerToaster } from "sonner";
+import { Toaster as RadixToaster } from "@/components/ui/toaster";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
-import { useSession } from "next-auth/react";
 import { ProductProvider } from "@/context/ProductsContext";
 import { CategoryProvider } from "@/context/CategoriesContext";
 
@@ -24,13 +24,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn("min-h-screen bg-background font-sans antialiased")}>
+      <body className={cn("min-h-screen bg-background font-sans antialiaseds")}>
         <SessionProviderWrapper>
           <ProductProvider>
             <CategoryProvider>
               {children}
               <SpeedInsights />
-              <Toaster />
+              <SonnerToaster />
+              <RadixToaster />
             </CategoryProvider>
           </ProductProvider>
         </SessionProviderWrapper>

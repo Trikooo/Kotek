@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")     // uses connection pooling
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -20,20 +20,20 @@ datasource db {
 // ------------------------------
 
 model User {
-  id            String          @id @default(uuid()) @db.Uuid
+  id            String    @id @default(uuid()) @db.Uuid
   name          String?
-  email         String?         @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
-  gender        String?         // Optional field for gender
-  birthday      String?         // Optional field for birthday (String format)
-  location      String?         // Optional field for location
-  friends       Json?           @db.JsonB // Using jsonb for friends/connections
-  guilds        Json?           @db.JsonB // Using jsonb for guild memberships
+  gender        String? // Optional field for gender
+  birthday      String? // Optional field for birthday (String format)
+  location      String? // Optional field for location
+  friends       Json?     @db.JsonB // Using jsonb for friends/connections
+  guilds        Json?     @db.JsonB // Using jsonb for guild memberships
 
   // Timestamps
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   Authenticator Authenticator[]
@@ -43,7 +43,7 @@ model User {
   cart          Cart?
   addresses     Address[]
   reviews       Review[]
-  role      UserRole @default(USER)
+  role          UserRole        @default(USER)
 }
 
 model Account {
@@ -60,33 +60,32 @@ model Account {
   session_state     String?
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
 }
 
-enum UserRole{
+enum UserRole {
   ADMIN
   MOD
   USER
-
 }
 
 model Session {
   sessionToken String   @unique
-  userId       String @db.Uuid
+  userId       String   @db.Uuid
   expires      DateTime
 
   // Timestamps
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -99,7 +98,7 @@ model VerificationToken {
 
 model Authenticator {
   credentialID         String
-  userId               String @db.Uuid
+  userId               String  @db.Uuid
   providerAccountId    String
   credentialPublicKey  String
   counter              Int
@@ -108,7 +107,7 @@ model Authenticator {
   transports           String?
 
   // Relations
-  user                 User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
   @@unique([credentialID])
@@ -119,15 +118,15 @@ model Authenticator {
 // ------------------------------
 
 model Category {
-  id            String     @id @default(uuid()) @db.Uuid
-  name          String     @unique
-  description   String?
-  imageUrl      String
-  tags          String[]
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String?
+  imageUrl    String
+  tags        String[]
 
   // Timestamps
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   parentId      String?    @db.Uuid
@@ -154,21 +153,21 @@ model Product {
   keyFeatures String[]
 
   // Dimensions
-  length      Float?
-  width       Float?
-  height      Float?
-  weight      Float?
+  length Float?
+  width  Float?
+  height Float?
+  weight Float?
 
   // Timestamps
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  categoryId  String?       @db.Uuid
-  category    Category?     @relation(fields: [categoryId], references: [id])
-  orderItems  OrderItem[]
-  cartItems   CartItem[]
-  reviews     Review[]
+  categoryId String?     @db.Uuid
+  category   Category?   @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+  reviews    Review[]
 
   @@index([name])
 }
@@ -189,21 +188,21 @@ model Order {
   totalAmount Int
 
   // Timestamps
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  userId      String      @db.Uuid
-  user        User        @relation(fields: [userId], references: [id])
-  items       OrderItem[]
+  userId String      @db.Uuid
+  user   User        @relation(fields: [userId], references: [id])
+  items  OrderItem[]
 
   @@index([userId])
 }
 
 model OrderItem {
-  id        String  @id @default(uuid()) @db.Uuid
-  quantity  Int
-  price     Int
+  id       String @id @default(uuid()) @db.Uuid
+  quantity Int
+  price    Int
 
   // Relations
   orderId   String  @db.Uuid
@@ -224,24 +223,24 @@ enum OrderStatus {
 }
 
 model Cart {
-  id        String     @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
   // Timestamps
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  userId    String     @unique @db.Uuid
-  user      User       @relation(fields: [userId], references: [id])
-  items     CartItem[]
+  userId String     @unique @db.Uuid
+  user   User       @relation(fields: [userId], references: [id])
+  items  CartItem[]
 
   @@index([userId])
 }
 
 model CartItem {
-  id        String  @id @default(uuid()) @db.Uuid
-  quantity  Int
-  price     Int
+  id       String @id @default(uuid()) @db.Uuid
+  quantity Int
+  price    Int
 
   // Relations
   cartId    String  @db.Uuid
@@ -249,6 +248,7 @@ model CartItem {
   productId String  @db.Uuid
   product   Product @relation(fields: [productId], references: [id])
 
+  @@unique([cartId, productId])
   @@index([cartId])
   @@index([productId])
 }
@@ -258,39 +258,39 @@ model CartItem {
 // ------------------------------
 
 model Address {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String  @id @default(uuid()) @db.Uuid
   fullName    String
   phoneNumber String
   wilaya      String
   commune     String
   address     String
-  isPrimary   Boolean  @default(false)
-
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  userId      String   @db.Uuid
-  user        User     @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-}
-
-model Review {
-  id        String   @id @default(uuid()) @db.Uuid
-  rating    Int
-  comment   String?
+  isPrimary   Boolean @default(false)
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id])
-  productId String   @db.Uuid
-  product   Product  @relation(fields: [productId], references: [id])
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Review {
+  id      String  @id @default(uuid()) @db.Uuid
+  rating  Int
+  comment String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId    String  @db.Uuid
+  user      User    @relation(fields: [userId], references: [id])
+  productId String  @db.Uuid
+  product   Product @relation(fields: [productId], references: [id])
 
   @@index([userId])
   @@index([productId])

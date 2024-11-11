@@ -1,31 +1,99 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Kotek - eCommerce Website
+
+Kotek is an eCommerce platform dedicated to selling a variety of computer equipment. Built with modern technologies, it offers a user-friendly interface and a seamless shopping experience.
+
+## Features
+
+- **User Authentication**: Secure login and registration for users.
+- **Role-Based Access**: Admins can manage products and orders efficiently.
+- **Product Management**: Admins can create, update, and delete products.
+- **Analytics**: Admins can view a detailed analysis about their business.
+- **Shopping Cart**: Users can add, remove, and update products in their cart.
+- **Responsive Design**: Optimized for both desktop and mobile devices.
+- **Toast Notifications**: Real-time feedback for user actions.
+
+## Tech Stack
+
+- **Frontend**:
+  - React
+  - TypeScript
+  - Tailwind CSS
+  - Shadcn
+- **Backend**:
+  - Next.js
+  - Prisma
+  - PostgreSQL
+- **Authentication**:
+  - NextAuth.js
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js (version 14 or higher)
+- PostgreSQL (version 12 or higher)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+   ```bash
 
-## Learn More
+   git clone https://github.com/yourusername/kotek.git
 
-To learn more about Next.js, take a look at the following resources:
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Navigate to the project directory:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   ```bash
+   cd kotek
+   ```
 
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+   or
+
+   ```bash
+   bun install
+   ```
+
+4. Set up your PostgreSQL database and update the environment variables in the `.env` file:
+
+   ```plaintext
+   DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/DATABASE_NAME
+   NEXTAUTH_SECRET=your_secret_key
+   ```
+
+5. Run database migrations:
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+6. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+7. Open your browser and navigate to `http://localhost:3000`.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any feature requests or bug fixes.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+## Contact
+
+For any inquiries, please reach out via [your email or contact method].
+
+---
+
+Thank you for checking out Kotek! We hope you enjoy your shopping experience.

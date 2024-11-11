@@ -38,9 +38,7 @@ export default function AdminProductDetail({
         return "outline";
     }
   };
-  useEffect(()=>{
-    console.log(product.tags)
-  })
+
 
   return (
 

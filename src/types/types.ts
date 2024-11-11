@@ -61,6 +61,39 @@ export interface ProductValidationT {
 }
 
 export interface ProductData {
-  products: Product [],
-  total: number
+  products: Product[];
+  total: number;
 }
+
+// types.ts
+export type CartProduct = {
+  name: string;
+  imageUrls: string[];
+};
+
+export type Cart = {
+  id: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  items: Omit<CartItem, "id" | "product">[];
+};
+
+export type FetchCart = {
+  id: string | null;
+  userId: string | null;
+  items: CartItem[] | [];
+};
+export type CartItem = {
+  id: string;
+  quantity: number;
+  price: number;
+  productId: string;
+  product: CartProduct;
+};
+
+export type CartUpdateResponse = {
+  message: string;
+  updatedCart?: Cart;
+  error?: string;
+};

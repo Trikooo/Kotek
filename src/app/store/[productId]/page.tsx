@@ -11,9 +11,7 @@ export default function ProductPage() {
   const params = useParams();
   const { productId } = params;
   const { data, loading, error } = useGetProductById(productId as string);
-  useEffect(() => {
-    console.log("data: ", data);
-  });
+
 
   const thumbnails = data?.imageUrls;
 

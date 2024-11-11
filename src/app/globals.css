@@ -17,7 +17,7 @@
     --secondary-foreground: 220.9 39.3% 11%;
     --muted: 220 14.3% 95.9%;
     --muted-foreground: 220 8.9% 46.1%;
-    --accent: 231.43,43.75%,93.73%;
+    --accent: 231.43, 43.75%, 93.73%;
     --accent-foreground: 220.9 39.3% 11%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
@@ -76,9 +76,6 @@ input[type="search"]::-webkit-search-results-decoration {
   -webkit-appearance: none;
 }
 
-
-
-
 @keyframes fade-out {
   from {
     opacity: 1;
@@ -90,4 +87,19 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .fade-out {
   animation: fade-out 0.3s forwards;
+}
+
+::selection {
+  background-color: hsla(301 100% 50% / 0.16);
+}
+
+/* Remove arrows in all browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
 }

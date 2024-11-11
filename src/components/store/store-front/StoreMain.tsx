@@ -1,18 +1,11 @@
 "use client";
 import { Search } from "lucide-react";
-import StoreCard from "./StoreCard";
 import SearchOptions from "./SearchOptions";
-
-import { Product } from "@prisma/client";
 import { useProductContext } from "@/context/ProductsContext";
-import { useEffect } from "react";
 import StoreCardList from "./StoreCard";
 
 export default function StoreMain() {
   const { data, loading, error } = useProductContext(); // Use the context to get products
-  useEffect(() => {
-    console.log("loading: ", loading);
-  });
 
   return (
     <div className="lg:pl-10">

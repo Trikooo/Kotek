@@ -9,7 +9,6 @@ export const useGetAllProducts = (page: number, pageSize: number) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log(loading);
       try {
         const response = await axios.get(
           `/api/products?page=${page}&pageSize=${pageSize}`

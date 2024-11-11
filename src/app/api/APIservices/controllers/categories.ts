@@ -2,7 +2,7 @@ import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
 import { writeFile } from "fs/promises";
 import path from "path";
-import { categorySchema, updateCategorySchema } from "../lib/validation"
+import { categorySchema, updateCategorySchema } from "../lib/validation";
 import { NextRequest } from "next/server";
 import { CategoryValidationT } from "@/types/types";
 import { capitalizeFirstLetter } from "@/lib/utils";
@@ -205,12 +205,13 @@ export async function categoryValidation(
     const buffer = Buffer.from(await file.arrayBuffer());
     const filename = file.name.replaceAll(" ", "_");
     const filePath = path.join(process.cwd(), "public/uploads", filename);
-    const imageUrl = `/uploads/${filename}`;
+    const imageUrl = `/uploads/categories/${filename}`;
 
     data.imageUrl = imageUrl; // Add imageUrl to data if file exists
 
     // Save the image to disk
-    await writeFile(filePath, buffer);
+    const uint8Array = new Uint8Array(buffer);
+    await writeFile(filePath, uint8Array);
   }
   // Validate data with the appropriate schema based on request method
   if (method === "PUT") {

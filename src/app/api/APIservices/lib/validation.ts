@@ -1,27 +1,36 @@
 import { z } from "zod";
 
 export const categorySchema = z.object({
-  name: z.string().min(1, "Name is required").max(20, "Name must not exceed 20 characters."),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(20, "Name must not exceed 20 characters."),
   description: z.string().optional(),
   parentId: z.string().optional(),
   tags: z.array(z.string()).optional(),
   imageUrl: z.string(),
-  subcategories: z.array(z.string().uuid(), { required_error: "Subcategories must be an array of UUIDs" }).optional(), // Ensure subcategories is an array of UUIDs
-
-})
-
+  subcategories: z
+    .array(z.string().uuid(), {
+      required_error: "Subcategories must be an array of UUIDs",
+    })
+    .optional(), // Ensure subcategories is an array of UUIDs
+});
 
 export const updateCategorySchema = z.object({
-  name: z.string().min(1, "Name is required").max(20, "Name must not exceed 20 characters."),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(20, "Name must not exceed 20 characters."),
   description: z.string().optional(),
   parentId: z.string().optional(),
   tags: z.array(z.string()).optional(),
   imageUrl: z.string().optional(),
-  subcategories: z.array(z.string().uuid(), { required_error: "Subcategories must be an array of UUIDs" }).optional(), // Ensure subcategories is an array of UUIDs
-
-})
-
-
+  subcategories: z
+    .array(z.string().uuid(), {
+      required_error: "Subcategories must be an array of UUIDs",
+    })
+    .optional(), // Ensure subcategories is an array of UUIDs
+});
 
 // Define the Product schema
 export const productSchema = z.object({
@@ -39,12 +48,11 @@ export const productSchema = z.object({
   width: z.number().nonnegative().optional(), // Optional non-negative number for width
   height: z.number().nonnegative().optional(), // Optional non-negative number for height
   weight: z.number().nonnegative().optional(), // Optional non-negative number for weight
-  imageUrls: z.array(z.string()).nonempty() 
+  imageUrls: z.array(z.string()).nonempty(),
 });
 
 // Type inference for TypeScript
 export type ProductSchemaType = z.infer<typeof productSchema>;
-
 
 export const updateProductSchema = z.object({
   name: z.string().min(1, "Name is required"), // Ensure name is not empty
@@ -61,5 +69,19 @@ export const updateProductSchema = z.object({
   width: z.number().nonnegative().optional(), // Optional non-negative number for width
   height: z.number().nonnegative().optional(), // Optional non-negative number for height
   weight: z.number().nonnegative().optional(), // Optional non-negative number for weight
-  imageUrls: z.array(z.string()).nonempty()
+  imageUrls: z.array(z.string()).nonempty(),
 });
+
+export const cartItemSchema = z.object({
+  productId: z.string().uuid(),
+  quantity: z.number().int().positive(),
+  price: z.number().int().nonnegative(),
+});
+
+export const cartUpdateRequestSchema = z.object({
+  userId: z.string().uuid(),
+  items: z.array(cartItemSchema).nonempty().max(100),
+});
+
+export type CartItemInput = z.infer<typeof cartItemSchema>;
+export type CartUpdateRequest = z.infer<typeof cartUpdateRequestSchema>;

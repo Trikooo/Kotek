@@ -2,7 +2,6 @@ import { CreateProductT } from "@/types/types";
 
 export function createProductFormData(product: Partial<CreateProductT>) {
   const formData = new FormData();
-  console.log(product.tags);
   formData.append("name", product.name ?? "");
   formData.append("description", product.description ?? "");
   formData.append("price", product.price?.toString() ?? "");

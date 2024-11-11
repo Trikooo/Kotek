@@ -1,5 +1,4 @@
 "use client";
-
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -10,24 +9,14 @@ import { FaDiscord, FaFacebook } from "react-icons/fa";
 import Background from "@/components/store/home/section1/Background";
 import Footer from "@/components/store/home/footer/Footer";
 import GoogleIcon from "@/components/icons/Google";
-import { Loader2, LoaderCircle } from "lucide-react";
-import { Toast } from "@/components/ui/myToast";
+import { AlertCircle, Loader2, LoaderCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function LoginPage() {
   const [isCreatingAccount, setIsCreatingAccount] = useState<boolean>(false);
   const router = useRouter();
   const { data: session, status } = useSession();
-
-  useEffect(() => {
-    if (status === "loading") {
-      console.log("Session is loading...");
-    } else if (status === "authenticated") {
-      console.log("Session: ", session);
-    } else {
-      console.log("No session found");
-      console.log("status: ", status)
-    }
-  }, [session, status]);
 
   // Wrap the search params usage in a Suspense boundary
   return (
@@ -99,14 +88,25 @@ function LoginComponent({ status }: LoginComponentProps) {
   const [error, setError] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
     if (errorParam) {
       setError(true);
       router.replace("/login");
+      toast({
+        variant: "destructive",
+        title: (
+          <>
+            <AlertCircle className="w-5 h-5" strokeWidth={1.5} />
+            Uh oh, there was a problem
+          </>
+        ),
+        description: "Please try again or use a different provider",
+      });
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, toast]);
 
   const handleSignIn = async (provider: string) => {
     setLoadingProvider(provider);
@@ -119,12 +119,6 @@ function LoginComponent({ status }: LoginComponentProps) {
 
   return (
     <>
-      {error && (
-        <Toast
-          type={"error"}
-          message={"Please try again or use a different provider"}
-        />
-      )}
       <div className="flex flex-col items-center justify-center gap-3 w-80">
         <Button
           variant="outline"

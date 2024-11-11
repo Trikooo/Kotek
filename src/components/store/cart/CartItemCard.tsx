@@ -1,97 +1,129 @@
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import { Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { CartItem } from "@/types/types";
+import { useEffect } from "react";
 
-// Export the variables
-export const cartItems = [
-  {
-    id: 1,
-    image: "/placeholder.svg",
-    name: "Intel Core i5 14600k",
-    quantity: 2,
-    price: 79.99,
-  },
-  {
-    id: 2,
-    image: "/placeholder.svg",
-    name: "Intel Core i5 14600k",
-    quantity: 1,
-    price: 49.99,
-  },
-  {
-    id: 3,
-    image: "/placeholder.svg",
-    name: "Intel Core i5 14600k",
-    quantity: 3,
-    price: 12.99,
-  },
-];
+type CartItemsCardProps = {
+  cartItems: CartItem[];
+  loadingItemId: string | null; // Add loadingItemId prop
+  deleteLoadingItemId: string | null;
+  className?: string;
+  onUpdateQuantity: (
+    id: string,
+    newQuantity: number,
+    e?: React.ChangeEvent<HTMLInputElement>
+  ) => void;
+  onRemoveItem: (id: string) => void;
+};
 
-export const subtotal = cartItems.reduce(
-  (total, item) => total + item.price * item.quantity,
-  0
-);
-export const discounts = 10;
-export const fees = 5;
-export const total = subtotal - discounts + fees;
+export default function CartItemsCard({
+  cartItems,
+  loadingItemId,
+  deleteLoadingItemId,
+  className,
+  onUpdateQuantity,
+  onRemoveItem,
+}: CartItemsCardProps) {
+  if (!cartItems || cartItems.length === 0) {
+    return (
+      <p className="text-center text-gray-500 py-8">Your cart is empty.</p>
+    );
+  }
 
-export default function Component() {
   return (
-    <div className="py-12">
-      <div className="grid gap-8">
-        <div className="grid gap-6">
-          {cartItems.map((item) => (
-            <div
-              key={item.id}
-              className="grid grid-cols-[80px_1fr_auto] items-center gap-4"
-            >
-              <Image
-                src="/products/image.png"
-                alt={item.name}
-                width={80}
-                height={80}
-                className="rounded-md object-cover"
-                style={{ aspectRatio: "80/80", objectFit: "cover" }}
-              />
-              <div className="grid gap-1">
-                <h3 className="font-medium">{item.name}</h3>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Select defaultValue={item.quantity.toString()}>
-                    <SelectTrigger className="w-20">
-                      <SelectValue placeholder={item.quantity.toString()} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1</SelectItem>
-                      <SelectItem value="2">2</SelectItem>
-                      <SelectItem value="3">3</SelectItem>
-                      <SelectItem value="4">4</SelectItem>
-                      <SelectItem value="5">5</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Separator orientation="vertical" className="h-4" />
-                  <span>Price: ${item.price.toFixed(2)}</span>
-                </div>
+    <div className={`py-8 ${className}`}>
+      <div className="space-y-8">
+        {cartItems.map((item) => (
+          <div key={item.id} className="flex items-center gap-4 pb-6 border-b">
+            <Image
+              src={item.product.imageUrls[0]}
+              alt={item.product.name}
+              width={80}
+              height={80}
+              className="rounded-md object-cover"
+              style={{ aspectRatio: "1", objectFit: "cover" }}
+            />
+            <div className="flex-grow">
+              <h3 className="font-semibold">{item.product.name}</h3>
+              <p className="text-gray-600">{item.price} DA</p>
+              <div className="flex items-center mt-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() =>
+                    onUpdateQuantity(item.id, Math.max(0, item.quantity - 1))
+                  }
+                  aria-label={`Decrease quantity of ${item.product.name}`}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+
+                <Input
+                  type="number"
+                  value={item.quantity}
+                  onChange={(e) => {
+                    const newQuantity = parseInt(e.target.value, 10);
+                    onUpdateQuantity(item.id, newQuantity, e);
+                  }}
+                  onBlur={(e) => {
+                    let newQuantity = parseInt(e.target.value, 10);
+                    if (newQuantity === 0 || isNaN(newQuantity)) {
+                      newQuantity = 1;
+                    }
+                    onUpdateQuantity(item.id, newQuantity);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      let newQuantity = parseInt(e.currentTarget.value, 10);
+                      if (newQuantity === 0 || isNaN(newQuantity)) {
+                        newQuantity = 1;
+                      }
+                      onUpdateQuantity(item.id, newQuantity);
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  className="w-16 mx-2 text-center"
+                  aria-label={`Quantity of ${item.product.name}`}
+                />
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                  aria-label={`Increase quantity of ${item.product.name}`}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+
+                {/* Conditionally render loader next to the Plus button */}
+                {loadingItemId === item.id && (
+                  <Loader2
+                    className="w-4 h-4 ml-2 animate-spin"
+                    strokeWidth={1.5}
+                  />
+                )}
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-destructive"
-              >
-                <Trash2 className="h-5 w-5" />
-                <span className="sr-only">Remove {item.name}</span>
-              </Button>
             </div>
-          ))}
-        </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onRemoveItem(item.id)}
+              aria-label={`Remove ${item.product.name} from cart`}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              {deleteLoadingItemId === item.id ? (
+                <Loader2 className="h-5 w-5 animate-spin" strokeWidth={1.5} />
+              ) : (
+                <Trash2 className="h-5 w-5" strokeWidth={1.5} />
+              )}
+            </Button>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
+
+
