@@ -19,6 +19,7 @@ import { useHeaderContext } from "@/context/HeaderContext";
 import DynamicDropdownMenu from "@/components/dynamic-ui/DropDownMenu";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { useCart } from "@/context/CartContext";
 
 const useOS = () => {
   const [os, setOS] = useState("loading");
@@ -73,6 +74,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isAtTop, setIsAtTop] = useState(true); // New state for checking top position
   const { searchFieldVisible, setSearchFieldVisible } = useHeaderContext();
+  const { cart } = useCart();
 
   useEffect(() => {
     const controlHeader = () => {
@@ -163,8 +165,13 @@ const Header = ({ setMobileMenuOpen }: any) => {
             </div>
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-12 lg:border-l lg:border-slate-900/15 pl-5">
-            <a href="/cart">
+            <a href="/cart" className="relative">
               <ShoppingCart strokeWidth={1.5} className="w-5 h-5" />
+              {cart && cart.items.length > 0 && (
+                <span className="absolute -top-2 -right-3 flex items-center justify-center w-4 h-4 text-xs text-white bg-red-500 rounded-full  shadow-md">
+                  {cart.items.length}
+                </span>
+              )}
             </a>
             <AccountDropDown />
           </div>
@@ -178,6 +185,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
     </>
   );
 };
+
 
 export default Header;
 function AccountDropDown() {
