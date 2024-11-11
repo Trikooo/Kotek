@@ -13,7 +13,7 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
   const userId = session?.user?.id;
 
   return (
-    <CartProvider userId={userId}>
+    <CartProvider>
       <HeaderProvider>
         <div className="flex flex-col min-h-screen">
           <Header setMobileMenuOpen={setMobileMenuOpen} />
