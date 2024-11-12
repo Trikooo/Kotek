@@ -28,8 +28,8 @@ export default function CartPage() {
     }
   }, [cart, loading]);
 
-  const debouncedUpdateCart = useDebounce(async (userId, updatedCart, id) => {
-    setLoadingItemId(id);
+  const debouncedUpdateCart = useDebounce(async (userId, updatedCart, productId) => {
+    setLoadingItemId(productId);
     try {
       await handleUpdateCart(userId, updatedCart);
       if (!updateError) initialCartRef.current = updatedCart;
@@ -53,51 +53,66 @@ export default function CartPage() {
   }, 700);
 
   const onUpdateQuantity = async (
-    id: string,
+    productId: string,
     newQuantity: number,
     e?: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (newQuantity < 1 || !cart || !initialCartRef.current) return;
     const updatedItems = cart.items.map((item) =>
-      item.id === id ? { ...item, quantity: newQuantity } : item
+      item.productId === productId ? { ...item, quantity: newQuantity } : item
     );
     setCart({ ...cart, items: updatedItems });
     const initialItem = initialCartRef.current.items.find(
-      (item) => item.id === id
+      (item) => item.productId === productId
     );
     if (initialItem?.quantity === newQuantity) return;
     if (cart.userId && document && e?.target !== document.activeElement) {
       await debouncedUpdateCart(
         cart.userId,
         { ...cart, items: updatedItems },
-        id
+        productId
       );
     } else if (typeof window !== "undefined") {
-      localStorage.setItem(
-        "guestCart",
-        JSON.stringify({ ...cart, items: updatedItems })
-      );
+      console.log("updated items: ", updatedItems);
+      localStorage.setItem("guestCart", JSON.stringify([...updatedItems]));
     }
   };
 
-  const onRemoveItem = async (id: string) => {
-    if (!cart?.userId || !id) return;
-    try {
-      setDeleteLoadingItemId(id);
-      await handleDeleteCartItem(cart.userId, id);
-      setCart({ ...cart, items: cart.items.filter((item) => item.id !== id) });
-      setDeleteLoadingItemId(null);
-    } catch {
-      toast({
-        variant: "destructive",
-        title: (
-          <>
-            <AlertCircle className="w-5 h-5" strokeWidth={1.5} /> Uh oh, there
-            was a problem
-          </>
-        ),
-        description: "Failed to remove item. Please try again.",
+  const onRemoveItem = async (productId: string, itemId: string) => {
+    if (cart && !cart.userId && typeof window !== "undefined") {
+      setDeleteLoadingItemId(productId);
+      const updatedItems = cart.items.filter((item) => {
+        return item.productId !== productId
       });
+      console.log("remainingItems: ", updatedItems);
+      localStorage.setItem("guestCart", JSON.stringify([...updatedItems]));
+      setDeleteLoadingItemId(null);
+
+      setCart({
+        ...cart,
+        items: updatedItems,
+      });
+    } else if (cart && cart.userId) {
+      try {
+        setDeleteLoadingItemId(productId);
+        await handleDeleteCartItem(cart.userId, itemId);
+        setCart({
+          ...cart,
+          items: cart.items.filter((item) => item.productId !== productId),
+        });
+        setDeleteLoadingItemId(null);
+      } catch {
+        toast({
+          variant: "destructive",
+          title: (
+            <>
+              <AlertCircle className="w-5 h-5" strokeWidth={1.5} /> Uh oh, there
+              was a problem
+            </>
+          ),
+          description: "Failed to remove item. Please try again.",
+        });
+      }
     }
   };
 

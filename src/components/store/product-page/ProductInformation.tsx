@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCreateOrUpdateCart } from "@/hooks/cart/useCart";
 import { toast } from "@/hooks/use-toast";
-import { Cart } from "@/types/types";
+import { Cart, FetchCart } from "@/types/types";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/context/CartContext"; // Import useCart
 
@@ -18,6 +18,7 @@ interface ProductInformationProps {
     originalPrice?: number;
     keyFeatures: string[];
     stock: number;
+    imageUrls: []
   } | null;
   loading: boolean;
   error?: boolean;
@@ -32,7 +33,7 @@ export default function ProductInformation({
   const { handleCreateOrUpdate } = useCreateOrUpdateCart();
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
-  const { cart } = useCart(); // Get the cart state
+  const { cart, setCart } = useCart(); // Get the cart state
 
   const userId = session?.user?.id;
 
@@ -42,16 +43,23 @@ export default function ProductInformation({
   );
 
   const handleAddToCart = async () => {
-    if (product) {
+    if (userId && product) {
       const cartData: Omit<Cart, "id" | "createdAt" | "updatedAt"> = {
-        userId: userId as string,
-        items: [{ productId: product.id, quantity, price: product.price }],
+        userId: userId,
+        items: [
+          { productId: product.id, quantity: quantity, price: product.price },
+        ],
       };
 
       try {
         await handleCreateOrUpdate(cartData);
         toast({
-          title: "Success!",
+          title: (
+            <>
+              <CircleCheck className="w-5 h-5" strokeWidth={1.5} />
+              Success!
+            </>
+          ),
           description: "Item has been added to cart.",
         });
       } catch (error) {
@@ -65,6 +73,52 @@ export default function ProductInformation({
           ),
           description: "Couldn't add item to cart, please try again.",
         });
+      }
+
+      setCart(
+        (prevCart) =>
+          ({
+            ...prevCart,
+            id: prevCart?.id ?? null,
+            userId: prevCart?.userId ?? null,
+            items: [...(prevCart?.items || []), ...cartData.items],
+          } as FetchCart)
+      );
+    } else {
+      // For guests (no userId)
+      if (typeof window !== "undefined" && window.localStorage && product) {
+        const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+
+        const newItem = {
+          productId: product.id,
+          quantity: quantity,
+          price: product.price,
+          product: {
+            name: product.name,
+            imageUrls: product.imageUrls,
+          },
+        };
+        const updatedCart = [...guestCart, newItem];
+
+        localStorage.setItem("guestCart", JSON.stringify(updatedCart));
+
+        toast({
+          title: (
+            <>
+              <CircleCheck className="w-5 h-5" strokeWidth={1.5} />
+              Success!
+            </>
+          ),
+          description: "Item has been added to cart.",
+        });
+
+        setCart(
+          (prevCart) =>
+            ({
+              ...prevCart,
+              items: [...(prevCart?.items || []), newItem],
+            } as FetchCart)
+        );
       }
     }
   };
@@ -96,6 +150,13 @@ export default function ProductInformation({
       setQuantity(1);
     } else if (product?.stock && newQuantity > product.stock) {
       setQuantity(product.stock);
+    }
+  };
+
+  const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleOnBlur(e as unknown as React.ChangeEvent<HTMLInputElement>);
+      e.currentTarget.blur(); // Remove focus
     }
   };
 
@@ -152,6 +213,7 @@ export default function ProductInformation({
             value={quantity}
             onChange={handleQuantityChange}
             onBlur={handleOnBlur}
+            onKeyDown={handleEnterKey} // Handle Enter key
             className="w-[60px] text-center"
             min={1}
             max={product.stock}
@@ -173,7 +235,11 @@ export default function ProductInformation({
           </span>
         </div>
         {isProductInCart ? (
-          <Button variant="outline" className="w-full mt-2" onClick={handleViewCart}>
+          <Button
+            variant="outline"
+            className="w-full mt-2"
+            onClick={handleViewCart}
+          >
             View Cart
           </Button>
         ) : (

@@ -37,7 +37,7 @@ export default function OrderSummary({ className }: OrderSummaryProps) {
 
   return (
     <Card
-      className={`${className} shadow-none bg-gray-50 border-none transition-opacity ${
+      className={`${className} h-min shadow-none bg-gray-50 border-none transition-opacity ${
         loading ? "opacity-50" : "opacity-100"
       }`}
     >

@@ -11,11 +11,11 @@ type CartItemsCardProps = {
   deleteLoadingItemId: string | null;
   className?: string;
   onUpdateQuantity: (
-    id: string,
+    productId: string,
     newQuantity: number,
     e?: React.ChangeEvent<HTMLInputElement>
   ) => void;
-  onRemoveItem: (id: string) => void;
+  onRemoveItem: (productId: string, itemId: string) => void;
 };
 
 export default function CartItemsCard({
@@ -53,7 +53,7 @@ export default function CartItemsCard({
                   variant="outline"
                   size="icon"
                   onClick={() =>
-                    onUpdateQuantity(item.id, Math.max(0, item.quantity - 1))
+                    onUpdateQuantity(item.productId, Math.max(0, item.quantity - 1))
                   }
                   aria-label={`Decrease quantity of ${item.product.name}`}
                 >
@@ -72,7 +72,7 @@ export default function CartItemsCard({
                     if (newQuantity === 0 || isNaN(newQuantity)) {
                       newQuantity = 1;
                     }
-                    onUpdateQuantity(item.id, newQuantity);
+                    onUpdateQuantity(item.productId, newQuantity);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -80,7 +80,7 @@ export default function CartItemsCard({
                       if (newQuantity === 0 || isNaN(newQuantity)) {
                         newQuantity = 1;
                       }
-                      onUpdateQuantity(item.id, newQuantity);
+                      onUpdateQuantity(item.productId, newQuantity);
                       e.currentTarget.blur();
                     }
                   }}
@@ -91,14 +91,16 @@ export default function CartItemsCard({
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                  onClick={() =>
+                    onUpdateQuantity(item.productId, item.quantity + 1)
+                  }
                   aria-label={`Increase quantity of ${item.product.name}`}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
 
                 {/* Conditionally render loader next to the Plus button */}
-                {loadingItemId === item.id && (
+                {loadingItemId === item.productId && (
                   <Loader2
                     className="w-4 h-4 ml-2 animate-spin"
                     strokeWidth={1.5}
@@ -109,11 +111,11 @@ export default function CartItemsCard({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => onRemoveItem(item.id)}
+              onClick={() => onRemoveItem(item.productId, item.id)}
               aria-label={`Remove ${item.product.name} from cart`}
               className="text-muted-foreground hover:text-destructive"
             >
-              {deleteLoadingItemId === item.id ? (
+              {deleteLoadingItemId === item.productId ? (
                 <Loader2 className="h-5 w-5 animate-spin" strokeWidth={1.5} />
               ) : (
                 <Trash2 className="h-5 w-5" strokeWidth={1.5} />
@@ -125,5 +127,3 @@ export default function CartItemsCard({
     </div>
   );
 }
-
-
