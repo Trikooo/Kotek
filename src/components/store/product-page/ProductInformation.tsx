@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CircleCheck, Minus, Plus } from "lucide-react";
+import { AlertCircle, CircleCheck, Loader2, Minus, Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -18,7 +18,7 @@ interface ProductInformationProps {
     originalPrice?: number;
     keyFeatures: string[];
     stock: number;
-    imageUrls: []
+    imageUrls: [];
   } | null;
   loading: boolean;
   error?: boolean;
@@ -30,7 +30,8 @@ export default function ProductInformation({
   error,
 }: ProductInformationProps) {
   const { data: session } = useSession();
-  const { handleCreateOrUpdate } = useCreateOrUpdateCart();
+  const { handleCreateOrUpdate, loading: updateLoading } =
+    useCreateOrUpdateCart();
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
   const { cart, setCart } = useCart(); // Get the cart state
@@ -184,7 +185,7 @@ export default function ProductInformation({
     return (
       <div className="md:p-6 space-y-4">
         <h3 className="text-xl md:text-3xl font-semibold">{product.name}</h3>
-        <ul className="text-muted-foreground space-y-1">
+        <ul className=" space-y-1 list-disc pl-4">
           {product.keyFeatures.map((feature, index) => (
             <li key={index}>{feature}</li>
           ))}
@@ -239,6 +240,7 @@ export default function ProductInformation({
             variant="outline"
             className="w-full mt-2"
             onClick={handleViewCart}
+            disabled={updateLoading}
           >
             View Cart
           </Button>
@@ -246,8 +248,13 @@ export default function ProductInformation({
           <Button
             className="bg-indigo-600 hover:bg-indigo-500 w-full"
             onClick={handleAddToCart}
+            disabled={updateLoading}
           >
-            Add to Cart
+            {updateLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
+            ) : (
+              "Add to Cart"
+            )}
           </Button>
         )}
       </div>
