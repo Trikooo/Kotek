@@ -26,31 +26,36 @@ export default function CartPage() {
     if (cart && !initialCartRef.current && cart.items.length > 0) {
       initialCartRef.current = cart;
     }
+    console.log("initialCartRef.current: ", initialCartRef.current);
+    console.log("cart: ", cart);
   }, [cart, loading]);
 
-  const debouncedUpdateCart = useDebounce(async (userId, updatedCart, productId) => {
-    setLoadingItemId(productId);
-    try {
-      await handleUpdateCart(userId, updatedCart);
-      if (!updateError) initialCartRef.current = updatedCart;
-      else setCart(initialCartRef.current);
-    } catch (err) {
-      console.error("Update Cart Error:", err);
-      setCart(initialCartRef.current);
-      toast({
-        variant: "destructive",
-        title: (
-          <>
-            <AlertCircle className="w-5 h-5" strokeWidth={1.5} /> Uh oh, there
-            was a problem
-          </>
-        ),
-        description: "Refresh the page and try again.",
-      });
-    } finally {
-      setLoadingItemId(null);
-    }
-  }, 700);
+  const debouncedUpdateCart = useDebounce(
+    async (userId, updatedCart, productId) => {
+      setLoadingItemId(productId);
+      try {
+        await handleUpdateCart(userId, updatedCart);
+        if (!updateError) initialCartRef.current = updatedCart;
+        else setCart(initialCartRef.current);
+      } catch (err) {
+        console.error("Update Cart Error:", err);
+        setCart(initialCartRef.current);
+        toast({
+          variant: "destructive",
+          title: (
+            <>
+              <AlertCircle className="w-5 h-5" strokeWidth={1.5} /> Uh oh, there
+              was a problem
+            </>
+          ),
+          description: "Refresh the page and try again.",
+        });
+      } finally {
+        setLoadingItemId(null);
+      }
+    },
+    700
+  );
 
   const onUpdateQuantity = async (
     productId: string,
@@ -82,7 +87,7 @@ export default function CartPage() {
     if (cart && !cart.userId && typeof window !== "undefined") {
       setDeleteLoadingItemId(productId);
       const updatedItems = cart.items.filter((item) => {
-        return item.productId !== productId
+        return item.productId !== productId;
       });
       console.log("remainingItems: ", updatedItems);
       localStorage.setItem("guestCart", JSON.stringify([...updatedItems]));
@@ -92,14 +97,26 @@ export default function CartPage() {
         ...cart,
         items: updatedItems,
       });
+      initialCartRef.current = {
+        ...cart,
+        items: updatedItems,
+      };
     } else if (cart && cart.userId) {
+      const updatedItems = cart.items.filter(
+        (item) => item.productId !== productId
+      );
       try {
         setDeleteLoadingItemId(productId);
         await handleDeleteCartItem(cart.userId, itemId);
         setCart({
           ...cart,
-          items: cart.items.filter((item) => item.productId !== productId),
+          items: updatedItems,
         });
+        initialCartRef.current = {
+          ...cart,
+          items: updatedItems
+        };
+
         setDeleteLoadingItemId(null);
       } catch {
         toast({
