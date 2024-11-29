@@ -1,0 +1,13 @@
+{
+  "wilayaName": {
+    "id": "number",
+    "communes": ["array", "of", "communes"],
+    "noestStations": { "communeName": "stationCode" }
+  },
+  "wilayaName2": {
+    "id": "number",
+    "communes": ["array", "of", "communes"],
+    "noestStations": { "communeName": "stationCode" }
+  }
+
+}

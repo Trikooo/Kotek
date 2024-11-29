@@ -5,6 +5,13 @@
     "dropup",
     "embla",
     "headlessui",
+    "noest",
     "Uncategorized"
-  ]
+  ],
+  "cSpell.ignorePaths": [
+  "src/data/wilayaData.json"
+]
+
 }
+
+

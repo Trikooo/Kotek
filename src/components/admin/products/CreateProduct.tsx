@@ -119,7 +119,7 @@ export default function CreateProduct() {
               <Select
                 options={categoryOptions}
                 selectedOptions={selectedCategory}
-                onChange={setSelectedCategory}
+                setSelectedOptions={setSelectedCategory}
                 loading={loading}
                 error={error}
               />
@@ -129,7 +129,7 @@ export default function CreateProduct() {
               <Select
                 options={STATUS_OPTIONS}
                 selectedOptions={selectedStatus}
-                onChange={setSelectedStatus}
+                setSelectedOptions={setSelectedStatus}
                 searchable={false}
               />
             </div>

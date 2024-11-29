@@ -97,3 +97,16 @@ export type CartUpdateResponse = {
   updatedCart?: Cart;
   error?: string;
 };
+
+
+type Wilaya = {
+  id: string;
+  communes: string[];
+  noestStations: {
+    commune: string;
+    stationCode: string;
+  }[];
+};
+
+export type Wilayas = Record<string, Wilaya>;
+

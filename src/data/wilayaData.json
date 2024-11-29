@@ -1,0 +1,2245 @@
+{
+  "Adrar": {
+    "id": "1",
+    "communes": [
+      "Adrar",
+      "Akabli",
+      "Aoulef",
+      "Bouda",
+      "Fenoughil",
+      "Inozghmir",
+      "O Ahmed Timmi",
+      "Reggane",
+      "Sali",
+      "Sbaa",
+      "Tamentit",
+      "Tamest",
+      "Timokten",
+      "Tit",
+      "Tsabit",
+      "Zaouiet Kounta"
+    ],
+    "noestStations": [
+      {
+        "commune": "Adrar",
+        "stationCode": "1A"
+      }
+    ]
+  },
+  "Chlef": {
+    "id": "2",
+    "communes": [
+      "Abou El Hassen",
+      "Ain Merane",
+      "Ben Boutaleb",
+      "Benairia",
+      "Beni Haoua",
+      "Beni Rached",
+      "Boukadir",
+      "Bouzghaia",
+      "Breira",
+      "Chettia",
+      "Chlef",
+      "Dahra",
+      "El Hadjadj",
+      "El Karimia",
+      "El Marsa",
+      "Harchoun",
+      "Herenfa",
+      "Labiod Medjadja",
+      "Moussadek",
+      "Oued Fodda",
+      "Oued Goussine",
+      "Oued Sly",
+      "Ouled Abbes",
+      "Ouled Ben Abdelkader",
+      "Ouled Fares",
+      "Oum Drou",
+      "Sendjas",
+      "Sidi Abderrahmane",
+      "Sidi Akacha",
+      "Sobha",
+      "Tadjna",
+      "Talassa",
+      "Taougrite",
+      "Tenes",
+      "Zeboudja"
+    ],
+    "noestStations": [
+      {
+        "commune": "Chlef",
+        "stationCode": "2A"
+      }
+    ]
+  },
+  "Laghouat": {
+    "id": "3",
+    "communes": [
+      "Aflou",
+      "Ain Mahdi",
+      "Ain Sidi Ali",
+      "Beidha",
+      "Benacer Ben Chohra",
+      "Brida",
+      "El Assafia",
+      "El Ghicha",
+      "El Haouaita",
+      "Gueltat Sidi Saad",
+      "Hadj Mechri",
+      "Hassi Delaa",
+      "Hassi R Mel",
+      "Kheneg",
+      "Ksar El Hirane",
+      "Laghouat",
+      "Oued M Zi",
+      "Oued Morra",
+      "Sebgag",
+      "Sidi Bouzid",
+      "Sidi Makhlouf",
+      "Tadjmout",
+      "Tadjrouna",
+      "Taouiala"
+    ],
+    "noestStations": [
+      {
+        "commune": "Laghouat",
+        "stationCode": "3A"
+      },
+      {
+        "commune": "AFLOU",
+        "stationCode": "3B"
+      }
+    ]
+  },
+  "Oum El Bouaghi": {
+    "id": "4",
+    "communes": [
+      "Ain Babouche",
+      "Ain Beida",
+      "Ain Diss",
+      "Ain Fekroune",
+      "Ain Kercha",
+      "Ain Zitoun",
+      "Ainmlila",
+      "Behir Chergui",
+      "Berriche",
+      "Bir Chouhada",
+      "Dhala",
+      "El Amiria",
+      "El Belala",
+      "El Djazia",
+      "El Fedjoudj Boughrar",
+      "El Harmilia",
+      "Fkirina",
+      "Hanchir Toumghani",
+      "Ksar Sbahi",
+      "Meskiana",
+      "Oued Nini",
+      "Ouled Gacem",
+      "Ouled Hamla",
+      "Ouled Zouai",
+      "Oum El Bouaghi",
+      "Rahia",
+      "Sigus",
+      "Souk Naamane",
+      "Zorg"
+    ],
+    "noestStations": [
+      {
+        "commune": "Ain mlila",
+        "stationCode": "4A"
+      }
+    ]
+  },
+  "Batna": {
+    "id": "5",
+    "communes": [
+      "Ain Djasser",
+      "Ain Touta",
+      "Ain Yagout",
+      "Amdoukal",
+      "Arris",
+      "Barika",
+      "Batna",
+      "Beni Foudhala El Hakania",
+      "Bitam",
+      "Boulhilat",
+      "Boumagueur",
+      "Boumia",
+      "Bouzina",
+      "Chemora",
+      "Chir",
+      "Djerma",
+      "Djezzar",
+      "El Hassi",
+      "El Madher",
+      "Fesdis",
+      "Foum Toub",
+      "Ghassira",
+      "Gosbat",
+      "Guigba",
+      "Hidoussa",
+      "Ichmoul",
+      "Inoughissen",
+      "Kimmel",
+      "Ksar Belezma",
+      "Larbaa",
+      "Lazrou",
+      "Lemsane",
+      "Maafa",
+      "Menaa",
+      "Merouana",
+      "Metkaouak",
+      "Ngaous",
+      "Oued Chaaba",
+      "Oued El Ma",
+      "Oued Taga",
+      "Ouled Ammar",
+      "Ouled Aouf",
+      "Ouled Fadel",
+      "Ouled Selam",
+      "Ouled Si Slimane",
+      "Ouyoun El Assafir",
+      "Rahbat",
+      "Ras El Aioun",
+      "Sefiane",
+      "Seggana",
+      "Seriana",
+      "Talkhamt",
+      "Taxlent",
+      "Tazoult",
+      "Teniet El Abed",
+      "Tighanimine",
+      "Tigherghar",
+      "Tilatou",
+      "Timgad",
+      "Tkout",
+      "Zanat El Beida"
+    ],
+    "noestStations": [
+      {
+        "commune": "Batna",
+        "stationCode": "5A"
+      },
+      {
+        "commune": "Barika",
+        "stationCode": "5B"
+      }
+    ]
+  },
+  "Béjaïa": {
+    "id": "6",
+    "communes": [
+      "Adekar",
+      "Ait Rizine",
+      "Ait Smail",
+      "Akbou",
+      "Akfadou",
+      "Amalou",
+      "Amizour",
+      "Aokas",
+      "Barbacha",
+      "Bejaia",
+      "Beni Djellil",
+      "Beni Ksila",
+      "Beni Maouch",
+      "Beni Melikeche",
+      "Boudjellil",
+      "Bouhamza",
+      "Boukhelifa",
+      "Chelata",
+      "Chemini",
+      "Darguina",
+      "Draa Kaid",
+      "El Kseur",
+      "Ferraoun",
+      "Ifelain Ilmathen",
+      "Ighil Ali",
+      "Ighram",
+      "Kendira",
+      "Kherrata",
+      "Leflaye",
+      "Mcisna",
+      "Melbou",
+      "Oued Ghir",
+      "Ouzallaguen",
+      "Seddouk",
+      "Semaoun",
+      "Sidi Aich",
+      "Sidi Ayad",
+      "Souk El Thenine",
+      "Souk Oufella",
+      "Tala Hamza",
+      "Tamokra",
+      "Tamridjet",
+      "Taourirt Ighil",
+      "Taskriout",
+      "Tazmalt",
+      "Thinabdher",
+      "Tibane",
+      "Tichi",
+      "Tifra",
+      "Timzrit",
+      "Tizi Nberber",
+      "Toudja"
+    ],
+    "noestStations": [
+      {
+        "commune": "Bejaia",
+        "stationCode": "6A"
+      },
+      {
+        "commune": "Akbou",
+        "stationCode": "6B"
+      }
+    ]
+  },
+  "Biskra": {
+    "id": "7",
+    "communes": [
+      "Ain Naga",
+      "Ain Zaatout",
+      "Besbes",
+      "Biskra",
+      "Bordj Ben Azzouz",
+      "Bouchagroun",
+      "Branis",
+      "Chetma",
+      "Djemorah",
+      "El Feidh",
+      "El Ghrous",
+      "El Hadjab",
+      "El Haouch",
+      "El Kantara",
+      "El Outaya",
+      "Foughala",
+      "Khanguet Sidinadji",
+      "Lichana",
+      "Lioua",
+      "Mchouneche",
+      "Mekhadma",
+      "Meziraa",
+      "Mlili",
+      "Oumache",
+      "Ourlal",
+      "Sidi Okba",
+      "Tolga",
+      "Zeribet El Oued"
+    ],
+    "noestStations": [
+      {
+        "commune": "Biskra",
+        "stationCode": "7A"
+      }
+    ]
+  },
+  "Béchar": {
+    "id": "8",
+    "communes": [
+      "Abadla",
+      "Bechar",
+      "Beni Ounif",
+      "Boukais",
+      "Erg Ferradj",
+      "Kenedsa",
+      "Lahmar",
+      "Mechraa Houari B",
+      "Meridja",
+      "Mogheul",
+      "Tabalbala",
+      "Taghit"
+    ],
+    "noestStations": [
+      {
+        "commune": "Bechar",
+        "stationCode": "8A"
+      }
+    ]
+  },
+  "Blida": {
+    "id": "9",
+    "communes": [
+      "Ain Romana",
+      "Ben Khlil",
+      "Beni Mered",
+      "Beni Tamou",
+      "Blida",
+      "Bouarfa",
+      "Boufarik",
+      "Bougara",
+      "Bouinan",
+      "Chebli",
+      "Chiffa",
+      "Chrea",
+      "Djebabra",
+      "El Affroun",
+      "Guerrouaou",
+      "Hammam Melouane",
+      "Larbaa",
+      "Meftah",
+      "Mouzaia",
+      "Oued Djer",
+      "Oued El Alleug",
+      "Ouled Selama",
+      "Ouled Yaich",
+      "Souhane",
+      "Soumaa"
+    ],
+    "noestStations": [
+      {
+        "commune": "Blida",
+        "stationCode": "9A"
+      },
+      {
+        "commune": "Boufarik",
+        "stationCode": "9B"
+      }
+    ]
+  },
+  "Bouira": {
+    "id": "10",
+    "communes": [
+      "Aghbalou",
+      "Ahl El Ksar",
+      "Ain Bessam",
+      "Ain El Hadjar",
+      "Ain Laloui",
+      "Ain Turk",
+      "Ait Laaziz",
+      "Aomar",
+      "Ath Mansour",
+      "Bechloul",
+      "Bir Ghbalou",
+      "Bordj Oukhriss",
+      "Bouderbala",
+      "Bouira",
+      "Boukram",
+      "Chorfa",
+      "Dechmia",
+      "Dirah",
+      "Djebahia",
+      "El Adjiba",
+      "El Asnam",
+      "El Hachimia",
+      "El Hakimia",
+      "El Khebouzia",
+      "El Mokrani",
+      "Guerrouma",
+      "Hadjera Zerga",
+      "Haizer",
+      "Hanif",
+      "Kadiria",
+      "Lakhdaria",
+      "Maala",
+      "Maamora",
+      "Mchedallah",
+      "Mezdour",
+      "Oued El Berdi",
+      "Ouled Rached",
+      "Raouraoua",
+      "Ridane",
+      "Saharidj",
+      "Souk El Khemis",
+      "Sour El Ghozlane",
+      "Taghzout",
+      "Taguedit",
+      "Zbarbar"
+    ],
+    "noestStations": [
+      {
+        "commune": "Bouira",
+        "stationCode": "10A"
+      }
+    ]
+  },
+  "Tamanrasset": {
+    "id": "11",
+    "communes": [
+      "Abalessa",
+      "Idles",
+      "In Amguel",
+      "Tamanghasset",
+      "Tazouk"
+    ],
+    "noestStations": [
+      {
+        "commune": "Tamanrasset",
+        "stationCode": "11A"
+      }
+    ]
+  },
+  "Tébessa": {
+    "id": "12",
+    "communes": [
+      "Ain Zerga",
+      "Bedjene",
+      "Bekkaria",
+      "Bir Dheheb",
+      "Bir El Ater",
+      "Bir El Mokadem",
+      "Boukhadra",
+      "Boulhaf Dyr",
+      "Cheria",
+      "El Aouinet",
+      "El Kouif",
+      "El Ma El Biodh",
+      "El Mazeraa",
+      "El Meridj",
+      "El Ogla",
+      "El Ogla El Malha",
+      "Ferkane",
+      "Gorriguer",
+      "Hammamet",
+      "Lahouidjbet",
+      "Morsott",
+      "Negrine",
+      "Ouenza",
+      "Oum Ali",
+      "Safsaf El Ouesra",
+      "Stah Guentis",
+      "Tebessa",
+      "Thlidjene"
+    ],
+    "noestStations": [
+      {
+        "commune": "Tebessa",
+        "stationCode": "12A"
+      }
+    ]
+  },
+  "Tlemcen": {
+    "id": "13",
+    "communes": [
+      "Ain Fetah",
+      "Ain Fezza",
+      "Ain Ghoraba",
+      "Ain Kebira",
+      "Ain Nehala",
+      "Ain Tallout",
+      "Ain Youcef",
+      "Amieur",
+      "Azails",
+      "Bab El Assa",
+      "Beni Bahdel",
+      "Beni Boussaid",
+      "Beni Mester",
+      "Beni Ouarsous",
+      "Beni Semiel",
+      "Beni Snous",
+      "Bensekrane",
+      "Bouhlou",
+      "Chetouane",
+      "Dar Yaghmouracene",
+      "Djebala",
+      "El Aricha",
+      "El Bouihi",
+      "El Fehoul",
+      "El Gor",
+      "Fellaoucene",
+      "Ghazaouet",
+      "Hammam Boughrara",
+      "Hennaya",
+      "Honaine",
+      "Maghnia",
+      "Mansourah",
+      "Marsa Ben Mhidi",
+      "Msirda Fouaga",
+      "Nedroma",
+      "Oued Chouly",
+      "Ouled Mimoun",
+      "Ouled Riyah",
+      "Remchi",
+      "Sabra",
+      "Sebbaa Chioukh",
+      "Sebdou",
+      "Sidi Abdelli",
+      "Sidi Djillali",
+      "Sidi Medjahed",
+      "Souahlia",
+      "Souani",
+      "Souk El Khemis",
+      "Souk Thlata",
+      "Terni Beni Hediel",
+      "Tianet",
+      "Tlemcen",
+      "Zenata"
+    ],
+    "noestStations": [
+      {
+        "commune": "Tlemcen",
+        "stationCode": "13A"
+      },
+      {
+        "commune": "Maghnia",
+        "stationCode": "13B"
+      }
+    ]
+  },
+  "Tiaret": {
+    "id": "14",
+    "communes": [
+      "Ain Bouchekif",
+      "Ain Deheb",
+      "Ain El Hadid",
+      "Ain Kermes",
+      "Ain Zarit",
+      "Bougara",
+      "Chehaima",
+      "Dahmouni",
+      "Djillali Ben Amar",
+      "Faidja",
+      "Frenda",
+      "Guertoufa",
+      "Hamadia",
+      "Ksar Chellala",
+      "Madna",
+      "Mahdia",
+      "Mechraa Safa",
+      "Medrissa",
+      "Medroussa",
+      "Meghila",
+      "Mellakou",
+      "Nadorah",
+      "Naima",
+      "Oued Lilli",
+      "Ouled Djerad",
+      "Rahouia",
+      "Rechaiga",
+      "Sebaine",
+      "Sebt",
+      "Serghine",
+      "Sidi Abdelghani",
+      "Sidi Abderrahmane",
+      "Sidi Ali Mellal",
+      "Sidi Bakhti",
+      "Sidi Hosni",
+      "Sougueur",
+      "Tagdemt",
+      "Takhemaret",
+      "Tiaret",
+      "Tidda",
+      "Tousnina",
+      "Zmalet El Emir Aek"
+    ],
+    "noestStations": [
+      {
+        "commune": "Tiaret",
+        "stationCode": "14A"
+      }
+    ]
+  },
+  "Tizi Ouzou": {
+    "id": "15",
+    "communes": [
+      "Abi Youcef",
+      "Aghni Goughran",
+      "Aghrib",
+      "Ain El Hammam",
+      "Ain Zaouia",
+      "Ait Aggouacha",
+      "Ait Aissa Mimoun",
+      "Ait Bouadou",
+      "Ait Boumehdi",
+      "Ait Chaffaa",
+      "Ait Khelil",
+      "Ait Mahmoud",
+      "Ait Oumalou",
+      "Ait Toudert",
+      "Ait Yahia",
+      "Ait Yahia Moussa",
+      "Akbil",
+      "Akerrou",
+      "Assi Youcef",
+      "Azazga",
+      "Azzefoun",
+      "Beni Aissi",
+      "Beni Douala",
+      "Beni Yenni",
+      "Beni Ziki",
+      "Beni Zmenzer",
+      "Boghni",
+      "Boudjima",
+      "Bounouh",
+      "Bouzguen",
+      "Draa Ben Khedda",
+      "Draa El Mizan",
+      "Freha",
+      "Frikat",
+      "Iboudraren",
+      "Idjeur",
+      "Iferhounene",
+      "Ifigha",
+      "Iflissen",
+      "Illilten",
+      "Iloula Oumalou",
+      "Imsouhal",
+      "Irdjen",
+      "Larba Nait Irathen",
+      "Maatka",
+      "Makouda",
+      "Mechtrass",
+      "Mekla",
+      "Mizrana",
+      "Mkira",
+      "Ouacif",
+      "Ouadhia",
+      "Ouaguenoun",
+      "Sidi Naamane",
+      "Souamaa",
+      "Souk El Thenine",
+      "Tadmait",
+      "Tigzirt",
+      "Timizart",
+      "Tirmitine",
+      "Tizi Ghenif",
+      "Tizi Nthlata",
+      "Tizi Ouzou",
+      "Tizi Rached",
+      "Yakouren",
+      "Yatafen",
+      "Zekri"
+    ],
+    "noestStations": [
+      {
+        "commune": "Tizi Ouzou",
+        "stationCode": "15A"
+      },
+      {
+        "commune": "AZAZGA",
+        "stationCode": "15B"
+      }
+    ]
+  },
+  "Alger": {
+    "id": "16",
+    "communes": [
+      "Ain Benian",
+      "Ain Taya",
+      "Alger Centre",
+      "Bab Azzouar",
+      "Bab El Oued",
+      "Baba Hassen",
+      "Bachedjerah",
+      "Bains Romains",
+      "Baraki",
+      "Ben Aknoun",
+      "Beni Messous",
+      "Bir Mourad Rais",
+      "Birkhadem",
+      "Birtouta",
+      "Bologhine Ibn Ziri",
+      "Bordj El Bahri",
+      "Bordj El Kiffan",
+      "Bourouba",
+      "Bouzareah",
+      "Casbah",
+      "Cheraga",
+      "Dar El Beida",
+      "Dely Ibrahim",
+      "Djasr Kasentina",
+      "Douera",
+      "Draria",
+      "El Achour",
+      "El Biar",
+      "El Harrach",
+      "El Madania",
+      "El Magharia",
+      "El Mouradia",
+      "Hamma Anassers",
+      "Haraoua",
+      "Hussein Dey",
+      "Hydra",
+      "Khracia",
+      "Kouba",
+      "Les Eucalyptus",
+      "Mahelma",
+      "Marsa",
+      "Mohammadia",
+      "Oued Koriche",
+      "Oued Smar",
+      "Ouled Chebel",
+      "Ouled Fayet",
+      "Rahmania",
+      "Rais Hamidou",
+      "Reghaia",
+      "Rouiba",
+      "Saoula",
+      "Sidi Mhamed",
+      "Sidi Moussa",
+      "Souidania",
+      "Staoueli",
+      "Tassala El Merdja",
+      "Zeralda"
+    ],
+    "noestStations": [
+      {
+        "commune": "Bir Mourad rais",
+        "stationCode": "16A"
+      },
+      {
+        "commune": "BAB EZZOUAR",
+        "stationCode": "16B"
+      },
+      {
+        "commune": "Cheraga",
+        "stationCode": "16C"
+      },
+      {
+        "commune": "Reghaia",
+        "stationCode": "16D"
+      },
+      {
+        "commune": "Alger centre",
+        "stationCode": "16E"
+      },
+      {
+        "commune": "Baba Hassen",
+        "stationCode": "16F"
+      }
+    ]
+  },
+  "Djelfa": {
+    "id": "17",
+    "communes": [
+      "Ain Chouhada",
+      "Ain El Ibel",
+      "Ain Fekka",
+      "Ain Maabed",
+      "Ain Oussera",
+      "Amourah",
+      "Benhar",
+      "Beni Yacoub",
+      "Birine",
+      "Bouira Lahdeb",
+      "Charef",
+      "Dar Chouikh",
+      "Deldoul",
+      "Djelfa",
+      "Douis",
+      "El Guedid",
+      "El Idrissia",
+      "El Khemis",
+      "Feidh El Botma",
+      "Guernini",
+      "Guettara",
+      "Had Sahary",
+      "Hassi Bahbah",
+      "Hassi El Euch",
+      "Hassi Fedoul",
+      "Messaad",
+      "Mliliha",
+      "Moudjebara",
+      "Oum Laadham",
+      "Sed Rahal",
+      "Selmana",
+      "Sidi Baizid",
+      "Sidi Ladjel",
+      "Tadmit",
+      "Zaafrane",
+      "Zaccar"
+    ],
+    "noestStations": [
+      {
+        "commune": "Djelfa",
+        "stationCode": "17A"
+      }
+    ]
+  },
+  "Jijel": {
+    "id": "18",
+    "communes": [
+      "Bordj Taher",
+      "Boudria Beni Yadjis",
+      "Bouraoui Belhadef",
+      "Boussif Ouled Askeur",
+      "Chahna",
+      "Chekfa",
+      "Djemaa Beni Habibi",
+      "Djmila",
+      "El Ancer",
+      "El Aouana",
+      "El Kennar Nouchfi",
+      "El Milia",
+      "Emir Abdelkader",
+      "Erraguene",
+      "Ghebala",
+      "Jijel",
+      "Kaous",
+      "Kemir Oued Adjoul",
+      "Ouadjana",
+      "Ouled Rabah",
+      "Ouled Yahia Khadrouch",
+      "Selma Benziada",
+      "Settara",
+      "Sidi Abdelaziz",
+      "Sidi Maarouf",
+      "Taher",
+      "Texena",
+      "Ziamma Mansouriah"
+    ],
+    "noestStations": [
+      {
+        "commune": "Jijel",
+        "stationCode": "18A"
+      }
+    ]
+  },
+  "Sétif": {
+    "id": "19",
+    "communes": [
+      "Ain Abessa",
+      "Ain Arnat",
+      "Ain Azal",
+      "Ain El Kebira",
+      "Ain Lahdjar",
+      "Ain Legraj",
+      "Ain Oulmane",
+      "Ain Roua",
+      "Ain Sebt",
+      "Ait Naoual Mezada",
+      "Ait Tizi",
+      "Amoucha",
+      "Babor",
+      "Bazer Sakhra",
+      "Beidha Bordj",
+      "Belaa",
+      "Beni Aziz",
+      "Beni Chebana",
+      "Beni Fouda",
+      "Beni Hocine",
+      "Beni Mouhli",
+      "Beni Ouartilane",
+      "Bir El Arch",
+      "Bir Haddada",
+      "Bouandas",
+      "Bougaa",
+      "Bousselam",
+      "Boutaleb",
+      "Dehamcha",
+      "Djemila",
+      "Draa Kebila",
+      "El Eulma",
+      "El Ouldja",
+      "El Ouricia",
+      "Guellal",
+      "Guelta Zerka",
+      "Guenzet",
+      "Guidjel",
+      "Hamma",
+      "Hammam Essokhna",
+      "Hammam Guergour",
+      "Harbil",
+      "Ksar El Abtal",
+      "Maaouia",
+      "Maouklane",
+      "Mezloug",
+      "Oued El Barad",
+      "Ouled Addouane",
+      "Ouled Sabor",
+      "Ouled Sidi Ahmed",
+      "Ouled Tebben",
+      "Rosfa",
+      "Salah Bey",
+      "Serdj El Ghoul",
+      "Setif",
+      "Tachouda",
+      "Talaifacene",
+      "Taya",
+      "Tella",
+      "Tizi Nbechar"
+    ],
+    "noestStations": [
+      {
+        "commune": "Setif",
+        "stationCode": "19A"
+      },
+      {
+        "commune": "El eulma",
+        "stationCode": "19B"
+      },
+      {
+        "commune": "Ain Oulmene",
+        "stationCode": "19C"
+      }
+    ]
+  },
+  "Saïda": {
+    "id": "20",
+    "communes": [
+      "Ain El Hadjar",
+      "Ain Sekhouna",
+      "Ain Soltane",
+      "Doui Thabet",
+      "El Hassasna",
+      "Hounet",
+      "Maamora",
+      "Moulay Larbi",
+      "Ouled Brahim",
+      "Ouled Khaled",
+      "Saida",
+      "Sidi Ahmed",
+      "Sidi Amar",
+      "Sidi Boubekeur",
+      "Tircine",
+      "Youb"
+    ],
+    "noestStations": [
+      {
+        "commune": "Saida",
+        "stationCode": "20A"
+      }
+    ]
+  },
+  "Skikda": {
+    "id": "21",
+    "communes": [
+      "Ain Bouziane",
+      "Ain Cherchar",
+      "Ain Kechra",
+      "Ain Zouit",
+      "Azzaba",
+      "Bein El Ouiden",
+      "Bekkouche Lakhdar",
+      "Benazouz",
+      "Beni Bachir",
+      "Beni Oulbane",
+      "Beni Zid",
+      "Bouchtata",
+      "Cheraia",
+      "Collo",
+      "Djendel Saadi Mohamed",
+      "El Ghedir",
+      "El Hadaik",
+      "El Harrouch",
+      "El Marsa",
+      "Emdjez Edchich",
+      "Es Sebt",
+      "Fil Fila",
+      "Hamadi Krouma",
+      "Kanoua",
+      "Kerkera",
+      "Kheneg Mayoum",
+      "Oued Zehour",
+      "Ouldja Boulbalout",
+      "Ouled Attia",
+      "Ouled Hebaba",
+      "Oum Toub",
+      "Ramdane Djamel",
+      "Salah Bouchaour",
+      "Sidi Mezghiche",
+      "Skikda",
+      "Tamalous",
+      "Zerdazas",
+      "Zitouna"
+    ],
+    "noestStations": [
+      {
+        "commune": "Skikda",
+        "stationCode": "21A"
+      }
+    ]
+  },
+  "Sidi Bel Abbès": {
+    "id": "22",
+    "communes": [
+      "Ain Adden",
+      "Ain El Berd",
+      "Ain Kada",
+      "Ain Thrid",
+      "Ain Tindamine",
+      "Amarnas",
+      "Badredine El Mokrani",
+      "Belarbi",
+      "Ben Badis",
+      "Benachiba Chelia",
+      "Bir El Hammam",
+      "Boudjebaa El Bordj",
+      "Boukhanafis",
+      "Chetouane Belaila",
+      "Dhaya",
+      "El Hacaiba",
+      "Hassi Dahou",
+      "Hassi Zehana",
+      "Lamtar",
+      "Makedra",
+      "Marhoum",
+      "Mcid",
+      "Merine",
+      "Mezaourou",
+      "Mostefa Ben Brahim",
+      "Moulay Slissen",
+      "Oued Sbaa",
+      "Oued Sefioun",
+      "Oued Taourira",
+      "Ras El Ma",
+      "Redjem Demouche",
+      "Sehala Thaoura",
+      "Sfissef",
+      "Sidi Ali Benyoub",
+      "Sidi Ali Boussidi",
+      "Sidi Bel Abbes",
+      "Sidi Brahim",
+      "Sidi Chaib",
+      "Sidi Dahou Dezairs",
+      "Sidi Hamadouche",
+      "Sidi Khaled",
+      "Sidi Lahcene",
+      "Sidi Yacoub",
+      "Tabia",
+      "Tafissour",
+      "Taoudmout",
+      "Teghalimet",
+      "Telagh",
+      "Tenira",
+      "Tessala",
+      "Tilmouni",
+      "Zerouala"
+    ],
+    "noestStations": [
+      {
+        "commune": "Sidi bel abbes",
+        "stationCode": "22A"
+      }
+    ]
+  },
+  "Annaba": {
+    "id": "23",
+    "communes": [
+      "Ain Berda",
+      "Annaba",
+      "Berrahel",
+      "Chetaibi",
+      "Cheurfa",
+      "El Bouni",
+      "El Hadjar",
+      "Eulma",
+      "Oued El Aneb",
+      "Seraidi",
+      "Sidi Amer",
+      "Treat"
+    ],
+    "noestStations": [
+      {
+        "commune": "Annaba",
+        "stationCode": "23A"
+      }
+    ]
+  },
+  "Guelma": {
+    "id": "24",
+    "communes": [
+      "Ain Ben Beida",
+      "Ain Hessania",
+      "Ain Larbi",
+      "Ain Makhlouf",
+      "Ain Reggada",
+      "Ain Sandel",
+      "Belkhir",
+      "Ben Djarah",
+      "Beni Mezline",
+      "Bordj Sabat",
+      "Bou Hachana",
+      "Bou Hamdane",
+      "Bouati Mahmoud",
+      "Bouchegouf",
+      "Boumahra Ahmed",
+      "Dahouara",
+      "Djeballah Khemissi",
+      "El Fedjoudj",
+      "Guelaat Bou Sbaa",
+      "Guelma",
+      "Hammam Maskhoutine",
+      "Hamman Nbail",
+      "Heliopolis",
+      "Khezara",
+      "Medjez Amar",
+      "Medjez Sfa",
+      "Nechmaya",
+      "Oued Cheham",
+      "Oued Fragha",
+      "Oued Zenati",
+      "Ras El Agba",
+      "Roknia",
+      "Salaoua Announa",
+      "Tamlouka"
+    ],
+    "noestStations": [
+      {
+        "commune": "Guelma",
+        "stationCode": "24A"
+      }
+    ]
+  },
+  "Constantine": {
+    "id": "25",
+    "communes": [
+      "Ain Abid",
+      "Ain Smara",
+      "Beni Hamiden",
+      "Constantine",
+      "Didouche Mourad",
+      "El Haria",
+      "El Khroub",
+      "Hamma Bouziane",
+      "Ibn Ziad",
+      "Mesaoud Boudjeriou",
+      "Ouled Rahmoune",
+      "Zighoud Youcef"
+    ],
+    "noestStations": [
+      {
+        "commune": "Zouaghi",
+        "stationCode": "25A"
+      },
+      {
+        "commune": "Ali Mendjli",
+        "stationCode": "25B"
+      },
+      {
+        "commune": "Constantine",
+        "stationCode": "25C"
+      }
+    ]
+  },
+  "Médéa": {
+    "id": "26",
+    "communes": [
+      "Ain Boucif",
+      "Ain Ouksir",
+      "Aissaouia",
+      "Aziz",
+      "Baata",
+      "Benchicao",
+      "Beni Slimane",
+      "Berrouaghia",
+      "Bir Ben Laabed",
+      "Boghar",
+      "Bouaiche",
+      "Bouaichoune",
+      "Bouchrahil",
+      "Boughezoul",
+      "Bouskene",
+      "Chahbounia",
+      "Chelalet El Adhaoura",
+      "Cheniguel",
+      "Damiat",
+      "Derrag",
+      "Deux Bassins",
+      "Djouab",
+      "Draa Essamar",
+      "El Azizia",
+      "El Guelbelkebir",
+      "El Hamdania",
+      "El Omaria",
+      "El Ouinet",
+      "Hannacha",
+      "Kef Lakhdar",
+      "Khams Djouamaa",
+      "Ksar El Boukhari",
+      "Medea",
+      "Medjebar",
+      "Meftaha",
+      "Meghraoua",
+      "Mezerena",
+      "Mihoub",
+      "Ouamri",
+      "Oued Harbil",
+      "Ouled Antar",
+      "Ouled Bouachra",
+      "Ouled Brahim",
+      "Ouled Deide",
+      "Ouled Hellal",
+      "Ouled Maaref",
+      "Oum El Djalil",
+      "Ouzera",
+      "Rebaia",
+      "Saneg",
+      "Sedraia",
+      "Seghouane",
+      "Si Mahdjoub",
+      "Sidi Damed",
+      "Sidi Errabia",
+      "Sidi Naamane",
+      "Sidi Zahar",
+      "Sidi Ziane",
+      "Souagui",
+      "Tablat",
+      "Tafraout",
+      "Tamesguida",
+      "Tlatet Eddoair",
+      "Zoubiria"
+    ],
+    "noestStations": [
+      {
+        "commune": "Medea",
+        "stationCode": "26A"
+      }
+    ]
+  },
+  "Mostaganem": {
+    "id": "27",
+    "communes": [
+      "Abdelmalek Ramdane",
+      "Achaacha",
+      "Ain Boudinar",
+      "Ain Nouissy",
+      "Ain Sidi Cherif",
+      "Ain Tadles",
+      "Bouguirat",
+      "El Hassiane",
+      "Fornaka",
+      "Hadjadj",
+      "Hassi Maameche",
+      "Khadra",
+      "Kheiredine",
+      "Mansourah",
+      "Mesra",
+      "Mezghrane",
+      "Mostaganem",
+      "Nekmaria",
+      "Oued El Kheir",
+      "Ouled Boughalem",
+      "Ouled Maallah",
+      "Safsaf",
+      "Sayada",
+      "Sidi Ali",
+      "Sidi Bellater",
+      "Sidi Lakhdar",
+      "Sirat",
+      "Souaflia",
+      "Sour",
+      "Stidia",
+      "Tazgait",
+      "Touahria"
+    ],
+    "noestStations": [
+      {
+        "commune": "Mostaganem",
+        "stationCode": "27A"
+      }
+    ]
+  },
+  "M'Sila": {
+    "id": "28",
+    "communes": [
+      "Ain El Hadjel",
+      "Ain El Melh",
+      "Ain Errich",
+      "Ain Fares",
+      "Ain Khadra",
+      "Belaiba",
+      "Ben Srour",
+      "Beni Ilmane",
+      "Benzouh",
+      "Berhoum",
+      "Bir Foda",
+      "Bou Saada",
+      "Bouti Sayah",
+      "Chellal",
+      "Dehahna",
+      "Djebel Messaad",
+      "El Hamel",
+      "El Houamed",
+      "Hammam Dhalaa",
+      "Khettouti Sed Djir",
+      "Khoubana",
+      "Maadid",
+      "Maarif",
+      "Magra",
+      "Mcif",
+      "Medjedel",
+      "Msila",
+      "Mtarfa",
+      "Ouanougha",
+      "Oued Chair",
+      "Ouled Addi Guebala",
+      "Ouled Atia",
+      "Ouled Derradj",
+      "Ouled Madhi",
+      "Ouled Mansour",
+      "Ouled Sidi Brahim",
+      "Ouled Slimane",
+      "Oultene",
+      "Sidi Aissa",
+      "Sidi Ameur",
+      "Sidi Hadjeres",
+      "Sidi Mhamed",
+      "Slim",
+      "Souamaa",
+      "Tamsa",
+      "Tarmount",
+      "Zarzour"
+    ],
+    "noestStations": [
+      {
+        "commune": "Msila",
+        "stationCode": "28A"
+      },
+      {
+        "commune": "BOUSAADA",
+        "stationCode": "28B"
+      }
+    ]
+  },
+  "Mascara": {
+    "id": "29",
+    "communes": [
+      "Ain Fares",
+      "Ain Fekan",
+      "Ain Ferah",
+      "Ain Frass",
+      "Alaimia",
+      "Aouf",
+      "Benian",
+      "Bou Hanifia",
+      "Bou Henni",
+      "Chorfa",
+      "El Bordj",
+      "El Gaada",
+      "El Ghomri",
+      "El Hachem",
+      "El Keurt",
+      "El Mamounia",
+      "El Menaouer",
+      "Ferraguig",
+      "Froha",
+      "Gharrous",
+      "Gherdjoum",
+      "Ghriss",
+      "Guettena",
+      "Hacine",
+      "Khalouia",
+      "Makdha",
+      "Maoussa",
+      "Mascara",
+      "Matemore",
+      "Moctadouz",
+      "Mohammadia",
+      "Nesmot",
+      "Oggaz",
+      "Oued El Abtal",
+      "Oued Taria",
+      "Ras Ain Amirouche",
+      "Sedjerara",
+      "Sehailia",
+      "Sidi Abdeldjebar",
+      "Sidi Abdelmoumene",
+      "Sidi Boussaid",
+      "Sidi Kada",
+      "Sig",
+      "Teghennif",
+      "Tizi",
+      "Zahana",
+      "Zelmata"
+    ],
+    "noestStations": [
+      {
+        "commune": "Mascara - mohamadia",
+        "stationCode": "29A"
+      },
+      {
+        "commune": "Mascara",
+        "stationCode": "29B"
+      }
+    ]
+  },
+  "Ouargla": {
+    "id": "30",
+    "communes": [
+      "Ain Beida",
+      "El Borma",
+      "Hassi Ben Abdellah",
+      "Hassi Messaoud",
+      "Ngoussa",
+      "Ouargla",
+      "Rouissat",
+      "Sidi Khouiled"
+    ],
+    "noestStations": [
+      {
+        "commune": "Ouargla",
+        "stationCode": "30A"
+      }
+    ]
+  },
+  "Oran": {
+    "id": "31",
+    "communes": [
+      "Ain Biya",
+      "Ain Kerma",
+      "Ain Turk",
+      "Arzew",
+      "Ben Freha",
+      "Bethioua",
+      "Bir El Djir",
+      "Boufatis",
+      "Bousfer",
+      "Boutlelis",
+      "El Ancar",
+      "El Braya",
+      "El Karma",
+      "Es Senia",
+      "Gdyel",
+      "Hassi Ben Okba",
+      "Hassi Bounif",
+      "Hassi Mefsoukh",
+      "Marsat El Hadjadj",
+      "Mers El Kebir",
+      "Messerghin",
+      "Oran",
+      "Oued Tlelat",
+      "Sidi Ben Yabka",
+      "Sidi Chami",
+      "Tafraoui"
+    ],
+    "noestStations": [
+      {
+        "commune": "Maraval",
+        "stationCode": "31A"
+      },
+      {
+        "commune": "Bir el djir",
+        "stationCode": "31B"
+      },
+      {
+        "commune": "Oran",
+        "stationCode": "31C"
+      }
+    ]
+  },
+  "El Bayadh": {
+    "id": "32",
+    "communes": [
+      "Ain El Orak",
+      "Arbaouat",
+      "Boualem",
+      "Bougtoub",
+      "Boussemghoun",
+      "Brezina",
+      "Cheguig",
+      "Chellala",
+      "El Abiodh Sidi Cheikh",
+      "El Bayadh",
+      "El Bnoud",
+      "El Kheither",
+      "El Mehara",
+      "Ghassoul",
+      "Kef El Ahmar",
+      "Krakda",
+      "Rogassa",
+      "Sidi Ameur",
+      "Sidi Slimane",
+      "Sidi Tifour",
+      "Stitten",
+      "Tousmouline"
+    ],
+    "noestStations": [
+      {
+        "commune": "El bayadh",
+        "stationCode": "32A"
+      }
+    ]
+  },
+  "Illizi": {
+    "id": "33",
+    "communes": [
+      "Bordj Omar Driss",
+      "Debdeb",
+      "Illizi",
+      "In Amenas"
+    ],
+    "noestStations": [
+      {
+        "commune": "Illizi",
+        "stationCode": "33A"
+      }
+    ]
+  },
+  "Bordj Bou Arreridj": {
+    "id": "34",
+    "communes": [
+      "Ain Taghrout",
+      "Ain Tesra",
+      "Belimour",
+      "Ben Daoud",
+      "Bir Kasdali",
+      "Bordj Bou Arreridj",
+      "Bordj Ghdir",
+      "Bordj Zemoura",
+      "Colla",
+      "Djaafra",
+      "El Ach",
+      "El Achir",
+      "El Anseur",
+      "El Hamadia",
+      "El Main",
+      "El Mhir",
+      "Ghilassa",
+      "Haraza",
+      "Hasnaoua",
+      "Khelil",
+      "Ksour",
+      "Mansoura",
+      "Medjana",
+      "Ouled Brahem",
+      "Ouled Dahmane",
+      "Ouled Sidi Brahim",
+      "Rabta",
+      "Ras El Oued",
+      "Sidi Embarek",
+      "Tafreg",
+      "Taglait",
+      "Teniet En Nasr",
+      "Tesmart",
+      "Tixter"
+    ],
+    "noestStations": [
+      {
+        "commune": "Bordj Bou Arreridj",
+        "stationCode": "34A"
+      }
+    ]
+  },
+  "Boumerdès": {
+    "id": "35",
+    "communes": [
+      "Afir",
+      "Ammal",
+      "Baghlia",
+      "Ben Choud",
+      "Beni Amrane",
+      "Bordj Menaiel",
+      "Boudouaou",
+      "Boudouaou El Bahri",
+      "Boumerdes",
+      "Bouzegza Keddara",
+      "Chabet El Ameur",
+      "Corso",
+      "Dellys",
+      "Djinet",
+      "El Kharrouba",
+      "Hammedi",
+      "Isser",
+      "Khemis El Khechna",
+      "Laghata",
+      "Larbatache",
+      "Naciria",
+      "Ouled Aissa",
+      "Ouled Hedadj",
+      "Ouled Moussa",
+      "Si Mustapha",
+      "Sidi Daoud",
+      "Souk El Had",
+      "Taourga",
+      "Thenia",
+      "Tidjelabine",
+      "Timezrit",
+      "Zemmouri"
+    ],
+    "noestStations": [
+      {
+        "commune": "Boumerdes",
+        "stationCode": "35A"
+      },
+      {
+        "commune": "Ouled Moussa",
+        "stationCode": "35B"
+      }
+    ]
+  },
+  "El Tarf": {
+    "id": "36",
+    "communes": [
+      "Ain El Assel",
+      "Ain Kerma",
+      "Asfour",
+      "Ben Mhidi",
+      "Berrihane",
+      "Bougous",
+      "Bouhadjar",
+      "Bouteldja",
+      "Chebaita Mokhtar",
+      "Chefia",
+      "Chihani",
+      "Drean",
+      "Echatt",
+      "El Aioun",
+      "El Kala",
+      "El Tarf",
+      "Hammam Beni Salah",
+      "Lac Des Oiseaux",
+      "Oued Zitoun",
+      "Raml Souk",
+      "Souarekh",
+      "Zerizer",
+      "Zitouna"
+    ],
+    "noestStations": [
+      {
+        "commune": "El tarf",
+        "stationCode": "36A"
+      }
+    ]
+  },
+  "Tindouf": {
+    "id": "37",
+    "communes": [
+      "Oum El Assel",
+      "Tindouf"
+    ],
+    "noestStations": [
+      {
+        "commune": "Tindouf",
+        "stationCode": "37A"
+      }
+    ]
+  },
+  "Tissemsilt": {
+    "id": "38",
+    "communes": [
+      "Ammari",
+      "Beni Chaib",
+      "Beni Lahcene",
+      "Bordj Bou Naama",
+      "Bordj El Emir Abdelkader",
+      "Boucaid",
+      "Khemisti",
+      "Larbaa",
+      "Lardjem",
+      "Layoune",
+      "Lazharia",
+      "Maasem",
+      "Melaab",
+      "Ouled Bessem",
+      "Sidi Abed",
+      "Sidi Boutouchent",
+      "Sidi Lantri",
+      "Sidi Slimane",
+      "Tamalaht",
+      "Theniet El Had",
+      "Tissemsilt",
+      "Youssoufia"
+    ],
+    "noestStations": [
+      {
+        "commune": "Tissemsilt",
+        "stationCode": "38A"
+      }
+    ]
+  },
+  "El Oued": {
+    "id": "39",
+    "communes": [
+      "Bayadha",
+      "Beni Guecha",
+      "Debila",
+      "Douar El Ma",
+      "El Ogla",
+      "El Oued",
+      "Guemar",
+      "Hamraia",
+      "Hassani Abdelkrim",
+      "Hassi Khelifa",
+      "Kouinine",
+      "Magrane",
+      "Mih Ouansa",
+      "Nakhla",
+      "Oued El Alenda",
+      "Ourmas",
+      "Reguiba",
+      "Robbah",
+      "Sidi Aoun",
+      "Taghzout",
+      "Taleb Larbi",
+      "Trifaoui"
+    ],
+    "noestStations": [
+      {
+        "commune": "El oued",
+        "stationCode": "39A"
+      }
+    ]
+  },
+  "Khenchela": {
+    "id": "40",
+    "communes": [
+      "Ain Touila",
+      "Babar",
+      "Baghai",
+      "Bouhmama",
+      "Chelia",
+      "Cherchar",
+      "Djellal",
+      "El Hamma",
+      "El Mahmal",
+      "El Oueldja",
+      "Ensigha",
+      "Kais",
+      "Khenchela",
+      "Khirane",
+      "Msara",
+      "Mtoussa",
+      "Ouled Rechache",
+      "Remila",
+      "Tamza",
+      "Taouzianat",
+      "Yabous"
+    ],
+    "noestStations": [
+      {
+        "commune": "Khenchela",
+        "stationCode": "40A"
+      }
+    ]
+  },
+  "Souk Ahras": {
+    "id": "41",
+    "communes": [
+      "Ain Soltane",
+      "Ain Zana",
+      "Bir Bouhouche",
+      "Drea",
+      "Haddada",
+      "Hanancha",
+      "Khedara",
+      "Khemissa",
+      "Mdaourouche",
+      "Mechroha",
+      "Merahna",
+      "Oued Keberit",
+      "Ouled Driss",
+      "Ouled Moumen",
+      "Oum El Adhaim",
+      "Quillen",
+      "Ragouba",
+      "Safel El Ouiden",
+      "Sedrata",
+      "Sidi Fredj",
+      "Souk Ahras",
+      "Taoura",
+      "Terraguelt",
+      "Tiffech",
+      "Zaarouria",
+      "Zouabi"
+    ],
+    "noestStations": [
+      {
+        "commune": "Souk Ahras",
+        "stationCode": "41A"
+      }
+    ]
+  },
+  "Tipaza": {
+    "id": "42",
+    "communes": [
+      "Aghabal",
+      "Ahmer El Ain",
+      "Ain Tagourait",
+      "Attatba",
+      "Beni Milleuk",
+      "Bou Haroun",
+      "Bou Ismail",
+      "Bourkika",
+      "Chaiba",
+      "Cherchel",
+      "Damous",
+      "Douaouda",
+      "Fouka",
+      "Gouraya",
+      "Hadjerat Ennous",
+      "Hadjout",
+      "Khemisti",
+      "Kolea",
+      "Larhat",
+      "Menaceur",
+      "Messelmoun",
+      "Meurad",
+      "Nodor",
+      "Sidi Amar",
+      "Sidi Ghiles",
+      "Sidi Rached",
+      "Sidi Semiane",
+      "Tipaza"
+    ],
+    "noestStations": [
+      {
+        "commune": "Tipaza",
+        "stationCode": "42A"
+      }
+    ]
+  },
+  "Mila": {
+    "id": "43",
+    "communes": [
+      "Ahmed Rachedi",
+      "Ain Beida Harriche",
+      "Ain Mellouk",
+      "Ain Tine",
+      "Amira Arras",
+      "Benyahia Abderrahmane",
+      "Bouhatem",
+      "Chelghoum Laid",
+      "Chigara",
+      "Derradji Bousselah",
+      "El Mechira",
+      "Elayadi Barbes",
+      "Ferdjioua",
+      "Grarem Gouga",
+      "Hamala",
+      "Mila",
+      "Minar Zarza",
+      "Oued Athmenia",
+      "Oued Endja",
+      "Oued Seguen",
+      "Ouled Khalouf",
+      "Rouached",
+      "Sidi Khelifa",
+      "Sidi Merouane",
+      "Tadjenanet",
+      "Tassadane Haddada",
+      "Telerghma",
+      "Terrai Bainen",
+      "Tessala Lamatai",
+      "Tiberguent",
+      "Yahia Beniguecha",
+      "Zeghaia"
+    ],
+    "noestStations": [
+      {
+        "commune": "Mila",
+        "stationCode": "43A"
+      },
+      {
+        "commune": "Chelghoum Laïd",
+        "stationCode": "43B"
+      }
+    ]
+  },
+  "Aïn Defla": {
+    "id": "44",
+    "communes": [
+      "Ain Benian",
+      "Ain Bouyahia",
+      "Ain Defla",
+      "Ain Lechiakh",
+      "Ain Soltane",
+      "Ain Torki",
+      "Arib",
+      "Barbouche",
+      "Bathia",
+      "Belaas",
+      "Ben Allal",
+      "Bir Ouled Khelifa",
+      "Bordj Emir Khaled",
+      "Boumedfaa",
+      "Bourached",
+      "Djelida",
+      "Djemaa Ouled Chikh",
+      "Djendel",
+      "El Abadia",
+      "El Amra",
+      "El Attaf",
+      "El Hassania",
+      "El Maine",
+      "Hammam Righa",
+      "Hoceinia",
+      "Khemis Miliana",
+      "Mekhatria",
+      "Miliana",
+      "Oued Chorfa",
+      "Oued Djemaa",
+      "Rouina",
+      "Sidi Lakhdar",
+      "Tachta Zegagha",
+      "Tarik Ibn Ziad",
+      "Tiberkanine",
+      "Zeddine"
+    ],
+    "noestStations": [
+      {
+        "commune": "Ain defla",
+        "stationCode": "44A"
+      }
+    ]
+  },
+  "Naâma": {
+    "id": "45",
+    "communes": [
+      "Ain Ben Khelil",
+      "Ain Sefra",
+      "Assela",
+      "Djeniane Bourzeg",
+      "El Biod",
+      "Kasdir",
+      "Makman Ben Amer",
+      "Mechria",
+      "Moghrar",
+      "Naama",
+      "Sfissifa",
+      "Tiout"
+    ],
+    "noestStations": [
+      {
+        "commune": "Mechria",
+        "stationCode": "45A"
+      }
+    ]
+  },
+  "Aïn Témouchent": {
+    "id": "46",
+    "communes": [
+      "Aghlal",
+      "Ain El Arbaa",
+      "Ain Kihal",
+      "Ain Temouchent",
+      "Ain Tolba",
+      "Aoubellil",
+      "Beni Saf",
+      "Bou Zedjar",
+      "Chaabet El Ham",
+      "Chentouf",
+      "El Amria",
+      "El Emir Abdelkader",
+      "El Malah",
+      "El Messaid",
+      "Hammam Bouhadjar",
+      "Hassasna",
+      "Hassi El Ghella",
+      "Oued Berkeche",
+      "Oued Sabah",
+      "Ouled Boudjemaa",
+      "Ouled Kihal",
+      "Oulhaca El Gheraba",
+      "Sidi Ben Adda",
+      "Sidi Boumediene",
+      "Sidi Safi",
+      "Tadmaya",
+      "Tamzoura",
+      "Terga"
+    ],
+    "noestStations": [
+      {
+        "commune": "Ain temouchent",
+        "stationCode": "46A"
+      }
+    ]
+  },
+  "Ghardaïa": {
+    "id": "47",
+    "communes": [
+      "Berriane",
+      "Bounoura",
+      "Dhayet Bendhahoua",
+      "El Atteuf",
+      "El Guerrara",
+      "Ghardaia",
+      "Mansoura",
+      "Metlili",
+      "Sebseb",
+      "Zelfana"
+    ],
+    "noestStations": [
+      {
+        "commune": "Ghardaia",
+        "stationCode": "47A"
+      }
+    ]
+  },
+  "Relizane": {
+    "id": "48",
+    "communes": [
+      "Ain Rahma",
+      "Ain Tarek",
+      "Ammi Moussa",
+      "Belaassel Bouzegza",
+      "Bendaoud",
+      "Beni Dergoun",
+      "Beni Zentis",
+      "Dar Ben Abdellah",
+      "Djidiouia",
+      "El Guettar",
+      "El Hamadna",
+      "El Hassi",
+      "El Matmar",
+      "El Ouldja",
+      "Had Echkalla",
+      "Hamri",
+      "Kalaa",
+      "Lahlef",
+      "Mazouna",
+      "Mediouna",
+      "Mendes",
+      "Merdja Sidi Abed",
+      "Ouarizane",
+      "Oued El Djemaa",
+      "Oued Essalem",
+      "Oued Rhiou",
+      "Ouled Aiche",
+      "Ouled Sidi Mihoub",
+      "Ramka",
+      "Relizane",
+      "Sidi Khettab",
+      "Sidi Lazreg",
+      "Sidi Mhamed Ben Ali",
+      "Sidi Mhamed Ben Aouda",
+      "Sidi Saada",
+      "Souk El Haad",
+      "Yellel",
+      "Zemmoura"
+    ],
+    "noestStations": [
+      {
+        "commune": "Relizane",
+        "stationCode": "48A"
+      }
+    ]
+  },
+  "Timimoun": {
+    "id": "49",
+    "communes": [
+      "Aougrout",
+      "Charouine",
+      "Deldoul",
+      "Ksar Kaddour",
+      "Metarfa",
+      "Ouled Aissa",
+      "Ouled Said",
+      "Talmine",
+      "Timimoun",
+      "Tinerkouk"
+    ],
+    "noestStations": [
+      {
+        "commune": "Timimoun",
+        "stationCode": "49A"
+      }
+    ]
+  },
+  "Bordj Badji Mokhtar": {
+    "id": "50",
+    "communes": [
+      "Bordj Badji Mokhtar",
+      "Timiaouine"
+    ],
+    "noestStations": []
+  },
+  "Ouled Djellal": {
+    "id": "51",
+    "communes": [
+      "Besbes",
+      "Chaiba",
+      "Doucen",
+      "Ouled Djellal",
+      "Ras El Miad",
+      "Sidi Khaled"
+    ],
+    "noestStations": [
+      {
+        "commune": "Ouled Djellal",
+        "stationCode": "51A"
+      }
+    ]
+  },
+  "Beni Abbes": {
+    "id": "52",
+    "communes": [
+      "Beni Abbes",
+      "Beni-Ikhlef",
+      "El Ouata",
+      "Igli",
+      "Kerzaz",
+      "Ksabi",
+      "Ouled-Khodeir",
+      "Tamtert",
+      "Timoudi"
+    ],
+    "noestStations": [
+      {
+        "commune": "Béni Abbés",
+        "stationCode": "52A"
+      }
+    ]
+  },
+  "In Salah": {
+    "id": "53",
+    "communes": [
+      "Ain Salah",
+      "Foggaret Ezzoua",
+      "Inghar"
+    ],
+    "noestStations": [
+      {
+        "commune": "In Salah",
+        "stationCode": "53A"
+      }
+    ]
+  },
+  "In Guezzam": {
+    "id": "54",
+    "communes": [
+      "Ain Guezzam",
+      "Tin Zouatine"
+    ],
+    "noestStations": []
+  },
+  "Touggourt": {
+    "id": "55",
+    "communes": [
+      "Benaceur",
+      "Blidet Amor",
+      "El Alia",
+      "El-Hadjira",
+      "M'naguer",
+      "Megarine",
+      "Nezla",
+      "Sidi Slimane",
+      "Taibet",
+      "Tebesbest",
+      "Temacine",
+      "Touggourt",
+      "Zaouia El Abidia"
+    ],
+    "noestStations": [
+      {
+        "commune": "Touggourt",
+        "stationCode": "55A"
+      }
+    ]
+  },
+  "Djanet": {
+    "id": "56",
+    "communes": [
+      "Bordj El Haouass",
+      "Djanet"
+    ],
+    "noestStations": []
+  },
+  "El M'Ghair": {
+    "id": "57",
+    "communes": [
+      "Djamaa",
+      "El M'Ghair",
+      "M'rara",
+      "Oum Touyour",
+      "Sidi Amrane",
+      "Sidi Khelil",
+      "Still",
+      "Tenedla"
+    ],
+    "noestStations": []
+  },
+  "El Meniaa": {
+    "id": "58",
+    "communes": [
+      "El Meniaa",
+      "Hassi Fehal",
+      "Hassi Gara"
+    ],
+    "noestStations": [
+      {
+        "commune": "El meniaa",
+        "stationCode": "58A"
+      }
+    ]
+  }
+}
