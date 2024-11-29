@@ -168,7 +168,7 @@ export default function EditCategory({ category }: EditCategoryProps) {
     <Dialog>
       <DialogTrigger>
         <Button variant="ghost">
-        <PenBox className="w-5 h-5" strokeWidth={1.5} />
+          <PenBox className="w-5 h-5" strokeWidth={1.5} />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
@@ -234,7 +234,7 @@ export default function EditCategory({ category }: EditCategoryProps) {
             <Select
               options={categoryOptions}
               selectedOptions={selectedParentCategory}
-              onChange={setSelectedParentCategory}
+              setSelectedOptions={setSelectedParentCategory}
               loading={loading}
               error={error}
             />
@@ -244,7 +244,7 @@ export default function EditCategory({ category }: EditCategoryProps) {
             <Select
               options={categoryOptions}
               selectedOptions={selectedSubcategories}
-              onChange={setSelectedSubcategories}
+              setSelectedOptions={setSelectedSubcategories}
               multiple
               loading={loading}
               error={error}

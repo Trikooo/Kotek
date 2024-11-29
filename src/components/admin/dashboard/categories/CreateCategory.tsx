@@ -206,7 +206,7 @@ export default function CreateCategory() {
             <Select
               options={categoryOptions}
               selectedOptions={selectedParentCategory}
-              onChange={setSelectedParentCategory}
+              setSelectedOptions={setSelectedParentCategory}
               loading={loading}
               error={error}
             />
@@ -216,7 +216,7 @@ export default function CreateCategory() {
             <Select
               options={categoryOptions}
               selectedOptions={selectedSubcategories}
-              onChange={setSelectedSubcategories}
+              setSelectedOptions={setSelectedSubcategories}
               multiple
               loading={loading}
               error={error}
