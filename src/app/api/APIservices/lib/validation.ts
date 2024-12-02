@@ -85,3 +85,32 @@ export const cartUpdateRequestSchema = z.object({
 
 export type CartItemInput = z.infer<typeof cartItemSchema>;
 export type CartUpdateRequest = z.infer<typeof cartUpdateRequestSchema>;
+
+export const AddressSchema = z.object({
+  id: z.string().optional(),
+  fullName: z
+    .string()
+    .min(2, { message: "Full name must be at least 2 characters" }),
+  phoneNumber: z
+    .string()
+    .regex(/^0\d{9}$/, {
+      message: "Phone number must be 10 digits starting with 0",
+    }),
+  secondPhoneNumber: z
+    .string()
+    .regex(/^0\d{9}$/, {
+      message: "Second phone number must be 10 digits starting with 0",
+    })
+    .optional(),
+  wilayaValue: z.string().min(1, { message: "Wilaya value is required" }),
+  wilayaLabel: z.string().min(1, { message: "Wilaya label is required" }),
+  commune: z.string().min(1, { message: "Commune is required" }),
+  address: z
+    .string()
+    .min(5, { message: "Address must be at least 5 characters" }),
+  stopDesk: z.boolean(),
+  stationCode: z.string().optional(),
+  stationName: z.string().optional(),
+});
+
+export type AddressType = z.infer<typeof AddressSchema>;

@@ -1,4 +1,4 @@
-import { $Enums, Category, Product } from "@prisma/client";
+import { $Enums, Category, OrderStatus, Product } from "@prisma/client";
 
 export interface CreateProductT {
   name: string;
@@ -98,15 +98,72 @@ export type CartUpdateResponse = {
   error?: string;
 };
 
-
 type Wilaya = {
   id: string;
   communes: string[];
-  noestStations: {
-    commune: string;
-    stationCode: string;
-  }[];
+  noest: {
+    stations: {
+      commune: string;
+      stationCode: string;
+    }[];
+    prices: {
+      home: number;
+      stopDesk: number;
+    };
+  };
+  legacyData?: {
+    previousWilaya: string;
+    previousId: string;
+  };
 };
 
 export type Wilayas = Record<string, Wilaya>;
 
+export type NoestOrderForm = {
+  api_token: string;
+  user_guid: string;
+  reference: string | null;
+  client: string;
+  phone: string;
+  phone_2?: string;
+  adresse: string;
+  wilaya_id: number;
+  commune: string;
+  montant: number;
+  remarque?: string;
+  produit: string; // Assuming it's a list of product references
+  type_id: 1 | 2 | 3; // 1: Livraison, 2: Echange, 3: Pick up
+  poids: number;
+  stop_desk: 0 | 1; // 0: à domicile, 1: stop desk
+  station_code?: string; // Required if stop_desk = 1
+  stock: 0 | 1; // 0: Non, 1: Oui
+  quantite?: string; // Required if stock = 1
+  can_open: 0 | 1; // 0: Non, 1: Oui
+};
+
+export type KotekOrder = {
+  status: OrderStatus;
+  totalAmount: number;
+  userId: string;
+  addressId?: string; // Optional addressId field (can be null or undefined if no address is provided)
+  address: Address; // Optional address object, reflects the Address model
+  items: {
+    quantity: number;
+    price: number;
+    productId: string;
+  }[];
+};
+export interface Address {
+  id?: string;
+  fullName: string;
+  phoneNumber: string;
+  secondPhoneNumber?: string;
+  wilayaValue: string;
+  wilayaLabel: string;
+  commune: string;
+  address: string;
+
+  stopDesk: boolean;
+  stationCode?: string;
+  stationName?: string;
+}

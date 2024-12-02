@@ -1,3 +1,4 @@
+"use client"
 import { useGetCart } from "@/hooks/cart/useCart";
 import { FetchCart } from "@/types/types";
 import React, { createContext, useContext, ReactNode, useMemo } from "react";

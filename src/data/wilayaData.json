@@ -19,12 +19,18 @@
       "Tsabit",
       "Zaouiet Kounta"
     ],
-    "noestStations": [
-      {
-        "commune": "Adrar",
-        "stationCode": "1A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Adrar",
+          "stationCode": "1A"
+        }
+      ],
+      "prices": {
+        "home": 1500,
+        "stopDesk": 1000
       }
-    ]
+    }
   },
   "Chlef": {
     "id": "2",
@@ -65,12 +71,18 @@
       "Tenes",
       "Zeboudja"
     ],
-    "noestStations": [
-      {
-        "commune": "Chlef",
-        "stationCode": "2A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Chlef",
+          "stationCode": "2A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Laghouat": {
     "id": "3",
@@ -100,16 +112,22 @@
       "Tadjrouna",
       "Taouiala"
     ],
-    "noestStations": [
-      {
-        "commune": "Laghouat",
-        "stationCode": "3A"
-      },
-      {
-        "commune": "AFLOU",
-        "stationCode": "3B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Laghouat",
+          "stationCode": "3A"
+        },
+        {
+          "commune": "AFLOU",
+          "stationCode": "3B"
+        }
+      ],
+      "prices": {
+        "home": 1000,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Oum El Bouaghi": {
     "id": "4",
@@ -144,12 +162,18 @@
       "Souk Naamane",
       "Zorg"
     ],
-    "noestStations": [
-      {
-        "commune": "Ain mlila",
-        "stationCode": "4A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Ain mlila",
+          "stationCode": "4A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Batna": {
     "id": "5",
@@ -216,16 +240,22 @@
       "Tkout",
       "Zanat El Beida"
     ],
-    "noestStations": [
-      {
-        "commune": "Batna",
-        "stationCode": "5A"
-      },
-      {
-        "commune": "Barika",
-        "stationCode": "5B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Batna",
+          "stationCode": "5A"
+        },
+        {
+          "commune": "Barika",
+          "stationCode": "5B"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Béjaïa": {
     "id": "6",
@@ -283,16 +313,22 @@
       "Tizi Nberber",
       "Toudja"
     ],
-    "noestStations": [
-      {
-        "commune": "Bejaia",
-        "stationCode": "6A"
-      },
-      {
-        "commune": "Akbou",
-        "stationCode": "6B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Bejaia",
+          "stationCode": "6A"
+        },
+        {
+          "commune": "Akbou",
+          "stationCode": "6B"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Biskra": {
     "id": "7",
@@ -326,12 +362,18 @@
       "Tolga",
       "Zeribet El Oued"
     ],
-    "noestStations": [
-      {
-        "commune": "Biskra",
-        "stationCode": "7A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Biskra",
+          "stationCode": "7A"
+        }
+      ],
+      "prices": {
+        "home": 1000,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Béchar": {
     "id": "8",
@@ -349,12 +391,18 @@
       "Tabalbala",
       "Taghit"
     ],
-    "noestStations": [
-      {
-        "commune": "Bechar",
-        "stationCode": "8A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Bechar",
+          "stationCode": "8A"
+        }
+      ],
+      "prices": {
+        "home": 1200,
+        "stopDesk": 800
       }
-    ]
+    }
   },
   "Blida": {
     "id": "9",
@@ -385,16 +433,22 @@
       "Souhane",
       "Soumaa"
     ],
-    "noestStations": [
-      {
-        "commune": "Blida",
-        "stationCode": "9A"
-      },
-      {
-        "commune": "Boufarik",
-        "stationCode": "9B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Blida",
+          "stationCode": "9A"
+        },
+        {
+          "commune": "Boufarik",
+          "stationCode": "9B"
+        }
+      ],
+      "prices": {
+        "home": 600,
+        "stopDesk": 400
       }
-    ]
+    }
   },
   "Bouira": {
     "id": "10",
@@ -445,28 +499,34 @@
       "Taguedit",
       "Zbarbar"
     ],
-    "noestStations": [
-      {
-        "commune": "Bouira",
-        "stationCode": "10A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Bouira",
+          "stationCode": "10A"
+        }
+      ],
+      "prices": {
+        "home": 700,
+        "stopDesk": 450
       }
-    ]
+    }
   },
   "Tamanrasset": {
     "id": "11",
-    "communes": [
-      "Abalessa",
-      "Idles",
-      "In Amguel",
-      "Tamanghasset",
-      "Tazouk"
-    ],
-    "noestStations": [
-      {
-        "commune": "Tamanrasset",
-        "stationCode": "11A"
+    "communes": ["Abalessa", "Idles", "In Amguel", "Tamanghasset", "Tazouk"],
+    "noest": {
+      "stations": [
+        {
+          "commune": "Tamanrasset",
+          "stationCode": "11A"
+        }
+      ],
+      "prices": {
+        "home": 2000,
+        "stopDesk": 1500
       }
-    ]
+    }
   },
   "Tébessa": {
     "id": "12",
@@ -500,12 +560,18 @@
       "Tebessa",
       "Thlidjene"
     ],
-    "noestStations": [
-      {
-        "commune": "Tebessa",
-        "stationCode": "12A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Tebessa",
+          "stationCode": "12A"
+        }
+      ],
+      "prices": {
+        "home": 900,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Tlemcen": {
     "id": "13",
@@ -564,16 +630,22 @@
       "Tlemcen",
       "Zenata"
     ],
-    "noestStations": [
-      {
-        "commune": "Tlemcen",
-        "stationCode": "13A"
-      },
-      {
-        "commune": "Maghnia",
-        "stationCode": "13B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Tlemcen",
+          "stationCode": "13A"
+        },
+        {
+          "commune": "Maghnia",
+          "stationCode": "13B"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Tiaret": {
     "id": "14",
@@ -621,12 +693,18 @@
       "Tousnina",
       "Zmalet El Emir Aek"
     ],
-    "noestStations": [
-      {
-        "commune": "Tiaret",
-        "stationCode": "14A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Tiaret",
+          "stationCode": "14A"
+        }
+      ],
+      "prices": {
+        "home": 900,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Tizi Ouzou": {
     "id": "15",
@@ -699,16 +777,22 @@
       "Yatafen",
       "Zekri"
     ],
-    "noestStations": [
-      {
-        "commune": "Tizi Ouzou",
-        "stationCode": "15A"
-      },
-      {
-        "commune": "AZAZGA",
-        "stationCode": "15B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Tizi Ouzou",
+          "stationCode": "15A"
+        },
+        {
+          "commune": "AZAZGA",
+          "stationCode": "15B"
+        }
+      ],
+      "prices": {
+        "home": 700,
+        "stopDesk": 450
       }
-    ]
+    }
   },
   "Alger": {
     "id": "16",
@@ -771,32 +855,38 @@
       "Tassala El Merdja",
       "Zeralda"
     ],
-    "noestStations": [
-      {
-        "commune": "Bir Mourad rais",
-        "stationCode": "16A"
-      },
-      {
-        "commune": "BAB EZZOUAR",
-        "stationCode": "16B"
-      },
-      {
-        "commune": "Cheraga",
-        "stationCode": "16C"
-      },
-      {
-        "commune": "Reghaia",
-        "stationCode": "16D"
-      },
-      {
-        "commune": "Alger centre",
-        "stationCode": "16E"
-      },
-      {
-        "commune": "Baba Hassen",
-        "stationCode": "16F"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Bir Mourad rais",
+          "stationCode": "16A"
+        },
+        {
+          "commune": "BAB EZZOUAR",
+          "stationCode": "16B"
+        },
+        {
+          "commune": "Cheraga",
+          "stationCode": "16C"
+        },
+        {
+          "commune": "Reghaia",
+          "stationCode": "16D"
+        },
+        {
+          "commune": "Alger centre",
+          "stationCode": "16E"
+        },
+        {
+          "commune": "Baba Hassen",
+          "stationCode": "16F"
+        }
+      ],
+      "prices": {
+        "home": 500,
+        "stopDesk": 300
       }
-    ]
+    }
   },
   "Djelfa": {
     "id": "17",
@@ -838,12 +928,18 @@
       "Zaafrane",
       "Zaccar"
     ],
-    "noestStations": [
-      {
-        "commune": "Djelfa",
-        "stationCode": "17A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Djelfa",
+          "stationCode": "17A"
+        }
+      ],
+      "prices": {
+        "home": 1000,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Jijel": {
     "id": "18",
@@ -877,12 +973,18 @@
       "Texena",
       "Ziamma Mansouriah"
     ],
-    "noestStations": [
-      {
-        "commune": "Jijel",
-        "stationCode": "18A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Jijel",
+          "stationCode": "18A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Sétif": {
     "id": "19",
@@ -948,20 +1050,26 @@
       "Tella",
       "Tizi Nbechar"
     ],
-    "noestStations": [
-      {
-        "commune": "Setif",
-        "stationCode": "19A"
-      },
-      {
-        "commune": "El eulma",
-        "stationCode": "19B"
-      },
-      {
-        "commune": "Ain Oulmene",
-        "stationCode": "19C"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Setif",
+          "stationCode": "19A"
+        },
+        {
+          "commune": "El eulma",
+          "stationCode": "19B"
+        },
+        {
+          "commune": "Ain Oulmene",
+          "stationCode": "19C"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Saïda": {
     "id": "20",
@@ -983,12 +1091,18 @@
       "Tircine",
       "Youb"
     ],
-    "noestStations": [
-      {
-        "commune": "Saida",
-        "stationCode": "20A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Saida",
+          "stationCode": "20A"
+        }
+      ],
+      "prices": {
+        "home": 900,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Skikda": {
     "id": "21",
@@ -1032,12 +1146,18 @@
       "Zerdazas",
       "Zitouna"
     ],
-    "noestStations": [
-      {
-        "commune": "Skikda",
-        "stationCode": "21A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Skikda",
+          "stationCode": "21A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Sidi Bel Abbès": {
     "id": "22",
@@ -1095,12 +1215,18 @@
       "Tilmouni",
       "Zerouala"
     ],
-    "noestStations": [
-      {
-        "commune": "Sidi bel abbes",
-        "stationCode": "22A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Sidi bel abbes",
+          "stationCode": "22A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Annaba": {
     "id": "23",
@@ -1118,12 +1244,18 @@
       "Sidi Amer",
       "Treat"
     ],
-    "noestStations": [
-      {
-        "commune": "Annaba",
-        "stationCode": "23A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Annaba",
+          "stationCode": "23A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Guelma": {
     "id": "24",
@@ -1163,12 +1295,18 @@
       "Salaoua Announa",
       "Tamlouka"
     ],
-    "noestStations": [
-      {
-        "commune": "Guelma",
-        "stationCode": "24A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Guelma",
+          "stationCode": "24A"
+        }
+      ],
+      "prices": {
+        "home": 900,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Constantine": {
     "id": "25",
@@ -1186,20 +1324,26 @@
       "Ouled Rahmoune",
       "Zighoud Youcef"
     ],
-    "noestStations": [
-      {
-        "commune": "Zouaghi",
-        "stationCode": "25A"
-      },
-      {
-        "commune": "Ali Mendjli",
-        "stationCode": "25B"
-      },
-      {
-        "commune": "Constantine",
-        "stationCode": "25C"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Zouaghi",
+          "stationCode": "25A"
+        },
+        {
+          "commune": "Ali Mendjli",
+          "stationCode": "25B"
+        },
+        {
+          "commune": "Constantine",
+          "stationCode": "25C"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Médéa": {
     "id": "26",
@@ -1269,12 +1413,18 @@
       "Tlatet Eddoair",
       "Zoubiria"
     ],
-    "noestStations": [
-      {
-        "commune": "Medea",
-        "stationCode": "26A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Medea",
+          "stationCode": "26A"
+        }
+      ],
+      "prices": {
+        "home": 700,
+        "stopDesk": 450
       }
-    ]
+    }
   },
   "Mostaganem": {
     "id": "27",
@@ -1312,12 +1462,18 @@
       "Tazgait",
       "Touahria"
     ],
-    "noestStations": [
-      {
-        "commune": "Mostaganem",
-        "stationCode": "27A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Mostaganem",
+          "stationCode": "27A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "M'Sila": {
     "id": "28",
@@ -1370,16 +1526,22 @@
       "Tarmount",
       "Zarzour"
     ],
-    "noestStations": [
-      {
-        "commune": "Msila",
-        "stationCode": "28A"
-      },
-      {
-        "commune": "BOUSAADA",
-        "stationCode": "28B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Msila",
+          "stationCode": "28A"
+        },
+        {
+          "commune": "BOUSAADA",
+          "stationCode": "28B"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Mascara": {
     "id": "29",
@@ -1432,16 +1594,22 @@
       "Zahana",
       "Zelmata"
     ],
-    "noestStations": [
-      {
-        "commune": "Mascara - mohamadia",
-        "stationCode": "29A"
-      },
-      {
-        "commune": "Mascara",
-        "stationCode": "29B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Mascara - mohamadia",
+          "stationCode": "29A"
+        },
+        {
+          "commune": "Mascara",
+          "stationCode": "29B"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Ouargla": {
     "id": "30",
@@ -1455,12 +1623,18 @@
       "Rouissat",
       "Sidi Khouiled"
     ],
-    "noestStations": [
-      {
-        "commune": "Ouargla",
-        "stationCode": "30A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Ouargla",
+          "stationCode": "30A"
+        }
+      ],
+      "prices": {
+        "home": 1100,
+        "stopDesk": 700
       }
-    ]
+    }
   },
   "Oran": {
     "id": "31",
@@ -1492,20 +1666,26 @@
       "Sidi Chami",
       "Tafraoui"
     ],
-    "noestStations": [
-      {
-        "commune": "Maraval",
-        "stationCode": "31A"
-      },
-      {
-        "commune": "Bir el djir",
-        "stationCode": "31B"
-      },
-      {
-        "commune": "Oran",
-        "stationCode": "31C"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Maraval",
+          "stationCode": "31A"
+        },
+        {
+          "commune": "Bir el djir",
+          "stationCode": "31B"
+        },
+        {
+          "commune": "Oran",
+          "stationCode": "31C"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "El Bayadh": {
     "id": "32",
@@ -1533,27 +1713,34 @@
       "Stitten",
       "Tousmouline"
     ],
-    "noestStations": [
-      {
-        "commune": "El bayadh",
-        "stationCode": "32A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "El bayadh",
+          "stationCode": "32A"
+        }
+      ],
+      "prices": {
+        "home": 1200,
+        "stopDesk": 800
       }
-    ]
+    }
   },
   "Illizi": {
     "id": "33",
-    "communes": [
-      "Bordj Omar Driss",
-      "Debdeb",
-      "Illizi",
-      "In Amenas"
-    ],
-    "noestStations": [
-      {
-        "commune": "Illizi",
-        "stationCode": "33A"
+    "communes": ["Bordj Omar Driss", "Debdeb", "Illizi", "In Amenas"],
+    "noest": {
+      "stations": [
+        {
+          "commune": "Illizi",
+          "stationCode": "33A"
+        }
+      ],
+      "prices": {
+        "home": 1900,
+        "stopDesk": 1500
       }
-    ]
+    }
   },
   "Bordj Bou Arreridj": {
     "id": "34",
@@ -1593,12 +1780,18 @@
       "Tesmart",
       "Tixter"
     ],
-    "noestStations": [
-      {
-        "commune": "Bordj Bou Arreridj",
-        "stationCode": "34A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Bordj Bou Arreridj",
+          "stationCode": "34A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Boumerdès": {
     "id": "35",
@@ -1636,16 +1829,22 @@
       "Timezrit",
       "Zemmouri"
     ],
-    "noestStations": [
-      {
-        "commune": "Boumerdes",
-        "stationCode": "35A"
-      },
-      {
-        "commune": "Ouled Moussa",
-        "stationCode": "35B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Boumerdes",
+          "stationCode": "35A"
+        },
+        {
+          "commune": "Ouled Moussa",
+          "stationCode": "35B"
+        }
+      ],
+      "prices": {
+        "home": 600,
+        "stopDesk": 400
       }
-    ]
+    }
   },
   "El Tarf": {
     "id": "36",
@@ -1674,25 +1873,34 @@
       "Zerizer",
       "Zitouna"
     ],
-    "noestStations": [
-      {
-        "commune": "El tarf",
-        "stationCode": "36A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "El tarf",
+          "stationCode": "36A"
+        }
+      ],
+      "prices": {
+        "home": 900,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Tindouf": {
     "id": "37",
-    "communes": [
-      "Oum El Assel",
-      "Tindouf"
-    ],
-    "noestStations": [
-      {
-        "commune": "Tindouf",
-        "stationCode": "37A"
+    "communes": ["Oum El Assel", "Tindouf"],
+    "noest": {
+      "stations": [
+        {
+          "commune": "Tindouf",
+          "stationCode": "37A"
+        }
+      ],
+      "prices": {
+        "home": 1700,
+        "stopDesk": 1000
       }
-    ]
+    }
   },
   "Tissemsilt": {
     "id": "38",
@@ -1720,12 +1928,18 @@
       "Tissemsilt",
       "Youssoufia"
     ],
-    "noestStations": [
-      {
-        "commune": "Tissemsilt",
-        "stationCode": "38A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Tissemsilt",
+          "stationCode": "38A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "El Oued": {
     "id": "39",
@@ -1753,12 +1967,18 @@
       "Taleb Larbi",
       "Trifaoui"
     ],
-    "noestStations": [
-      {
-        "commune": "El oued",
-        "stationCode": "39A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "El oued",
+          "stationCode": "39A"
+        }
+      ],
+      "prices": {
+        "home": 1100,
+        "stopDesk": 700
       }
-    ]
+    }
   },
   "Khenchela": {
     "id": "40",
@@ -1785,12 +2005,18 @@
       "Taouzianat",
       "Yabous"
     ],
-    "noestStations": [
-      {
-        "commune": "Khenchela",
-        "stationCode": "40A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Khenchela",
+          "stationCode": "40A"
+        }
+      ],
+      "prices": {
+        "home": 900,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Souk Ahras": {
     "id": "41",
@@ -1822,12 +2048,18 @@
       "Zaarouria",
       "Zouabi"
     ],
-    "noestStations": [
-      {
-        "commune": "Souk Ahras",
-        "stationCode": "41A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Souk Ahras",
+          "stationCode": "41A"
+        }
+      ],
+      "prices": {
+        "home": 900,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Tipaza": {
     "id": "42",
@@ -1861,12 +2093,18 @@
       "Sidi Semiane",
       "Tipaza"
     ],
-    "noestStations": [
-      {
-        "commune": "Tipaza",
-        "stationCode": "42A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Tipaza",
+          "stationCode": "42A"
+        }
+      ],
+      "prices": {
+        "home": 600,
+        "stopDesk": 400
       }
-    ]
+    }
   },
   "Mila": {
     "id": "43",
@@ -1904,16 +2142,22 @@
       "Yahia Beniguecha",
       "Zeghaia"
     ],
-    "noestStations": [
-      {
-        "commune": "Mila",
-        "stationCode": "43A"
-      },
-      {
-        "commune": "Chelghoum Laïd",
-        "stationCode": "43B"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Mila",
+          "stationCode": "43A"
+        },
+        {
+          "commune": "Chelghoum Laïd",
+          "stationCode": "43B"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Aïn Defla": {
     "id": "44",
@@ -1955,12 +2199,18 @@
       "Tiberkanine",
       "Zeddine"
     ],
-    "noestStations": [
-      {
-        "commune": "Ain defla",
-        "stationCode": "44A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Ain defla",
+          "stationCode": "44A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Naâma": {
     "id": "45",
@@ -1978,12 +2228,18 @@
       "Sfissifa",
       "Tiout"
     ],
-    "noestStations": [
-      {
-        "commune": "Mechria",
-        "stationCode": "45A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Mechria",
+          "stationCode": "45A"
+        }
+      ],
+      "prices": {
+        "home": 1200,
+        "stopDesk": 800
       }
-    ]
+    }
   },
   "Aïn Témouchent": {
     "id": "46",
@@ -2017,12 +2273,18 @@
       "Tamzoura",
       "Terga"
     ],
-    "noestStations": [
-      {
-        "commune": "Ain temouchent",
-        "stationCode": "46A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Ain temouchent",
+          "stationCode": "46A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Ghardaïa": {
     "id": "47",
@@ -2038,12 +2300,18 @@
       "Sebseb",
       "Zelfana"
     ],
-    "noestStations": [
-      {
-        "commune": "Ghardaia",
-        "stationCode": "47A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Ghardaia",
+          "stationCode": "47A"
+        }
+      ],
+      "prices": {
+        "home": 1100,
+        "stopDesk": 700
       }
-    ]
+    }
   },
   "Relizane": {
     "id": "48",
@@ -2087,12 +2355,18 @@
       "Yellel",
       "Zemmoura"
     ],
-    "noestStations": [
-      {
-        "commune": "Relizane",
-        "stationCode": "48A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Relizane",
+          "stationCode": "48A"
+        }
+      ],
+      "prices": {
+        "home": 800,
+        "stopDesk": 500
       }
-    ]
+    }
   },
   "Timimoun": {
     "id": "49",
@@ -2108,20 +2382,37 @@
       "Timimoun",
       "Tinerkouk"
     ],
-    "noestStations": [
-      {
-        "commune": "Timimoun",
-        "stationCode": "49A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Timimoun",
+          "stationCode": "49A"
+        }
+      ],
+      "prices": {
+        "home": 1500,
+        "stopDesk": 1000
       }
-    ]
+    },
+    "legacyData": {
+      "previousWilaya": "adrar",
+      "previousId": "1"
+    }
   },
   "Bordj Badji Mokhtar": {
     "id": "50",
-    "communes": [
-      "Bordj Badji Mokhtar",
-      "Timiaouine"
-    ],
-    "noestStations": []
+    "communes": ["Bordj Badji Mokhtar", "Timiaouine"],
+    "noest": {
+      "stations": [],
+      "prices": {
+        "home": 0,
+        "stopDesk": 0
+      }
+    },
+    "legacyData": {
+      "previousWilaya": "adrar",
+      "previousId": "1"
+    }
   },
   "Ouled Djellal": {
     "id": "51",
@@ -2133,12 +2424,18 @@
       "Ras El Miad",
       "Sidi Khaled"
     ],
-    "noestStations": [
-      {
-        "commune": "Ouled Djellal",
-        "stationCode": "51A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Ouled Djellal",
+          "stationCode": "51A"
+        }
+      ],
+      "prices": {
+        "home": 1000,
+        "stopDesk": 600
       }
-    ]
+    }
   },
   "Beni Abbes": {
     "id": "52",
@@ -2153,34 +2450,49 @@
       "Tamtert",
       "Timoudi"
     ],
-    "noestStations": [
-      {
-        "commune": "Béni Abbés",
-        "stationCode": "52A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Béni Abbés",
+          "stationCode": "52A"
+        }
+      ],
+      "prices": {
+        "home": 1200,
+        "stopDesk": 800
       }
-    ]
+    },
+    "legacyData": {
+      "previousWilaya": "Béchar",
+      "previousId": "8"
+    }
   },
   "In Salah": {
     "id": "53",
-    "communes": [
-      "Ain Salah",
-      "Foggaret Ezzoua",
-      "Inghar"
-    ],
-    "noestStations": [
-      {
-        "commune": "In Salah",
-        "stationCode": "53A"
+    "communes": ["Ain Salah", "Foggaret Ezzoua", "Inghar"],
+    "noest": {
+      "stations": [
+        {
+          "commune": "In Salah",
+          "stationCode": "53A"
+        }
+      ],
+      "prices": {
+        "home": 1800,
+        "stopDesk": 1200
       }
-    ]
+    }
   },
   "In Guezzam": {
     "id": "54",
-    "communes": [
-      "Ain Guezzam",
-      "Tin Zouatine"
-    ],
-    "noestStations": []
+    "communes": ["Ain Guezzam", "Tin Zouatine"],
+    "noest": {
+      "stations": [],
+      "prices": {
+        "home": 0,
+        "stopDesk": 0
+      }
+    }
   },
   "Touggourt": {
     "id": "55",
@@ -2199,20 +2511,37 @@
       "Touggourt",
       "Zaouia El Abidia"
     ],
-    "noestStations": [
-      {
-        "commune": "Touggourt",
-        "stationCode": "55A"
+    "noest": {
+      "stations": [
+        {
+          "commune": "Touggourt",
+          "stationCode": "55A"
+        }
+      ],
+      "prices": {
+        "home": 1100,
+        "stopDesk": 700
       }
-    ]
+    },
+    "legacyData": {
+      "previousWilaya": "Ouargla",
+      "previousId": "30"
+    }
   },
   "Djanet": {
     "id": "56",
-    "communes": [
-      "Bordj El Haouass",
-      "Djanet"
-    ],
-    "noestStations": []
+    "communes": ["Bordj El Haouass", "Djanet"],
+    "noest": {
+      "stations": [],
+      "prices": {
+        "home": 0,
+        "stopDesk": 0
+      }
+    },
+    "legacyData": {
+      "previousWilaya": "Illizi",
+      "previousId": "33"
+    }
   },
   "El M'Ghair": {
     "id": "57",
@@ -2226,20 +2555,36 @@
       "Still",
       "Tenedla"
     ],
-    "noestStations": []
+    "noest": {
+      "stations": [],
+      "prices": {
+        "home": 1100,
+        "stopDesk": 700
+      }
+    },
+    "legacyData": {
+      "previousWilaya": "El Oued",
+      "previousId": "39"
+    }
   },
   "El Meniaa": {
     "id": "58",
-    "communes": [
-      "El Meniaa",
-      "Hassi Fehal",
-      "Hassi Gara"
-    ],
-    "noestStations": [
-      {
-        "commune": "El meniaa",
-        "stationCode": "58A"
+    "communes": ["El Meniaa", "Hassi Fehal", "Hassi Gara"],
+    "noest": {
+      "stations": [
+        {
+          "commune": "El meniaa",
+          "stationCode": "58A"
+        }
+      ],
+      "prices": {
+        "home": 1100,
+        "stopDesk": 800
       }
-    ]
+    },
+    "legacyData": {
+      "previousWilaya": "Ghardaïa",
+      "previousId": "47"
+    }
   }
 }

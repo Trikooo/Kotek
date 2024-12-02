@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  KeyboardEvent,
+  useMemo,
+} from "react";
 import {
   Check,
   ChevronDown,
@@ -16,6 +22,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./tooltip";
+import Fuse from "fuse.js";
+import { normalizeText } from "@/utils/normalizeText";
 
 export type Option = {
   value: string;
@@ -25,8 +33,8 @@ export type Option = {
 interface SelectProps {
   options: Option[];
   selectedOptions: Option[];
-  setSelectedOptions: (selectedOptions: Option[]) => void;
-  onChange?: (selectedOptions: Option[]) => void;
+  setSelectedOptions: React.Dispatch<React.SetStateAction<Option[]>>;
+  onChange?: (prevOptions: Option[], currentOption: Option[]) => void;
   multiple?: boolean;
   searchable?: boolean;
   loading?: boolean;
@@ -63,30 +71,41 @@ const Select: React.FC<SelectProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const normalizedOptions = options.map((option) => ({
+    ...option,
+    label: normalizeText(option.label),
+    value: option.value,
+  }));
 
-  const handleOptionClick = (option: Option) => {
+  const fuse = useMemo(() => {
+    const fuseOptions = {
+      keys: ["label", "value"],
+      threshold: 0.3,
+      minMatchCharLength: 1,
+      ignoreLocation: true,
+    };
+    return new Fuse(normalizedOptions, fuseOptions);
+  }, [normalizedOptions]);
+
+  const handleOptionClick = (option: Option | undefined) => {
+    if (!option) return;
+
     if (onChange) {
-      onChange([option]);
+      onChange(selectedOptions, [option]);
     }
+
     if (multiple) {
-      if (option.value === "none") {
-        setSelectedOptions([]);
-      } else {
-        const isSelected = selectedOptions.some(
-          (o) => o.value === option.value
-        );
-        const newSelectedOptions = isSelected
-          ? selectedOptions.filter((o) => o.value !== option.value)
-          : [...selectedOptions, option];
-        setSelectedOptions(newSelectedOptions);
-      }
+      const isSelected = selectedOptions.some((o) => o.value === option.value);
+      const newSelectedOptions = isSelected
+        ? selectedOptions.filter((o) => o.value !== option.value) // Deselect option
+        : [...selectedOptions, option]; // Select option
+      setSelectedOptions(newSelectedOptions);
     } else {
-      if (option.value === "none") {
-        setSelectedOptions([]);
-      } else {
-        setSelectedOptions([option]);
-        closeDropdown();
-      }
+      // Deselect the option if it's already selected, otherwise select it
+      setSelectedOptions((prev) =>
+        prev[0]?.value === option.value ? [] : [option]
+      );
+      closeDropdown();
     }
   };
 
@@ -101,12 +120,16 @@ const Select: React.FC<SelectProps> = ({
     setSelectedOptions(newSelectedOptions);
   };
 
-  const filteredOptions =
-    options.length === 0
-      ? []
-      : options.filter((option) =>
-          option.label.toLowerCase().includes(search.toLowerCase())
-        );
+  const filteredOptions = search.trim()
+    ? fuse
+        .search(search)
+        .map((result) => {
+          // Return the original option from the `options` array
+          const option = options.find((opt) => opt.value === result.item.value);
+          return option;
+        })
+        .filter((option): option is Option => option !== undefined)
+    : options;
 
   // Scroll to first selected option when dropdown opens
   useEffect(() => {
@@ -161,8 +184,14 @@ const Select: React.FC<SelectProps> = ({
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
+      // When search is performed, always set focus to the first result
+      if (search.trim() && filteredOptions.length > 0) {
+        setFocusedIndex((prevIndex) =>
+          prevIndex < 0 || prevIndex >= filteredOptions.length ? 0 : prevIndex
+        );
+      }
     }
-  }, [open]);
+  }, [open, search, filteredOptions]);
 
   useEffect(() => {
     if (optionsRef.current) {
@@ -208,8 +237,12 @@ const Select: React.FC<SelectProps> = ({
       event.preventDefault();
       if (!open) {
         setOpen(true);
-      } else if (focusedIndex !== -1) {
-        handleOptionClick(filteredOptions[focusedIndex]);
+      } else if (filteredOptions.length > 0) {
+        const indexToSelect = focusedIndex;
+        const option = filteredOptions[indexToSelect];
+        if (option) {
+          handleOptionClick(option);
+        }
       }
     } else if (event.key === "Escape") {
       event.preventDefault();
@@ -325,7 +358,7 @@ const Select: React.FC<SelectProps> = ({
                     }}
                     className={cn(
                       "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm",
-                      isKeyboardNav &&
+                      (isKeyboardNav || (search.trim() && index === 0)) &&
                         index === focusedIndex &&
                         "bg-accent text-accent-foreground",
                       "hover:bg-accent hover:text-accent-foreground"

@@ -9,23 +9,16 @@ import { Truck } from "lucide-react";
 interface CheckoutLayoutProps {
   children: React.ReactNode;
   step: number;
-  totalSteps: number;
 }
 
-const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
-  children,
-  step,
-  totalSteps,
-}) => {
-  const progressValue = (step / totalSteps) * 100;
+const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({ children, step }) => {
+  const progressValue = (step / 2) * 100;
 
   const getStepDescription = (step: number) => {
     switch (step) {
       case 1:
         return "Shipping";
       case 2:
-        return "Payment";
-      case 3:
         return "Review";
       default:
         return "Step";
@@ -37,11 +30,7 @@ const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
       <div className="w-full mx-auto py-12 md:py-16 grid md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <Progress
-              value={progressValue}
-              parts={totalSteps}
-              className="flex-1"
-            />
+            <Progress value={progressValue} parts={2} className="flex-1" />
             <div className="text-sm font-medium text-muted-foreground">
               Step {step}: {getStepDescription(step)}
             </div>
@@ -94,7 +83,10 @@ const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
                   </p>
                 </div>
                 <div className="flex-shrink-0 hover:bg-indigo-50 p-2 px-4 rounded-md transition-colors duration-200">
-                  <Truck className="h-6 w-6 text-muted-foreground" strokeWidth="1.5"/>
+                  <Truck
+                    className="h-6 w-6 text-muted-foreground"
+                    strokeWidth="1.5"
+                  />
                 </div>
               </div>
             </CardContent>

@@ -26,8 +26,6 @@ export default function CartPage() {
     if (cart && !initialCartRef.current && cart.items.length > 0) {
       initialCartRef.current = cart;
     }
-    console.log("initialCartRef.current: ", initialCartRef.current);
-    console.log("cart: ", cart);
   }, [cart, loading]);
 
   const debouncedUpdateCart = useDebounce(
@@ -114,7 +112,7 @@ export default function CartPage() {
         });
         initialCartRef.current = {
           ...cart,
-          items: updatedItems
+          items: updatedItems,
         };
 
         setDeleteLoadingItemId(null);
@@ -188,6 +186,3 @@ export default function CartPage() {
     </div>
   );
 }
-
-
-

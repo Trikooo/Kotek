@@ -192,9 +192,11 @@ model Order {
   updatedAt DateTime @updatedAt
 
   // Relations
-  userId String      @db.Uuid
-  user   User        @relation(fields: [userId], references: [id])
-  items  OrderItem[]
+  userId    String      @db.Uuid
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+  addressId String?     @db.Uuid
+  address   Address?    @relation(fields: [addressId], references: [id])
 
   @@index([userId])
 }
@@ -258,22 +260,28 @@ model CartItem {
 // ------------------------------
 
 model Address {
-  id          String  @id @default(uuid()) @db.Uuid
-  fullName    String
-  phoneNumber String
-  wilaya      String
-  commune     String
-  address     String
-  isPrimary   Boolean @default(false)
+  id                String  @id @default(uuid()) @db.Uuid
+  fullName          String
+  phoneNumber       String
+  secondPhoneNumber String?
+  wilayaValue       String
+  wilayaLabel       String
+  commune           String
+  stopDesk          Boolean
+  stationCode       String?
+  stationName       String?
+  address           String
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  userId String @db.Uuid
-  user   User   @relation(fields: [userId], references: [id])
+  userId String  @db.Uuid
+  user   User    @relation(fields: [userId], references: [id])
+  Order  Order[]
 
+  @@unique([wilayaValue, commune, address]) // Unique constraint on the combination of wilayaValue, commune, and address
   @@index([userId])
 }
 

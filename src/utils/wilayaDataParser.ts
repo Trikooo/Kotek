@@ -24,3 +24,19 @@ export function parseCommunes(wilayaData: Wilayas, wilayaId: string) {
   }
   return undefined;
 }
+
+export function parseNoestStations(
+  wilayaData: Wilayas,
+  wilayaId: string
+): Option[] | undefined {
+  const wilaya = Object.values(wilayaData).find(
+    (wilaya) => wilaya.id === wilayaId
+  );
+  if (wilaya) {
+    return wilaya.noest.stations.map(({ commune, stationCode }) => ({
+      label: commune,
+      value: stationCode,
+    }));
+  }
+  return undefined; // If no matching wilaya found, return undefined
+}

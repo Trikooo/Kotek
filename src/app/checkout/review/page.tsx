@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 
 export default function Review() {
   const router = useRouter(); // Using the useRouter hook from next/navigation
-  const currentStep = 3;
-  const totalSteps = 3;
+  const currentStep = 2;
+
 
   const handleBack = () => {
-    router.push("/checkout/payment"); // Navigate to the previous step
+    router.push("/checkout/shipping"); // Navigate to the previous step
   };
 
   const handleContinue = () => {
@@ -19,8 +19,8 @@ export default function Review() {
   };
 
   return (
-    <CheckoutLayout step={currentStep} totalSteps={totalSteps}>
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+    <CheckoutLayout step={currentStep}>
+      <div className="grid lg:grid-cols-1 gap-6 mb-6">
         <ShippingReview />
         <PaymentReview />
       </div>

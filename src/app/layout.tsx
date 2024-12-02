@@ -8,6 +8,9 @@ import { Toaster as RadixToaster } from "@/components/ui/toaster";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 import { ProductProvider } from "@/context/ProductsContext";
 import { CategoryProvider } from "@/context/CategoriesContext";
+import { CartProvider } from "@/context/CartContext";
+import { KotekOrderProvider } from "@/context/KotekOrderContext";
+import { AddressProvider } from "@/context/AddressContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,11 +27,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn("min-h-screen bg-background font-sans antialiaseds")}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased")}>
         <SessionProviderWrapper>
           <ProductProvider>
             <CategoryProvider>
-              {children}
+              <CartProvider>
+                <AddressProvider>
+                  <KotekOrderProvider>{children}</KotekOrderProvider>
+                </AddressProvider>
+              </CartProvider>
               <SpeedInsights />
               <SonnerToaster />
               <RadixToaster />
