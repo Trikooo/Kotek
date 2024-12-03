@@ -37,14 +37,35 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedAddressLoading, setSelectedAddressLoading] = useState(true);
 
-  // Load the selected address from localStorage on mount
+  // Load the selected address from localStorage on mount and validate against existing addresses
   useEffect(() => {
-    const savedAddress = localStorage.getItem("selectedAddress");
-    if (savedAddress) {
-      setSelectedAddress(JSON.parse(savedAddress));
+    // Only proceed if addresses are loaded
+    if (addresses && addresses.length > 0) {
+      const savedAddress = localStorage.getItem("selectedAddress");
+      if (savedAddress) {
+        const parsedSavedAddress = JSON.parse(savedAddress);
+
+        // Check if the saved address matches the unique constraint
+        const isAddressValid = addresses.some(
+          (address) =>
+            address.wilayaValue === parsedSavedAddress.wilayaValue &&
+            address.commune === parsedSavedAddress.commune &&
+            address.address === parsedSavedAddress.address
+        );
+
+        if (isAddressValid) {
+          // If address is valid, set it as selected
+          setSelectedAddress(parsedSavedAddress);
+        } else {
+          // If address is not valid, remove from localStorage
+          localStorage.removeItem("selectedAddress");
+          setSelectedAddress(null);
+        }
+      }
+
+      setSelectedAddressLoading(false);
     }
-    setSelectedAddressLoading(false);
-  }, []);
+  }, [addresses]);
 
   // Save the selected address to localStorage when it changes
   useEffect(() => {
@@ -65,7 +86,14 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({
       setSelectedAddress,
       selectedAddressLoading,
     }),
-    [addresses, setAddresses, loading, error, selectedAddress, selectedAddressLoading]
+    [
+      addresses,
+      setAddresses,
+      loading,
+      error,
+      selectedAddress,
+      selectedAddressLoading,
+    ]
   );
 
   return (

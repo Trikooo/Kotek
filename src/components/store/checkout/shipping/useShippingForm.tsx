@@ -184,19 +184,18 @@ export default function useShippingForm() {
       );
     }
 
-    setAddresses((prev) => {
-      // If prev is not an array, start with an empty array
-      const currentAddresses = Array.isArray(prev) ? prev : [];
-      // Add the new address
-      return [...currentAddresses, address];
-    });
-
     if (userId) {
       try {
         setAddressLoading(true);
         await handleCreateAddress(address, userId);
         setSelectedAddress(address);
         router.push("/checkout/review");
+        setAddresses((prev) => {
+          // If prev is not an array, start with an empty array
+          const currentAddresses = Array.isArray(prev) ? prev : [];
+          // Add the new address
+          return [...currentAddresses, address];
+        });
       } catch (error) {
         toast({
           variant: "destructive",
@@ -214,6 +213,12 @@ export default function useShippingForm() {
     } else {
       setSelectedAddress(address);
       router.push("/checkout/review");
+      setAddresses((prev) => {
+        // If prev is not an array, start with an empty array
+        const currentAddresses = Array.isArray(prev) ? prev : [];
+        // Add the new address
+        return [...currentAddresses, address];
+      });
     }
     // Navigate to the next page
   };

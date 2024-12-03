@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,15 +11,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useAddress } from "@/context/AddressContext";
-import {
-  Truck,
-  User,
-  MapPin,
-  Phone,
-  Loader2,
-  BookUser,
-  UserRound,
-} from "lucide-react";
+import { Truck, User, MapPin, Phone, Loader2 } from "lucide-react";
 import ErrorComponent from "@/components/error/error";
 import { useRouter } from "next/navigation";
 
@@ -32,6 +25,7 @@ export default function ExistingAddresses({
   const router = useRouter();
   const { addresses, loading, error, selectedAddress, setSelectedAddress } =
     useAddress();
+  const { status } = useSession();
 
   useEffect(() => {
     if (addresses.length > 0 && !selectedAddress) {
@@ -159,24 +153,39 @@ export default function ExistingAddresses({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-muted-foreground justify-center">
-              Start by adding a new address
+              {status === "authenticated"
+                ? "Start by adding a new address"
+                : "Login to save your address"}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <p className="text-muted-foreground">
-              You haven&apos;t added any shipping addresses yet.
-            </p>
+            {status === "authenticated" ? (
+              <p className="text-muted-foreground">
+                You haven&apos;t added any shipping addresses yet.
+              </p>
+            ) : (
+              <p className="text-muted-foreground">
+                Please log in to save and manage your shipping addresses.
+              </p>
+            )}
           </CardContent>
+          <CardFooter className="justify-center">
+            {status === "authenticated" ? (
+              <Button onClick={onAddNew}>Add New Address</Button>
+            ) : (
+              <Button onClick={() => router.push("/login")}>Login</Button>
+            )}
+          </CardFooter>
         </Card>
       )}
 
-      <CardFooter className="mt-4">
+      <CardFooter className="p-0 mt-4 justify-end">
         <Button
           onClick={handleContinue}
           disabled={!selectedAddress}
-          className="w-full"
+          className="w-32"
         >
-          Continue to Payment
+          Continue
         </Button>
       </CardFooter>
     </div>
