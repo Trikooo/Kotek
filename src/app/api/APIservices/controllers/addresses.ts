@@ -1,6 +1,7 @@
-import { Address } from "@/types/types";
+
 import { PrismaClient } from "@prisma/client";
 import { AddressSchema } from "../lib/validation";
+import { Address } from "@/types/types";
 
 const prisma = new PrismaClient();
 
@@ -31,7 +32,6 @@ export async function createAddress(userId: string, addressData: Address) {
     }
 
     // Validate address data
-    console.log(addressData);
     const validatedAddress = AddressSchema.parse(addressData);
 
     // Create new address

@@ -2534,7 +2534,7 @@
     "noest": {
       "stations": [],
       "prices": {
-        "home": 0,
+        "home": 2200,
         "stopDesk": 0
       }
     },

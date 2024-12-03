@@ -9,44 +9,49 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-interface OrderSummarySkeletonProps {
-  className?: string;
+interface OrderSummaryProps{
+className?: string
 }
-
-export function OrderSummarySkeleton({ className }: OrderSummarySkeletonProps) {
+export function OrderSummarySkeleton({className}: OrderSummaryProps) {
   return (
-    <Card
-      className={`${className} shadow-none bg-gray-50 border-none transition-opacity opacity-50 h-min`}
-    >
-      <CardHeader>
-        <CardTitle>
-          <Skeleton className="h-5 w-1/2" />
-        </CardTitle>
+    <Card className={` ${className} shadow-sm bg-gray-50 border-0`}>
+      <CardHeader className="border-b">
+        <CardTitle className="text-2xl font-bold">Order Summary</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-2">
-        <div className="flex justify-between">
-          <Skeleton className="h-6 w-1/4" />
-          <Skeleton className="h-6 w-1/4" />
+      <CardContent className="p-6">
+        <div className="space-y-2 mb-4">
+          {[...Array(3)].map((_, index) => (
+            <div key={index} className="flex justify-between items-center">
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            </div>
+          ))}
         </div>
-        <div className="flex justify-between">
-          <Skeleton className="h-6 w-1/4" />
-          <Skeleton className="h-6 w-1/4" />
-        </div>
-        <Separator />
-        <div className="flex justify-between font-medium">
-          <Skeleton className="h-4 w-1/4" />
-          <Skeleton className="h-4 w-1/4" />
+        <Separator className="my-4" />
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+          </div>
+          <div className="flex justify-between">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+          </div>
+          <Separator className="my-2" />
+          <div className="flex justify-between">
+            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+          </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <Button
-          className="w-full bg-indigo-600 hover:bg-indigo-500 animate-pulse"
-          disabled
-        ></Button>
+      <CardFooter className="p-6">
+        <div className="w-full h-10 bg-gray-200 rounded"></div>
       </CardFooter>
     </Card>
-  );
+  )
 }
+
+
 
 export default function CartItemsCardSkeleton({ className }: {className: string}) {
   return (

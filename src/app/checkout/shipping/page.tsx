@@ -8,8 +8,10 @@ import ExistingAddresses from "@/components/store/checkout/shipping/ExistingAddr
 import { useSession } from "next-auth/react";
 import { useAddress } from "@/context/AddressContext";
 import useShippingForm from "@/components/store/checkout/shipping/useShippingForm";
+import { EMPTY_ADDRESS } from "@/lib/constants";
 
 export default function Shipping() {
+  const { setSelectedAddress } = useAddress();
   const { data: session, status } = useSession();
   const { addresses, loading } = useAddress();
   const { addressLoading } = useShippingForm();
@@ -22,14 +24,11 @@ export default function Shipping() {
     // Determine whether to show form immediately when loading is complete
     const shouldShowForm =
       status === "unauthenticated" ||
-      (addresses.length === 0 && loading === false && addressLoading);
+      (addresses.length === 0 && loading === false);
 
     setShowForm(shouldShowForm);
   }, [status, addresses, loading, addressLoading]);
 
-  useEffect(() => {
-    console.log("showForm: ", showForm);
-  });
   return (
     <CheckoutLayout step={currentStep}>
       <h2 className="text-2xl font-bold">Shipping Information</h2>
@@ -40,7 +39,13 @@ export default function Shipping() {
           <p className="text-muted-foreground mb-4">
             Select an existing address or enter a new one.
           </p>
-          <Button onClick={() => setShowForm(!showForm)} variant={"outline"}>
+          <Button
+            onClick={() => {
+              setSelectedAddress(EMPTY_ADDRESS);
+              setShowForm(!showForm);
+            }}
+            variant={"outline"}
+          >
             {showForm ? "Show Existing Addresses" : "Add New Address"}
           </Button>
         </div>

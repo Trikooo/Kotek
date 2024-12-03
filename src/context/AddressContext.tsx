@@ -1,5 +1,6 @@
 "use client";
 import { useGetAddresses } from "@/hooks/address/useAddress";
+import { EMPTY_ADDRESS } from "@/lib/constants";
 import { Address } from "@/types/types";
 import {
   createContext,
@@ -15,8 +16,8 @@ interface AddressContextType {
   setAddresses: React.Dispatch<React.SetStateAction<Address[]>>;
   loading: boolean;
   error: string | null;
-  selectedAddress: Address | null;
-  setSelectedAddress: React.Dispatch<React.SetStateAction<Address | null>>;
+  selectedAddress: Address;
+  setSelectedAddress: React.Dispatch<React.SetStateAction<Address>>;
   selectedAddressLoading: boolean;
 }
 
@@ -34,46 +35,84 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { addresses, setAddresses, loading, error } = useGetAddresses();
-  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+
+  const [selectedAddress, setSelectedAddress] = useState<Address>({
+    fullName: "",
+    phoneNumber: "",
+    wilayaValue: "",
+    wilayaLabel: "",
+    commune: "",
+    address: "",
+    shippingPrice: 0,
+    stopDesk: false,
+  });
+
   const [selectedAddressLoading, setSelectedAddressLoading] = useState(true);
 
-  // Load the selected address from localStorage on mount and validate against existing addresses
   useEffect(() => {
-    // Only proceed if addresses are loaded
     if (addresses && addresses.length > 0) {
       const savedAddress = localStorage.getItem("selectedAddress");
       if (savedAddress) {
-        const parsedSavedAddress = JSON.parse(savedAddress);
+        try {
+          const parsedSavedAddress = JSON.parse(savedAddress);
+          const isAddressValid =
+            parsedSavedAddress &&
+            parsedSavedAddress.wilayaValue &&
+            parsedSavedAddress.commune &&
+            parsedSavedAddress.address;
 
-        // Check if the saved address matches the unique constraint
-        const isAddressValid = addresses.some(
-          (address) =>
-            address.wilayaValue === parsedSavedAddress.wilayaValue &&
-            address.commune === parsedSavedAddress.commune &&
-            address.address === parsedSavedAddress.address
-        );
+          if (isAddressValid) {
+            const matchingAddress = addresses.find(
+              (address) =>
+                address.wilayaValue === parsedSavedAddress.wilayaValue &&
+                address.commune === parsedSavedAddress.commune &&
+                address.address === parsedSavedAddress.address
+            );
 
-        if (isAddressValid) {
-          // If address is valid, set it as selected
-          setSelectedAddress(parsedSavedAddress);
-        } else {
-          // If address is not valid, remove from localStorage
+            if (matchingAddress) {
+              setSelectedAddress(parsedSavedAddress);
+            } else {
+              setSelectedAddress(addresses[0] || EMPTY_ADDRESS);
+              localStorage.removeItem("selectedAddress");
+            }
+          } else {
+            setSelectedAddress(addresses[0] || EMPTY_ADDRESS);
+            localStorage.removeItem("selectedAddress");
+          }
+        } catch {
+          setSelectedAddress(EMPTY_ADDRESS);
           localStorage.removeItem("selectedAddress");
-          setSelectedAddress(null);
         }
+      } else {
+        setSelectedAddress(addresses[0] || EMPTY_ADDRESS);
       }
 
       setSelectedAddressLoading(false);
     }
   }, [addresses]);
 
-  // Save the selected address to localStorage when it changes
   useEffect(() => {
-    if (selectedAddress) {
-      setSelectedAddressLoading(true);
-      localStorage.setItem("selectedAddress", JSON.stringify(selectedAddress));
-      setSelectedAddressLoading(false);
+    setSelectedAddressLoading(true);
+
+    if (selectedAddress === EMPTY_ADDRESS) {
+      localStorage.removeItem("selectedAddress");
+    } else {
+      const isValidAddress =
+        selectedAddress.wilayaValue &&
+        selectedAddress.commune &&
+        selectedAddress.address;
+
+      if (isValidAddress) {
+        localStorage.setItem(
+          "selectedAddress",
+          JSON.stringify(selectedAddress)
+        );
+      } else {
+        localStorage.removeItem("selectedAddress");
+      }
     }
+
+    setSelectedAddressLoading(false);
   }, [selectedAddress]);
 
   const value = useMemo(

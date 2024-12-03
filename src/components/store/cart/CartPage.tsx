@@ -76,7 +76,7 @@ export default function CartPage() {
         productId
       );
     } else if (typeof window !== "undefined") {
-      console.log("updated items: ", updatedItems);
+
       localStorage.setItem("guestCart", JSON.stringify([...updatedItems]));
     }
   };
@@ -87,7 +87,7 @@ export default function CartPage() {
       const updatedItems = cart.items.filter((item) => {
         return item.productId !== productId;
       });
-      console.log("remainingItems: ", updatedItems);
+
       localStorage.setItem("guestCart", JSON.stringify([...updatedItems]));
       setDeleteLoadingItemId(null);
 

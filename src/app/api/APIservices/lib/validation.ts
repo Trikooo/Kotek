@@ -108,6 +108,7 @@ export const AddressSchema = z.object({
   address: z
     .string()
     .min(5, { message: "Address must be at least 5 characters" }),
+  shippingPrice: z.number().min(0, { message: "Shipping price must be a non-negative number" }),
   stopDesk: z.boolean(),
   stationCode: z.string().optional(),
   stationName: z.string().optional(),

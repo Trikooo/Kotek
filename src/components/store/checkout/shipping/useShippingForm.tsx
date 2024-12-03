@@ -21,17 +21,19 @@ export default function useShippingForm() {
   const userId = session?.user?.id;
   const { addresses, setAddresses, selectedAddress, setSelectedAddress } =
     useAddress();
-  const { handleCreateAddress } = useAddressRequest();
-  const [address, setAddress] = useState<Address>({
-    fullName: "",
-    phoneNumber: "",
-    wilayaValue: "",
-    wilayaLabel: "",
-    commune: "",
-    address: "",
 
-    stopDesk: false,
-  });
+  const { handleCreateAddress } = useAddressRequest();
+  // const [address, setAddress] = useState<Address>({
+  //   fullName: "",
+  //   phoneNumber: "",
+  //   wilayaValue: "",
+  //   wilayaLabel: "",
+  //   commune: "",
+  //   address: "",
+
+  //   stopDesk: false,
+  // });
+
   const [addressLoading, setAddressLoading] = useState<boolean>(false);
   const [addressError, setAddressError] = useState<boolean>(false);
   const [wilayaData, setWilayaData] = useState<Wilayas | null>(null);
@@ -58,9 +60,9 @@ export default function useShippingForm() {
           setWilayaOptions(parsedWilayaOptions);
 
           // Pre-select Wilaya if exists in kotekOrder
-          if (address.wilayaValue) {
+          if (selectedAddress.wilayaValue) {
             const matchedWilaya = parsedWilayaOptions.find(
-              (option) => option.value == address.wilayaValue
+              (option) => option.value == selectedAddress.wilayaValue
             );
             if (matchedWilaya) {
               setSelectedWilaya([matchedWilaya]);
@@ -78,7 +80,7 @@ export default function useShippingForm() {
     if (!wilayaData) {
       fetchWilayaData();
     }
-  }, [wilayaData, address.wilayaValue]);
+  }, [wilayaData, selectedAddress.wilayaValue]);
 
   // Second useEffect for populating communes
   useEffect(() => {
@@ -88,9 +90,9 @@ export default function useShippingForm() {
         setCommuneOptions(communes);
 
         // Pre-select Commune if exists in kotekOrder
-        if (address.commune) {
+        if (selectedAddress.commune) {
           const matchedCommune = communes.find(
-            (option) => option.value === address.commune
+            (option) => option.value === selectedAddress.commune
           );
           if (matchedCommune) {
             setSelectedCommune([matchedCommune]);
@@ -102,8 +104,10 @@ export default function useShippingForm() {
       setCommuneOptions([]);
       setSelectedCommune([]);
     }
-  }, [wilayaOptions, wilayaData, selectedWilaya, address.commune]);
-
+  }, [wilayaOptions, wilayaData, selectedWilaya, selectedAddress.commune]);
+  useEffect(() => {
+    console.log("selectedAddress: ", selectedAddress);
+  }, [selectedAddress]);
   // Third useEffect for stop desk options
   useEffect(() => {
     const wilaya = selectedWilaya[0];
@@ -118,16 +122,16 @@ export default function useShippingForm() {
         setStopDeskOptions(noestStations);
 
         // Pre-select stop desk if stationCode exists
-        if (address.stationCode) {
+        if (selectedAddress.stationCode) {
           const matchedStopDesk = noestStations.find(
-            (option) => option.value === address.stationCode
+            (option) => option.value === selectedAddress.stationCode
           );
           if (matchedStopDesk) {
             setSelectedStopDesk([matchedStopDesk]);
 
             // Ensure stopDesk is checked if a station is selected
 
-            setAddress((prev) => ({
+            setSelectedAddress((prev) => ({
               ...prev,
               stopDesk: true,
             }));
@@ -138,7 +142,41 @@ export default function useShippingForm() {
       setWilayaHasStopDesk(false);
       setSelectedStopDesk([]);
     }
-  }, [wilayaData, selectedWilaya, address.stationCode, setAddress]);
+  }, [
+    wilayaData,
+    selectedWilaya,
+    selectedAddress.stationCode,
+    setSelectedAddress,
+  ]);
+
+  useEffect(() => {
+    if (
+      wilayaData &&
+      selectedAddress.wilayaLabel &&
+      selectedWilaya.length > 0
+    ) {
+      if (selectedAddress.stopDesk) {
+        setSelectedAddress((prev) => ({
+          ...prev,
+          shippingPrice:
+            wilayaData[selectedAddress.wilayaLabel].noest.prices.stopDesk,
+        }));
+      } else {
+        setSelectedAddress((prev) => ({
+          ...prev,
+          shippingPrice:
+            wilayaData[selectedAddress.wilayaLabel].noest.prices.home,
+        }));
+      }
+    }
+  }, [
+    selectedAddress.stopDesk,
+    selectedAddress.wilayaLabel,
+    setSelectedAddress,
+    selectedWilaya,
+    wilayaHasStopDesk,
+    wilayaData,
+  ]);
 
   // Validation and continue handler
   const handleContinue = async (e: React.FormEvent) => {
@@ -147,22 +185,26 @@ export default function useShippingForm() {
     // Reusable validation function
     const showValidationError = (description: string) => {
       toast({
-        title: "Validation Error",
-        description,
+        title: (
+          <>
+            <AlertCircle className="w-5 h-5" strokeWidth={1.5} /> {description}
+          </>
+        ),
+
         variant: "destructive",
       });
     };
 
     // Validation checks
-    if (!address.fullName?.trim()) {
+    if (!selectedAddress.fullName?.trim()) {
       return showValidationError("Please enter your full name.");
     }
 
-    if (!address.phoneNumber?.trim()) {
+    if (!selectedAddress.phoneNumber?.trim()) {
       return showValidationError("Please enter a phone number.");
     }
 
-    if (!address.address?.trim()) {
+    if (!selectedAddress.address?.trim()) {
       return showValidationError("Please enter your address.");
     }
 
@@ -175,7 +217,7 @@ export default function useShippingForm() {
     }
 
     if (
-      address.stopDesk &&
+      selectedAddress.stopDesk &&
       wilayaHasStopDesk &&
       selectedStopDesk.length === 0
     ) {
@@ -187,14 +229,16 @@ export default function useShippingForm() {
     if (userId) {
       try {
         setAddressLoading(true);
-        await handleCreateAddress(address, userId);
-        setSelectedAddress(address);
+        setSelectedAddress(selectedAddress);
+        console.log(selectedAddress);
+        await handleCreateAddress(selectedAddress, userId);
+
         router.push("/checkout/review");
         setAddresses((prev) => {
           // If prev is not an array, start with an empty array
           const currentAddresses = Array.isArray(prev) ? prev : [];
           // Add the new address
-          return [...currentAddresses, address];
+          return [...currentAddresses, selectedAddress];
         });
       } catch (error) {
         toast({
@@ -211,21 +255,19 @@ export default function useShippingForm() {
         setAddressLoading(false);
       }
     } else {
-      setSelectedAddress(address);
+      setSelectedAddress(selectedAddress);
       router.push("/checkout/review");
       setAddresses((prev) => {
         // If prev is not an array, start with an empty array
         const currentAddresses = Array.isArray(prev) ? prev : [];
         // Add the new address
-        return [...currentAddresses, address];
+        return [...currentAddresses, selectedAddress];
       });
     }
     // Navigate to the next page
   };
 
   return {
-    address,
-    setAddress,
     wilayaOptions,
     communeOptions,
     selectedWilaya,
@@ -242,5 +284,6 @@ export default function useShippingForm() {
     stopDeskOptions,
     handleContinue,
     addressLoading,
+    wilayaData,
   };
 }

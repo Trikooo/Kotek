@@ -8,16 +8,14 @@ import {
   Tooltip,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { AlertCircle, CircleHelp, Loader2 } from "lucide-react";
+import { CircleHelp, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import useShippingForm from "./useShippingForm";
-import { useEffect } from "react";
+import { useAddress } from "@/context/AddressContext";
 
 export default function ShippingForm() {
   const {
-    address,
-    setAddress,
     wilayaOptions,
     communeOptions,
     selectedWilaya,
@@ -35,10 +33,8 @@ export default function ShippingForm() {
     handleContinue,
     addressLoading,
   } = useShippingForm();
+  const { selectedAddress, setSelectedAddress } = useAddress();
 
-  useEffect(() => {
-    console.log("address: ", address);
-  }, [address]);
   return (
     <form className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-2">
@@ -47,9 +43,9 @@ export default function ShippingForm() {
           <Input
             id="fullName"
             placeholder="Enter your full name"
-            value={address.fullName || ""}
+            value={selectedAddress.fullName || ""}
             onChange={(e) =>
-              setAddress((prev) => ({
+              setSelectedAddress((prev) => ({
                 ...prev,
                 fullName: e.target.value,
               }))
@@ -62,9 +58,9 @@ export default function ShippingForm() {
             id="phoneNumber"
             placeholder="Enter your phone number"
             type="tel"
-            value={address.phoneNumber || ""}
+            value={selectedAddress.phoneNumber || ""}
             onChange={(e) =>
-              setAddress((prev) => ({
+              setSelectedAddress((prev) => ({
                 ...prev,
                 phoneNumber: e.target.value,
               }))
@@ -77,11 +73,11 @@ export default function ShippingForm() {
         <div className="flex items-center space-x-2">
           <Checkbox
             id="addSecondPhone"
-            checked={!!(addSecondPhone || address.secondPhoneNumber)}
+            checked={!!(addSecondPhone || selectedAddress.secondPhoneNumber)}
             onCheckedChange={(checked) => {
               setAddSecondPhone(checked as boolean);
               if (checked === false) {
-                setAddress((prev) => ({
+                setSelectedAddress((prev) => ({
                   ...prev,
                   secondPhoneNumber: "",
                 }));
@@ -91,16 +87,16 @@ export default function ShippingForm() {
 
           <Label htmlFor="addSecondPhone">Add another phone number?</Label>
         </div>
-        {(addSecondPhone || address.secondPhoneNumber) && (
+        {(addSecondPhone || selectedAddress.secondPhoneNumber) && (
           <div className="pt-6">
             <Label htmlFor="secondPhoneNumber">Phone Number 2</Label>
             <Input
               id="secondPhoneNumber"
               placeholder="Enter second phone number"
               type="tel"
-              value={address.secondPhoneNumber || ""}
+              value={selectedAddress.secondPhoneNumber || ""}
               onChange={(e) =>
-                setAddress((prev) => ({
+                setSelectedAddress((prev) => ({
                   ...prev,
                   secondPhoneNumber: e.target.value,
                 }))
@@ -115,9 +111,9 @@ export default function ShippingForm() {
         <Input
           id="address"
           placeholder="Enter your address"
-          value={address.address || ""}
+          value={selectedAddress.address || ""}
           onChange={(e) =>
-            setAddress((prev) => ({
+            setSelectedAddress((prev) => ({
               ...prev,
               address: e.target.value,
             }))
@@ -136,12 +132,24 @@ export default function ShippingForm() {
             error={wilayaError}
             label="wilaya"
             onChange={(_, currentWilaya) => {
-              if (currentWilaya[0].value !== selectedWilaya[0]?.value) {
+              setSelectedAddress((prev) => ({
+                ...prev,
+                stopDesk: false,
+                stationCode: "",
+                stationName: "", 
+              }));
+              if (currentWilaya.length === 0) {
+                setSelectedAddress((prev) => ({
+                  ...prev,
+                  shippingPrice: 0,
+                }));
+              }
+              if (currentWilaya[0]?.value !== selectedWilaya[0]?.value) {
                 setSelectedCommune([]);
                 setSelectedStopDesk([]);
               }
-              if (currentWilaya[0].value)
-                setAddress((prev) => {
+              if (currentWilaya[0]?.value)
+                setSelectedAddress((prev) => {
                   return {
                     ...prev,
                     wilayaValue: currentWilaya[0].value,
@@ -161,7 +169,7 @@ export default function ShippingForm() {
             label="commune"
             onChange={(_, current) => {
               if (current[0]?.value) {
-                setAddress((prev) => ({
+                setSelectedAddress((prev) => ({
                   ...prev,
                   commune: current[0].value,
                 }));
@@ -176,9 +184,9 @@ export default function ShippingForm() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="stopDesk"
-              checked={address.stopDesk}
+              checked={selectedAddress.stopDesk}
               onCheckedChange={(checked) => {
-                setAddress((prev) => ({
+                setSelectedAddress((prev) => ({
                   ...prev,
                   stopDesk: checked as boolean,
                 }));
@@ -186,7 +194,7 @@ export default function ShippingForm() {
             />
             <Label htmlFor="stopDesk">Use stop desk delivery?</Label>
           </div>
-          {address.stopDesk && (
+          {selectedAddress.stopDesk && (
             <div className="space-y-2">
               <Label htmlFor="stopDeskSelect">Noest Stations</Label>
               <Select
@@ -197,7 +205,7 @@ export default function ShippingForm() {
                 searchable={false}
                 onChange={(_, currentDesk) => {
                   if (currentDesk[0].value) {
-                    setAddress((prev) => ({
+                    setSelectedAddress((prev) => ({
                       ...prev,
                       stationCode: currentDesk[0].value,
                       stationName: currentDesk[0].label,
@@ -234,7 +242,11 @@ export default function ShippingForm() {
         )
       )}
       <div className="flex justify-end mt-6">
-        <Button onClick={handleContinue} disabled={addressLoading} className="w-24">
+        <Button
+          onClick={handleContinue}
+          disabled={addressLoading}
+          className="w-24"
+        >
           {addressLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
           ) : (

@@ -3,7 +3,8 @@ import { Truck, User, MapPin, Phone, AlertCircle, Loader2 } from "lucide-react";
 import { useAddress } from "@/context/AddressContext";
 
 export default function ShippingReview() {
-  const { selectedAddress, selectedAddressLoading, error } = useAddress();
+  const { selectedAddress, selectedAddressLoading, loading, error } =
+    useAddress();
 
   const hasAddress =
     selectedAddress &&
@@ -20,7 +21,7 @@ export default function ShippingReview() {
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6 space-y-4">
-        {selectedAddressLoading ? (
+        {selectedAddressLoading || loading ? (
           <div className="flex items-center justify-center text-muted-foreground gap-2">
             <Loader2 className="h-5 w-5 animate-spin" />
             <p>Loading...</p>

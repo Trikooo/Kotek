@@ -98,7 +98,7 @@ export type CartUpdateResponse = {
   error?: string;
 };
 
-type Wilaya = {
+export type Wilaya = {
   id: string;
   communes: string[];
   noest: {
@@ -162,7 +162,7 @@ export interface Address {
   wilayaLabel: string;
   commune: string;
   address: string;
-
+  shippingPrice: number;
   stopDesk: boolean;
   stationCode?: string;
   stationName?: string;

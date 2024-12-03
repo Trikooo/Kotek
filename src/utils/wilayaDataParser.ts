@@ -6,6 +6,7 @@ export function parseWilayas(wilayaData: Wilayas) {
     return {
       label: key,
       value: wilaya.id,
+      disabled: key === "In Guezzam" || key === "Bordj Badji Mokhtar"
     };
   });
   return options;

@@ -12,6 +12,7 @@ import {
   Search,
   Loader2,
   AlertCircle,
+  MinusCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -28,13 +29,14 @@ import { normalizeText } from "@/utils/normalizeText";
 export type Option = {
   value: string;
   label: string;
+  disabled?: boolean;
 };
 
 interface SelectProps {
   options: Option[];
   selectedOptions: Option[];
   setSelectedOptions: React.Dispatch<React.SetStateAction<Option[]>>;
-  onChange?: (prevOptions: Option[], currentOption: Option[]) => void;
+  onChange?: (prevOptions: Option[], currentOptions: Option[]) => void;
   multiple?: boolean;
   searchable?: boolean;
   loading?: boolean;
@@ -43,6 +45,7 @@ interface SelectProps {
   label?: string;
   emptyMessage?: string;
   noResultsMessage?: string;
+  disabledMessage?: string;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -58,6 +61,7 @@ const Select: React.FC<SelectProps> = ({
   label,
   emptyMessage = "No options available",
   noResultsMessage = "No results found",
+  disabledMessage = "Unavailable",
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -88,23 +92,32 @@ const Select: React.FC<SelectProps> = ({
   }, [normalizedOptions]);
 
   const handleOptionClick = (option: Option | undefined) => {
-    if (!option) return;
+    if (!option || option.disabled) return;
 
-    if (onChange) {
-      onChange(selectedOptions, [option]);
-    }
+    const prevSelectedOptions = [...selectedOptions];
+    let newSelectedOptions: Option[];
 
     if (multiple) {
       const isSelected = selectedOptions.some((o) => o.value === option.value);
-      const newSelectedOptions = isSelected
+      newSelectedOptions = isSelected
         ? selectedOptions.filter((o) => o.value !== option.value) // Deselect option
         : [...selectedOptions, option]; // Select option
-      setSelectedOptions(newSelectedOptions);
     } else {
       // Deselect the option if it's already selected, otherwise select it
-      setSelectedOptions((prev) =>
-        prev[0]?.value === option.value ? [] : [option]
-      );
+      newSelectedOptions =
+        prevSelectedOptions[0]?.value === option.value ? [] : [option];
+    }
+
+    // Call onChange with previous and current selected options
+    if (onChange) {
+      onChange(prevSelectedOptions, newSelectedOptions);
+    }
+
+    // Update selected options
+    setSelectedOptions(newSelectedOptions);
+
+    // Close dropdown for single select
+    if (!multiple) {
       closeDropdown();
     }
   };
@@ -353,21 +366,31 @@ const Select: React.FC<SelectProps> = ({
                     key={option.value}
                     onClick={() => handleOptionClick(option)}
                     onMouseEnter={() => {
-                      setFocusedIndex(index);
-                      setIsKeyboardNav(false);
+                      if (!option.disabled) {
+                        setFocusedIndex(index);
+                        setIsKeyboardNav(false);
+                      }
                     }}
                     className={cn(
                       "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm",
+                      option.disabled
+                        ? "text-muted-foreground cursor-not-allowed opacity-50"
+                        : "hover:bg-accent hover:text-accent-foreground",
                       (isKeyboardNav || (search.trim() && index === 0)) &&
                         index === focusedIndex &&
                         "bg-accent text-accent-foreground",
-                      "hover:bg-accent hover:text-accent-foreground"
+                      option.disabled && "cursor-not-allowed"
                     )}
                   >
                     {selectedOptions.some((o) => o.value === option.value) && (
                       <Check className="absolute left-2 h-4 w-4" />
                     )}
                     {option.label}
+                    {option.disabled && (
+                      <Badge variant={"outline"} className="ml-2">
+                        {disabledMessage}
+                      </Badge>
+                    )}
                   </div>
                 ))
               )}

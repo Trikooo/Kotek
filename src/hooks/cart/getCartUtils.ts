@@ -64,10 +64,9 @@ export const fetchUserCart = async (userId: string) => {
     });
     const updatedData = await updateCartFirstTime(userId, mergedItems); // update the cart
     localStorage.removeItem("guestCart");
-    console.log("updatedCart: ", updatedData.updatedCart);
+
     return updatedData.updatedCart;
   } else {
-    console.log("userCart: ", userCart)
     return userCart;
   }
 };

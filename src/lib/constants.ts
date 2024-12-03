@@ -1,4 +1,5 @@
 import { Option } from "@/components/ui/better-select";
+import { Address } from "@/types/types";
 export const STATUSES = ["active", "inactive", "draft"] as const;
 
 export const SORT_OPTIONS: Option[] = [
@@ -18,3 +19,14 @@ for (const status of STATUSES) {
 }
 
 export const STATUS_OPTIONS = statusOptions;
+
+export const EMPTY_ADDRESS: Address = {
+  fullName: "",
+  phoneNumber: "",
+  wilayaValue: "",
+  wilayaLabel: "",
+  commune: "",
+  address: "",
+  shippingPrice: 0,
+  stopDesk: false,
+};

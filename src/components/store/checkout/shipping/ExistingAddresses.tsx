@@ -14,6 +14,8 @@ import { useAddress } from "@/context/AddressContext";
 import { Truck, User, MapPin, Phone, Loader2 } from "lucide-react";
 import ErrorComponent from "@/components/error/error";
 import { useRouter } from "next/navigation";
+import { EMPTY_ADDRESS } from "@/lib/constants";
+import ExistingAddressesSkeleton from "./ExistingAddressesSkeleton";
 
 type ExistingAddressesProps = {
   onAddNew: () => void;
@@ -34,15 +36,12 @@ export default function ExistingAddresses({
   }, [addresses, selectedAddress, setSelectedAddress]);
 
   const handleContinue = () => {
-    console.log(selectedAddress);
     router.push("/checkout/review");
   };
 
   if (loading) {
     return (
-      <div className="w-full flex items-center justify-center">
-        <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
-      </div>
+      <ExistingAddressesSkeleton />
     );
   }
 
@@ -54,21 +53,29 @@ export default function ExistingAddresses({
     <div className="space-y-4">
       <RadioGroup
         className="grid md:grid-cols-2 gap-4"
-        value={selectedAddress?.id}
-        onValueChange={(id) => {
-          const address = addresses.find((addr) => addr.id === id);
-          setSelectedAddress(address || null);
+        value={
+          selectedAddress
+            ? `${selectedAddress.commune}-${selectedAddress.address}`
+            : ""
+        }
+        onValueChange={(value) => {
+          const [commune, address] = value.split("-");
+          const matchedAddress = addresses.find(
+            (addr) => addr.commune === commune && addr.address === address
+          );
+          setSelectedAddress(matchedAddress || EMPTY_ADDRESS);
         }}
       >
         {addresses.map((address) => (
           <label
-            key={address.id}
-            htmlFor={`address-${address.id}`}
+            key={`${address.commune}-${address.address}`}
+            htmlFor={`address-${address.commune}-${address.address}`}
             className="w-full"
           >
             <Card
               className={`${
-                selectedAddress?.id === address.id
+                selectedAddress?.commune === address.commune &&
+                selectedAddress?.address === address.address
                   ? "border-indigo-600 border-2"
                   : ""
               } hover:border-indigo-600/60 cursor-pointer h-full transition-colors`}
@@ -77,11 +84,13 @@ export default function ExistingAddresses({
               <CardHeader className="p-0 m-0">
                 <CardTitle className="flex items-center gap-2 text-primary ">
                   <RadioGroupItem
-                    value={address.id || ""}
-                    id={`address-${address.id}`}
+                    value={`${address.commune}-${address.address}`}
+                    id={`address-${address.commune}-${address.address}`}
                     className="mr-2 hidden"
                   />
-                  <Label htmlFor={`address-${address.id}`}></Label>
+                  <Label
+                    htmlFor={`address-${address.commune}-${address.address}`}
+                  ></Label>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6 space-y-4">
@@ -171,7 +180,14 @@ export default function ExistingAddresses({
           </CardContent>
           <CardFooter className="justify-center">
             {status === "authenticated" ? (
-              <Button onClick={onAddNew}>Add New Address</Button>
+              <Button
+                onClick={() => {
+                  setSelectedAddress(EMPTY_ADDRESS);
+                  onAddNew();
+                }}
+              >
+                Add New Address
+              </Button>
             ) : (
               <Button onClick={() => router.push("/login")}>Login</Button>
             )}
@@ -182,7 +198,7 @@ export default function ExistingAddresses({
       <CardFooter className="p-0 mt-4 justify-end">
         <Button
           onClick={handleContinue}
-          disabled={!selectedAddress}
+          disabled={selectedAddress.wilayaLabel === ""}
           className="w-32"
         >
           Continue

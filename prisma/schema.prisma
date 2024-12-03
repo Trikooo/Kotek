@@ -271,6 +271,7 @@ model Address {
   stationCode       String?
   stationName       String?
   address           String
+  shippingPrice     Int
 
   // Timestamps
   createdAt DateTime @default(now())
