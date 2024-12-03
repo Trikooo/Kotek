@@ -28,6 +28,7 @@ export const KotekOrderProvider: React.FC<{ children: React.ReactNode }> = ({
       commune: "",
       address: "",
       stopDesk: false,
+      shippingPrice: 0
     },
   });
 
