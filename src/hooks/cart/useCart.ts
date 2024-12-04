@@ -213,3 +213,41 @@ export function useDeleteCartItem() {
     error,
   };
 }
+
+export function useEmptyCart() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function handleEmptyCart(userId: string): Promise<any> {
+    setLoading(true);
+    setError(null);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.delete(`/api/cart?userId=${userId}`);
+
+        resolve(response.data);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error(
+            "Error emptying cart:",
+            error.response?.data || error.message
+          );
+          setError("Failed to empty cart");
+        } else {
+          console.error("Unexpected error:", error);
+          setError("An unexpected error occurred");
+        }
+        reject(error);
+      } finally {
+        setLoading(false);
+      }
+    });
+  }
+
+  return {
+    handleEmptyCart,
+    loading,
+    error,
+  };
+}

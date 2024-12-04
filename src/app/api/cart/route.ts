@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createUserCart,
+  emptyUserCart,
   getUserCart,
   updateUserCart,
   validateCartData,
@@ -177,6 +178,40 @@ export async function PUT(request: NextRequest) {
       {
         status: 500,
       }
+    );
+  }
+}
+
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const userId = request.nextUrl.searchParams.get("userId");
+
+    // Check if userId is provided
+    if (!userId) {
+      return NextResponse.json(
+        { message: "User ID is required." },
+        { status: 400 }
+      );
+    }
+
+    const emptyCart = await emptyUserCart(userId);
+
+    return NextResponse.json(
+      {
+        message: "Cart emptied successfully",
+        cart: emptyCart,
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    console.error("Error emptying cart:", error);
+
+    return NextResponse.json(
+      { message: "An error occurred while emptying the cart." },
+      { status: 500 }
     );
   }
 }

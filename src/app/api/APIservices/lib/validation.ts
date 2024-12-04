@@ -80,7 +80,7 @@ export const cartItemSchema = z.object({
 
 export const cartUpdateRequestSchema = z.object({
   userId: z.string().uuid(),
-  items: z.array(cartItemSchema).nonempty().max(100),
+  items: z.array(cartItemSchema).max(100),
 });
 
 export type CartItemInput = z.infer<typeof cartItemSchema>;
@@ -91,16 +91,15 @@ export const AddressSchema = z.object({
   fullName: z
     .string()
     .min(2, { message: "Full name must be at least 2 characters" }),
-  phoneNumber: z
-    .string()
-    .regex(/^0\d{9}$/, {
-      message: "Phone number must be 10 digits starting with 0",
-    }),
+  phoneNumber: z.string().regex(/^0\d{9}$/, {
+    message: "Phone number must be 10 digits starting with 0",
+  }),
   secondPhoneNumber: z
     .string()
     .regex(/^0\d{9}$/, {
       message: "Second phone number must be 10 digits starting with 0",
     })
+    .nullable()
     .optional(),
   wilayaValue: z.string().min(1, { message: "Wilaya value is required" }),
   wilayaLabel: z.string().min(1, { message: "Wilaya label is required" }),
@@ -108,10 +107,45 @@ export const AddressSchema = z.object({
   address: z
     .string()
     .min(5, { message: "Address must be at least 5 characters" }),
-  shippingPrice: z.number().min(0, { message: "Shipping price must be a non-negative number" }),
+  shippingPrice: z
+    .number()
+    .min(0, { message: "Shipping price must be a non-negative number" }),
   stopDesk: z.boolean(),
-  stationCode: z.string().optional(),
-  stationName: z.string().optional(),
+  stationCode: z.string().nullable().optional(),
+  stationName: z.string().nullable().optional(),
+});
+export type AddressType = z.infer<typeof AddressSchema>;
+
+// Enum for Order Status
+export const OrderStatusEnum = z.enum([
+  "PENDING",
+  "PROCESSING",
+  "DISPATCHED",
+  "DELIVERED",
+  "CANCELLED",
+]);
+
+export const KotekOrderItemSchema = z.object({
+  quantity: z.number().int().positive("Quantity must be a positive integer"),
+  price: z.number().nonnegative("Price must be a non-negative number"),
+  productId: z.string().min(1, "Product ID is required"),
 });
 
-export type AddressType = z.infer<typeof AddressSchema>;
+export const KotekOrderSchema = z.object({
+  status: OrderStatusEnum,
+  totalAmount: z
+    .number()
+    .nonnegative("Total amount must be a non-negative number"),
+  subtotalAmount: z
+    .number()
+    .nonnegative("Subtotal amount must be a non-negative number"),
+  userId: z.string().optional(),
+  addressId: z.string().optional(),
+  guestAddress: AddressSchema.optional(),
+  items: z
+    .array(KotekOrderItemSchema)
+    .nonempty("Order must have at least one item"),
+});
+
+// Note: Make sure to import or define AddressSchema separately
+export type KotekOrder = z.infer<typeof KotekOrderSchema>;

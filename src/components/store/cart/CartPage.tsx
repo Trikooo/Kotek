@@ -142,7 +142,7 @@ export default function CartPage() {
       {loading ? (
         <div className="mt-14 w-full flex gap-16 flex-col lg:flex-row">
           <CartItemsCardSkeleton className="flex-1" />
-          <OrderSummarySkeleton className="lg:w-1/3" />
+          <OrderSummarySkeleton className="lg:w-5/12" />
         </div>
       ) : error && !error.includes("Not Found") ? (
         <div className="mt-24 w-full flex flex-col gap-4 items-center justify-center text-red-500">
@@ -180,7 +180,7 @@ export default function CartPage() {
             onUpdateQuantity={onUpdateQuantity}
             onRemoveItem={onRemoveItem}
           />
-          <OrderSummary className="lg:w-1/3" />
+          <OrderSummary className="lg:w-5/12" />
         </div>
       )}
     </div>

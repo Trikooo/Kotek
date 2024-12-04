@@ -1,7 +1,7 @@
 import { Address } from "@/types/types";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { fetchUserAddresses, loadGuestAddresses } from "./getAddressUtils";
+import { fetchUserAddresses } from "./getAddressUtils";
 import axios from "axios";
 import { handleAxiosError } from "@/utils/handleAxiosError";
 
@@ -79,14 +79,14 @@ export function useAddressRequest() {
 const handleAddressRequest = async (
   method: "post" | "put" | "delete",
   url: string,
-  address: Address | {} | null,
+  address: Address | {},
   userId: string
 ): Promise<any> => {
   try {
     const config = {
       method,
       url,
-      data: address ?  address  : undefined,
+      data: address ? address : undefined,
     };
     const response = await axios(config);
     return response.data;

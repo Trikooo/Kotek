@@ -105,9 +105,7 @@ export default function useShippingForm() {
       setSelectedCommune([]);
     }
   }, [wilayaOptions, wilayaData, selectedWilaya, selectedAddress.commune]);
-  useEffect(() => {
-    console.log("selectedAddress: ", selectedAddress);
-  }, [selectedAddress]);
+
   // Third useEffect for stop desk options
   useEffect(() => {
     const wilaya = selectedWilaya[0];
@@ -230,7 +228,6 @@ export default function useShippingForm() {
       try {
         setAddressLoading(true);
         setSelectedAddress(selectedAddress);
-        console.log(selectedAddress);
         await handleCreateAddress(selectedAddress, userId);
 
         router.push("/checkout/review");

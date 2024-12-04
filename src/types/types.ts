@@ -144,9 +144,10 @@ export type NoestOrderForm = {
 export type KotekOrder = {
   status: OrderStatus;
   totalAmount: number;
+  subtotalAmount: number;
   userId: string;
-  addressId?: string; // Optional addressId field (can be null or undefined if no address is provided)
-  address: Address; // Optional address object, reflects the Address model
+  addressId?: string; // Optional addressId field (can be null or undefined if no address id is provided (user logged out))
+  guestAddress?: Address; // Optional address object, reflects the Address model
   items: {
     quantity: number;
     price: number;

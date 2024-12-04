@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import handleError from "../APIutils/APIutils";
 import {
   createAddress,
   deleteAddress,
@@ -17,16 +16,23 @@ export async function GET(request: NextRequest) {
       );
     }
     const addresses = await getAllAddresses(userId);
-    if (addresses) {
+    if (addresses && addresses.length > 0) {
       return NextResponse.json({ addresses: addresses }, { status: 200 });
     } else {
       return NextResponse.json(
-        { message: "No address was found" },
+        { message: "No addresses found for this user" },
         { status: 404 }
       );
     }
   } catch (error) {
-    handleError(error, "addresses");
+    console.error("GET Address Error:", error);
+    return NextResponse.json(
+      {
+        message: "Failed to retrieve addresses",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -45,20 +51,32 @@ export async function POST(request: NextRequest) {
 
     const address = await createAddress(userId, addressData);
     if (address)
-      return NextResponse.json({ addresses: address }, { status: 200 });
+      return NextResponse.json({ addresses: address }, { status: 201 });
+
+    return NextResponse.json(
+      { message: "Failed to create address" },
+      { status: 400 }
+    );
   } catch (error) {
-    return NextResponse.json({ error: error }, { status: 500 });
+    console.error("POST Address Error:", error);
+    return NextResponse.json(
+      {
+        message: "Failed to create address",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
 
-// PUT handler to update an address
 export async function PUT(request: NextRequest) {
   try {
+    const userId = request.nextUrl.searchParams.get("userId");
     const addressId = request.nextUrl.searchParams.get("addressId");
 
-    if (!addressId) {
+    if (!userId || !addressId) {
       return NextResponse.json(
-        { message: "Address ID is required" },
+        { message: "User ID and Address ID are required" },
         { status: 400 }
       );
     }
@@ -77,22 +95,29 @@ export async function PUT(request: NextRequest) {
       );
     }
   } catch (error) {
-    handleError(error, "address");
+    console.error("PUT Address Error:", error);
+    return NextResponse.json(
+      {
+        message: "Failed to update address",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
-// DELETE handler to delete an address
+
 export async function DELETE(request: NextRequest) {
   try {
-    const userId = request.nextUrl.searchParams.get("userId");
+    const addressId = request.nextUrl.searchParams.get("addressId");
 
-    if (!userId) {
+    if (!addressId) {
       return NextResponse.json(
-        { message: "User ID is required" },
+        { message: "User ID and Address ID are required" },
         { status: 400 }
       );
     }
 
-    const deletedAddress = await deleteAddress(userId);
+    const deletedAddress = await deleteAddress(addressId);
 
     if (deletedAddress) {
       return NextResponse.json(
@@ -106,6 +131,13 @@ export async function DELETE(request: NextRequest) {
       );
     }
   } catch (error) {
-    handleError(error, "address");
+    console.error("DELETE Address Error:", error);
+    return NextResponse.json(
+      {
+        message: "Failed to delete address",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }

@@ -2,11 +2,16 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { KotekOrder } from "@/types/types";
 import { useSession } from "next-auth/react";
+import { useAddress } from "./AddressContext";
+import { useGetKotekOrders } from "@/hooks/orders/usKotekOrder";
 
 // Create the context
 const KotekOrderContext = createContext<{
   kotekOrder: KotekOrder;
   setKotekOrder: React.Dispatch<React.SetStateAction<KotekOrder>>;
+  existingKotekOrders: KotekOrder[];
+  loading: boolean;
+  error: string | null;
 } | null>(null);
 
 // Provider component
@@ -14,22 +19,15 @@ export const KotekOrderProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { data: session } = useSession();
+  const { selectedAddress } = useAddress();
+  const { existingKotekOrders, loading, error } = useGetKotekOrders(); // Use the hook
 
   const [kotekOrder, setKotekOrder] = useState<KotekOrder>({
     status: "PENDING",
     totalAmount: 0,
+    subtotalAmount: 0,
     userId: "",
     items: [],
-    address: {
-      fullName: "",
-      phoneNumber: "",
-      wilayaLabel: "",
-      wilayaValue: "",
-      commune: "",
-      address: "",
-      stopDesk: false,
-      shippingPrice: 0
-    },
   });
 
   useEffect(() => {
@@ -42,7 +40,15 @@ export const KotekOrderProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [session]);
 
   return (
-    <KotekOrderContext.Provider value={{ kotekOrder, setKotekOrder }}>
+    <KotekOrderContext.Provider
+      value={{
+        kotekOrder,
+        setKotekOrder,
+        existingKotekOrders,
+        loading,
+        error,
+      }}
+    >
       {children}
     </KotekOrderContext.Provider>
   );

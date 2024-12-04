@@ -230,3 +230,23 @@ export async function deleteItemFromCart(
     }
   }
 }
+
+export async function emptyUserCart(userId: string) {
+  const cart = await prisma.cart.findUnique({
+    where: { userId },
+  });
+
+  if (!cart) {
+    throw new Error("Cart not found for user");
+  }
+
+  // Delete all items associated with this cart
+  await prisma.cartItem.deleteMany({
+    where: {
+      cartId: cart.id,
+    },
+  });
+
+  // Return the now-empty cart
+  return await getUserCart(cart.userId);
+}
