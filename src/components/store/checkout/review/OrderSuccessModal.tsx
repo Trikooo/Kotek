@@ -79,7 +79,10 @@ export function OrderSuccessModal({ isOpen, onClose }: OrderSuccessModalProps) {
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[550px] md:max-w-[600px] lg:max-w-[650px] p-0">
           <div className="flex flex-col items-center justify-center p-6 pt-8 pb-8 bg-gradient-to-br from-green-50 to-blue-50 rounded-t-lg">
-            <CheckCircle className="w-16 h-16 text-indigo-600 mb-4" strokeWidth={1.5}/>
+            <CheckCircle
+              className="w-16 h-16 text-indigo-600 mb-4"
+              strokeWidth={1.5}
+            />
             <DialogHeader>
               <DialogTitle className="text-3xl font-bold text-center mb-2">
                 Order Placed Successfully!
@@ -91,12 +94,13 @@ export function OrderSuccessModal({ isOpen, onClose }: OrderSuccessModalProps) {
             </DialogHeader>
           </div>
           <div className="p-6 bg-white rounded-b-lg">
-            <h3 className="text-xl font-semibold mb-2">What's Next?</h3>
+            <h3 className="text-xl font-semibold mb-2">What&apos;s Next?</h3>
             <ul className="list-disc list-inside space-y-2 mb-4">
-              <li>Our team will review your order and give you a call as soon as possible.</li>
               <li>
-                We'll ship your package and ensure a rapid delivery.
+                Our team will review your order and give you a call as soon as
+                possible.
               </li>
+              <li>We&apos;ll ship your package and ensure a rapid delivery.</li>
             </ul>
             <DialogFooter>
               <Button

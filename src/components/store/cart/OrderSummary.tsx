@@ -78,7 +78,7 @@ export default function OrderSummary({
         guestAddress: selectedAddress,
       }));
     }
-  }, [kotekOrder.userId, selectedAddress]);
+  }, [kotekOrder.userId, selectedAddress, setKotekOrder]);
 
   const handleProceed = () => {
     router.push("/checkout/shipping");
