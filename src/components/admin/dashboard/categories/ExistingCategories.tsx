@@ -34,6 +34,7 @@ export default function ExistingCategories() {
 
   // Define your rows dynamically
   const rows = filteredCategories.map((category) => ({
+    id: category.id,
     image: (
       <Image
         src={category.imageUrl || "/placeholder/placeholder.svg"}

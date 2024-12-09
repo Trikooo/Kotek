@@ -16,6 +16,7 @@ const columns: Column[] = [
 
 const rows: Row[] = [
   {
+    id: 1,
     customer: {
       primary: "Liam Johnson",
       secondary: "liam@example.com",
@@ -26,6 +27,7 @@ const rows: Row[] = [
     amount: "$250.00",
   },
   {
+    id: 1,
     customer: {
       primary: "Olivia Smith",
       secondary: "olivia@example.com",
@@ -36,6 +38,7 @@ const rows: Row[] = [
     amount: "$150.00",
   },
   {
+    id: 1,
     customer: {
       primary: "Noah Williams",
       secondary: "noah@example.com",
@@ -46,6 +49,7 @@ const rows: Row[] = [
     amount: "$350.00",
   },
   {
+    id: 1,
     customer: {
       primary: "Emma Brown",
       secondary: "emma@example.com",

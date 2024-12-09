@@ -20,7 +20,6 @@ import Link from "next/link";
 import { useKotekOrder } from "@/context/KotekOrderContext";
 
 export default function AllProducts() {
-
   const { data, loading, error, page, setPage } = useProductContext();
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(
     new Set()
@@ -49,6 +48,7 @@ export default function AllProducts() {
   ];
 
   const rows: Row[] = filteredProducts.map((product) => ({
+    id: product.id,
     image: (
       <Tooltip>
         <TooltipTrigger>

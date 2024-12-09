@@ -95,12 +95,19 @@ export const KotekOrderProvider: React.FC<{ children: React.ReactNode }> = ({
     }),
     [
       kotekOrder,
+      setKotekOrder,
       userKotekOrders,
+      setUserKotekOrders,
       userOrdersLoading,
       userOrdersError,
+      loadMoreUserKotekOrders,
+      userKotekOrdersPagination,
       allKotekOrders,
+      setAllKotekOrders,
       allKotekOrdersLoading,
       allKotekOrdersError,
+      loadMoreAllKotekOrders,
+      allKotekOrdersPagination,
     ]
   );
 

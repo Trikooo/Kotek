@@ -5,12 +5,6 @@ import { useKotekOrder } from "@/context/KotekOrderContext";
 import { useEffect } from "react";
 
 export default function Settings() {
-  const { existingKotekOrders } = useKotekOrder();
-
-  useEffect(() => {
-    console.log(existingKotekOrders);
-  }, [existingKotekOrders]);
-
   return (
     <AdminLayout>
       <div className="relative w-full max-w-lg mx-auto p-4 border-2 border-black">

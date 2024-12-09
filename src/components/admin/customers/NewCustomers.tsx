@@ -17,26 +17,31 @@ const columns = [
 
 const rows = [
   {
+    id: 1,
     customer: "Liam Johnson",
     email: "liam@example.com",
     origin: "Facebook",
   },
   {
+    id: 1,
     customer: "Olivia Smith",
     email: "olivia@example.com",
     origin: "Ouedkniss",
   },
   {
+    id: 1,
     customer: "Noah Williams",
     email: "noah@example.com",
     origin: "Website",
   },
   {
+    id: 1,
     customer: "Emma Brown",
     email: "emma@example.com",
     origin: "In Store",
   },
   {
+    id: 1,
     customer: "Liam Johnson",
     email: "liam@example.com",
     origin: "Other",

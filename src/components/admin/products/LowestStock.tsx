@@ -16,6 +16,7 @@ export default function LowestStock() {
 
   const rows = [
     {
+      id: 1,
       image: "/profile-image.png",
       name: "Laser Lemonade Machine",
       status: { value: "Draft", filled: false },
@@ -25,6 +26,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 2,
       image: "/profile-image.png",
       name: "Hypernova Headphones",
       status: { value: "Active", filled: true },
@@ -34,6 +36,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 3,
       image: "/profile-image.png",
       name: "AeroGlow Desk Lamp",
       status: { value: "Active", filled: true },
@@ -43,6 +46,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 4,
       image: "/profile-image.png",
       name: "TechTonic Energy Drink",
       status: { value: "Draft", filled: false },
@@ -52,6 +56,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 5,
       image: "/profile-image.png",
       name: "Gamer Gear Pro Controller",
       status: { value: "Active", filled: true },
@@ -61,6 +66,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 6,
       image: "/profile-image.png",
       name: "Luminous VR Headset",
       status: { value: "Active", filled: true },
@@ -70,6 +76,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 7,
       image: "/profile-image.png",
       name: "Quantum Keyboard",
       status: { value: "Active", filled: true },
@@ -79,6 +86,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 8,
       image: "/profile-image.png",
       name: "Nebula Projector",
       status: { value: "Draft", filled: false },
@@ -88,6 +96,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 9,
       image: "/profile-image.png",
       name: "Celestial Smartwatch",
       status: { value: "Active", filled: true },
@@ -97,6 +106,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 10,
       image: "/profile-image.png",
       name: "Stellar Mouse Pad",
       status: { value: "Draft", filled: false },
@@ -106,6 +116,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 11,
       image: "/profile-image.png",
       name: "Aurora Desk Organizer",
       status: { value: "Active", filled: true },
@@ -115,6 +126,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 12,
       image: "/profile-image.png",
       name: "Lunar Mouse",
       status: { value: "Active", filled: true },
@@ -124,6 +136,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
     {
+      id: 13,
       image: "/profile-image.png",
       name: "Galactic Bluetooth Speaker",
       status: { value: "Draft", filled: false },
@@ -133,6 +146,7 @@ export default function LowestStock() {
       actions: <ProductsDropDown />,
     },
   ];
+
 
   return (
     <DataTable
