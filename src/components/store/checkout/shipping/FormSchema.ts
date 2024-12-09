@@ -1,14 +1,26 @@
 import * as z from "zod";
 
+const phoneRegex = /^[0-9]+$/;
+
 export const shippingFormSchema = z
   .object({
     fullName: z.string().min(2, {
       message: "Full name must be at least 2 characters.",
     }),
-    phoneNumber: z.string().min(10, {
-      message: "Phone number must be at least 10 digits.",
-    }),
-    secondPhoneNumber: z.string().optional(),
+    phoneNumber: z
+      .string()
+      .min(10, {
+        message: "Phone number must be at least 10 digits.",
+      })
+      .refine((value) => phoneRegex.test(value), {
+        message: "Please enter a valid phone number.",
+      }),
+    secondPhoneNumber: z
+      .string()
+      .optional()
+      .refine((value) => !value || phoneRegex.test(value), {
+        message: "Please enter a valid phone number, or leave it blank.",
+      }),
     address: z.string().min(5, {
       message: "Address must be at least 5 characters.",
     }),
@@ -21,10 +33,12 @@ export const shippingFormSchema = z
       label: z.string(),
     }),
     stopDesk: z.boolean().default(false),
-    station: z.object({
-      value: z.string(),
-      label: z.string(),
-    }).optional(),
+    station: z
+      .object({
+        value: z.string(),
+        label: z.string(),
+      })
+      .optional(),
   })
   .refine(
     (data) => {
@@ -35,7 +49,7 @@ export const shippingFormSchema = z
     },
     {
       message: "Station is required when using stop desk delivery",
-      path: ["station"], // This will show the error on the stationCode field
+      path: ["station"],
     }
   );
 
