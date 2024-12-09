@@ -42,22 +42,12 @@ export function OrderSuccessModal({ isOpen, onClose }: OrderSuccessModalProps) {
   useEffect(() => {
     if (isOpen) {
       setShowConfetti(true);
-      playPopSound();
-      const timer = setTimeout(() => setShowConfetti(false), 5000);
+      const timer = setTimeout(() => setShowConfetti(false), 10000);
       return () => clearTimeout(timer);
     } else {
       setShowConfetti(false);
     }
   }, [isOpen]);
-
-  const playPopSound = () => {
-    if (typeof window !== "undefined") {
-      const audio = new Audio("/sounds/pop.mp3");
-      audio
-        .play()
-        .catch((error) => console.error("Error playing sound:", error));
-    }
-  };
 
   return (
     <>
@@ -70,10 +60,19 @@ export function OrderSuccessModal({ isOpen, onClose }: OrderSuccessModalProps) {
             width={windowDimension.width}
             height={windowDimension.height}
             recycle={false}
-            numberOfPieces={400}
+            numberOfPieces={300}
             tweenDuration={10000}
             onConfettiComplete={() => setShowConfetti(false)}
+            initialVelocityY={50}
+            confettiSource={{
+              x: 0,
+              y: windowDimension.height / 2,
+              w: windowDimension.width,
+              h: windowDimension.height,
+            }}
+            wind={0}
           />
+
         </div>
       )}
       <Dialog open={isOpen} onOpenChange={onClose}>

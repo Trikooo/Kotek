@@ -16,7 +16,9 @@ import { useAddress } from "@/context/AddressContext";
 import { OrderSummarySkeleton } from "./CartSkeleton";
 import { useEffect } from "react";
 import { useKotekOrder } from "@/context/KotekOrderContext";
-import { ArrowBigRight, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { EMPTY_ADDRESS } from "@/lib/constants";
+import { formatCurrency } from "@/utils/generalUtils";
 
 interface OrderSummaryProps {
   className?: string;
@@ -27,7 +29,12 @@ export default function OrderSummary({
   className,
   inCheckout = false,
 }: OrderSummaryProps) {
-  const { selectedAddress, loading: addressesLoading } = useAddress();
+  const {
+    shippingPrice,
+    loading: addressesLoading,
+    selectedAddress,
+    addresses,
+  } = useAddress();
   const { kotekOrder, setKotekOrder } = useKotekOrder();
   const { cart, loading: cartLoading } = useCart();
 
@@ -53,7 +60,6 @@ export default function OrderSummary({
     };
 
     const subtotal = calculateSubtotal();
-    const shippingPrice = selectedAddress.shippingPrice ?? 0;
     const totalAmount = subtotal + shippingPrice;
 
     setKotekOrder((prevOrder) => ({
@@ -62,23 +68,24 @@ export default function OrderSummary({
       subtotalAmount: subtotal,
       totalAmount,
     }));
-  }, [cart?.items, selectedAddress, setKotekOrder]);
+  }, [cart?.items, setKotekOrder, shippingPrice]);
 
   useEffect(() => {
+    console.log(addresses);
     if (kotekOrder.userId) {
       setKotekOrder((prev) => ({
         ...prev,
-        addressId: selectedAddress.id,
+        addressId: selectedAddress?.id,
         guestAddress: undefined,
       }));
     } else {
       setKotekOrder((prev) => ({
         ...prev,
         addressId: undefined,
-        guestAddress: selectedAddress,
+        guestAddress: selectedAddress || EMPTY_ADDRESS,
       }));
     }
-  }, [kotekOrder.userId, selectedAddress, setKotekOrder]);
+  }, [kotekOrder.userId, selectedAddress, setKotekOrder, addresses]);
 
   const handleProceed = () => {
     router.push("/checkout/shipping");
@@ -120,30 +127,38 @@ export default function OrderSummary({
       </CardHeader>
       <CardContent className="p-6">
         <ScrollArea className="mb-4">
-          {cart.items.map((item, index) => (
-            <div
-              key={index}
-              className="flex justify-between items-center mb-2 text-sm"
-            >
-              <span className="font-medium">
-                {item.quantity}× {item.product.name}
-              </span>
-              <span>{item.price * item.quantity} DA</span>
-            </div>
-          ))}
+          {cart.items.map((item, index) => {
+            // Skip rendering if product details are missing
+            if (!item.product) {
+              console.warn("Order summary item missing product details:", item);
+              return null;
+            }
+
+            return (
+              <div
+                key={index}
+                className="flex justify-between items-center mb-2 text-sm"
+              >
+                <span className="font-medium">
+                  {item.quantity}×{item.product.name}
+                </span>
+                <span>{formatCurrency(item.price * item.quantity)}</span>
+              </div>
+            );
+          })}
         </ScrollArea>
         <Separator className="my-4" />
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Subtotal</span>
-            <span>{kotekOrder.subtotalAmount} DA</span>
+            <span>{formatCurrency(kotekOrder.subtotalAmount)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Shipping</span>
             {!inCheckout ? (
               <span className="text-yellow-600">Proceed to calculate</span>
-            ) : selectedAddress.shippingPrice !== 0 ? (
-              <span>{selectedAddress.shippingPrice} DA</span>
+            ) : shippingPrice !== 0 ? (
+              <span>{formatCurrency(shippingPrice)}</span>
             ) : (
               <span className="text-yellow-600">Select a wilaya first</span>
             )}
@@ -151,8 +166,8 @@ export default function OrderSummary({
           <Separator className="my-2" />
           <div className="flex justify-between font-bold text-lg">
             <span>Total</span>
-            {selectedAddress.shippingPrice !== 0 && inCheckout ? (
-              <span>{kotekOrder.totalAmount} DA</span>
+            {shippingPrice !== 0 && inCheckout ? (
+              <span>{formatCurrency(kotekOrder.totalAmount)}</span>
             ) : (
               <span>--</span>
             )}

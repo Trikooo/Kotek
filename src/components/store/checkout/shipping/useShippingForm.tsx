@@ -14,13 +14,20 @@ import { useAddress } from "@/context/AddressContext";
 import { useAddressRequest } from "@/hooks/address/useAddress";
 import { useSession } from "next-auth/react";
 import { AlertCircle } from "lucide-react";
+import { ShippingFormValues } from "./FormSchema";
+import axios, { AxiosError } from "axios";
 
 export default function useShippingForm() {
   const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user?.id;
-  const { addresses, setAddresses, selectedAddress, setSelectedAddress } =
-    useAddress();
+  const {
+    addresses,
+    setAddresses,
+    selectedAddress,
+    setSelectedAddress,
+    shippingPrice,
+  } = useAddress();
 
   const { handleCreateAddress } = useAddressRequest();
   // const [address, setAddress] = useState<Address>({
@@ -58,17 +65,6 @@ export default function useShippingForm() {
           setWilayaData(data);
           const parsedWilayaOptions = parseWilayas(data);
           setWilayaOptions(parsedWilayaOptions);
-
-          // Pre-select Wilaya if exists in kotekOrder
-          if (selectedAddress.wilayaValue) {
-            const matchedWilaya = parsedWilayaOptions.find(
-              (option) => option.value == selectedAddress.wilayaValue
-            );
-            if (matchedWilaya) {
-              setSelectedWilaya([matchedWilaya]);
-            }
-          }
-
           setWilayaLoading(false);
         }
       } catch (error) {
@@ -80,7 +76,7 @@ export default function useShippingForm() {
     if (!wilayaData) {
       fetchWilayaData();
     }
-  }, [wilayaData, selectedAddress.wilayaValue]);
+  }, [wilayaData, selectedAddress?.wilayaValue]);
 
   // Second useEffect for populating communes
   useEffect(() => {
@@ -88,23 +84,13 @@ export default function useShippingForm() {
       const communes = parseCommunes(wilayaData, selectedWilaya[0].value);
       if (communes) {
         setCommuneOptions(communes);
-
-        // Pre-select Commune if exists in kotekOrder
-        if (selectedAddress.commune) {
-          const matchedCommune = communes.find(
-            (option) => option.value === selectedAddress.commune
-          );
-          if (matchedCommune) {
-            setSelectedCommune([matchedCommune]);
-          }
-        }
       }
     }
     if (selectedWilaya.length < 1) {
       setCommuneOptions([]);
       setSelectedCommune([]);
     }
-  }, [wilayaOptions, wilayaData, selectedWilaya, selectedAddress.commune]);
+  }, [wilayaOptions, wilayaData, selectedWilaya, selectedAddress?.commune]);
 
   // Third useEffect for stop desk options
   useEffect(() => {
@@ -118,23 +104,6 @@ export default function useShippingForm() {
       const noestStations = parseNoestStations(wilayaData, wilaya.value);
       if (noestStations) {
         setStopDeskOptions(noestStations);
-
-        // Pre-select stop desk if stationCode exists
-        if (selectedAddress.stationCode) {
-          const matchedStopDesk = noestStations.find(
-            (option) => option.value === selectedAddress.stationCode
-          );
-          if (matchedStopDesk) {
-            setSelectedStopDesk([matchedStopDesk]);
-
-            // Ensure stopDesk is checked if a station is selected
-
-            setSelectedAddress((prev) => ({
-              ...prev,
-              stopDesk: true,
-            }));
-          }
-        }
       }
     } else {
       setWilayaHasStopDesk(false);
@@ -143,127 +112,130 @@ export default function useShippingForm() {
   }, [
     wilayaData,
     selectedWilaya,
-    selectedAddress.stationCode,
+    selectedAddress?.stationCode,
     setSelectedAddress,
   ]);
-
-  useEffect(() => {
-    if (
-      wilayaData &&
-      selectedAddress.wilayaLabel &&
-      selectedWilaya.length > 0
-    ) {
-      if (selectedAddress.stopDesk) {
-        setSelectedAddress((prev) => ({
-          ...prev,
-          shippingPrice:
-            wilayaData[selectedAddress.wilayaLabel].noest.prices.stopDesk,
-        }));
-      } else {
-        setSelectedAddress((prev) => ({
-          ...prev,
-          shippingPrice:
-            wilayaData[selectedAddress.wilayaLabel].noest.prices.home,
-        }));
-      }
-    }
-  }, [
-    selectedAddress.stopDesk,
-    selectedAddress.wilayaLabel,
-    setSelectedAddress,
-    selectedWilaya,
-    wilayaHasStopDesk,
-    wilayaData,
-  ]);
+  // Fourth useEffect to set shippingPrice
 
   // Validation and continue handler
-  const handleContinue = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Reusable validation function
-    const showValidationError = (description: string) => {
-      toast({
-        title: (
-          <>
-            <AlertCircle className="w-5 h-5" strokeWidth={1.5} /> {description}
-          </>
-        ),
-
-        variant: "destructive",
-      });
+  const handleContinue = async (data: ShippingFormValues) => {
+    // Prepare data for submission
+    const dataToSend = {
+      ...selectedAddress,
+      fullName: data.fullName,
+      phoneNumber: data.phoneNumber,
+      address: data.address,
+      secondPhoneNumber: data.secondPhoneNumber || undefined,
+      wilayaValue: data.wilaya.value,
+      wilayaLabel: data.wilaya.label,
+      commune: data.commune.label,
+      stopDesk: data.stopDesk,
+      stationCode: data.station?.value,
+      stationName: data.station?.label,
+      shippingPrice: shippingPrice,
     };
+    console.log("dataToSend: ", dataToSend);
 
-    // Validation checks
-    if (!selectedAddress.fullName?.trim()) {
-      return showValidationError("Please enter your full name.");
-    }
+    try {
+      setAddressLoading(true);
 
-    if (!selectedAddress.phoneNumber?.trim()) {
-      return showValidationError("Please enter a phone number.");
-    }
+      if (userId) {
+        try {
+          const createdAddressData = await handleCreateAddress(
+            dataToSend,
+            userId
+          );
+          const newAddress = {
+            id: createdAddressData.address.id,
+            ...dataToSend,
+          };
+          setSelectedAddress(newAddress);
 
-    if (!selectedAddress.address?.trim()) {
-      return showValidationError("Please enter your address.");
-    }
+          // Update addresses list
+          setAddresses((prev) => {
+            const currentAddresses = Array.isArray(prev) ? prev : [];
+            return [...currentAddresses, newAddress];
+          });
+        } catch (error) {
+          // More granular error handling
+          if (axios.isAxiosError(error)) {
+            // Handle Axios-specific errors
+            const status = error.response?.status;
+            switch (status) {
+              case 400:
+                toast({
+                  variant: "destructive",
+                  title: "Validation Error",
+                  description:
+                    "Please check your address details and try again.",
+                });
+                break;
+              case 409:
+                toast({
+                  variant: "destructive",
+                  title: "Duplicate Address",
+                  description:
+                    "An address with the same details already exists.",
+                });
+                break;
+              case 404:
+                toast({
+                  variant: "destructive",
+                  title: "User Not Found",
+                  description: "Please log in again.",
+                });
+                break;
+              case 500:
+                toast({
+                  variant: "destructive",
+                  title: "Server Error",
+                  description:
+                    "An unexpected server error occurred. Please try again later.",
+                });
+                break;
+              default:
+                toast({
+                  variant: "destructive",
+                  title: "Error",
+                  description: error.message || "An unexpected error occurred.",
+                });
+            }
 
-    if (selectedWilaya.length === 0) {
-      return showValidationError("Please select a wilaya.");
-    }
+            // Optionally log the full error for debugging
+            console.error("Address creation error:", error);
 
-    if (selectedCommune.length === 0) {
-      return showValidationError("Please select a commune.");
-    }
+            // Prevent navigation on error
+            return;
+          }
 
-    if (
-      selectedAddress.stopDesk &&
-      wilayaHasStopDesk &&
-      selectedStopDesk.length === 0
-    ) {
-      return showValidationError(
-        "Please select a stop desk station or uncheck the box."
-      );
-    }
-
-    if (userId) {
-      try {
-        setAddressLoading(true);
-        setSelectedAddress(selectedAddress);
-        await handleCreateAddress(selectedAddress, userId);
-
-        router.push("/checkout/review");
-        setAddresses((prev) => {
-          // If prev is not an array, start with an empty array
-          const currentAddresses = Array.isArray(prev) ? prev : [];
-          // Add the new address
-          return [...currentAddresses, selectedAddress];
-        });
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: (
-            <>
-              <AlertCircle className="w-5 h-5" strokeWidth={1.5} /> Uh oh, there
-              was a problem
-            </>
-          ),
-          description: "Refresh the page and try again.",
-        });
-      } finally {
-        setAddressLoading(false);
+          // Handle other types of errors
+          toast({
+            variant: "destructive",
+            title: "Unexpected Error",
+            description: "Please refresh the page and try again.",
+          });
+          console.error("Unexpected error:", error);
+          return;
+        }
+      } else {
+        // For guest users, just set the address without API call
+        setSelectedAddress(dataToSend);
       }
-    } else {
-      setSelectedAddress(selectedAddress);
-      router.push("/checkout/review");
-      setAddresses((prev) => {
-        // If prev is not an array, start with an empty array
-        const currentAddresses = Array.isArray(prev) ? prev : [];
-        // Add the new address
-        return [...currentAddresses, selectedAddress];
-      });
-    }
-    // Navigate to the next page
-  };
 
+      // Navigate to review page
+      router.push("/checkout/review");
+    } catch (error) {
+      // Catch-all error handler
+      toast({
+        variant: "destructive",
+        title: "Navigation Error",
+        description: "An unexpected error occurred during checkout.",
+      });
+      console.error("Checkout navigation error:", error);
+    } finally {
+      setAddressLoading(false);
+    }
+  };
   return {
     wilayaOptions,
     communeOptions,

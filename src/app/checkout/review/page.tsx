@@ -8,18 +8,19 @@ import { Button } from "@/components/ui/button";
 import { useKotekOrder } from "@/context/KotekOrderContext";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useKotekOrderRequest } from "@/hooks/orders/usKotekOrder";
+import { useKotekOrderRequest } from "@/hooks/orders/useKotekOrder";
 import { useAddress } from "@/context/AddressContext";
 import { useEmptyCart } from "@/hooks/cart/useCart";
 import { useCart } from "@/context/CartContext";
 import { OrderSuccessModal } from "@/components/store/checkout/review/OrderSuccessModal";
+import { Address } from "@/types/types";
 
 export default function Review() {
   const router = useRouter();
   const currentStep = 2;
   const { kotekOrder, setKotekOrder } = useKotekOrder();
   const { handleCreateKotekOrder } = useKotekOrderRequest();
-  const { selectedAddress } = useAddress();
+  const { addresses, selectedAddress, setSelectedAddress } = useAddress();
   const { handleEmptyCart } = useEmptyCart();
   const { cart, setCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
@@ -31,15 +32,13 @@ export default function Review() {
 
   const handlePlaceOrder = async () => {
     setIsLoading(true);
+
     try {
-      if (
-        (kotekOrder.userId && !selectedAddress.id) ||
-        (!kotekOrder.userId && !kotekOrder.guestAddress)
-      ) {
+      if (!selectedAddress) {
         toast.error("Address not selected, please go back.");
         return;
       }
-
+      console.log(kotekOrder);
       const createdOrder = await handleCreateKotekOrder(
         kotekOrder,
         kotekOrder.userId
@@ -70,6 +69,7 @@ export default function Review() {
   const handleCloseSuccessModal = () => {
     setIsSuccessModalOpen(false);
     router.push("/"); // Navigate to home page or order confirmation page
+    setSelectedAddress(null);
   };
 
   return (

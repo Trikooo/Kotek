@@ -17,8 +17,10 @@ import { useProductContext } from "@/context/ProductsContext";
 import { DeleteProduct } from "./DeleteProduct";
 import Image from "next/image";
 import Link from "next/link";
+import { useKotekOrder } from "@/context/KotekOrderContext";
 
 export default function AllProducts() {
+
   const { data, loading, error, page, setPage } = useProductContext();
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(
     new Set()

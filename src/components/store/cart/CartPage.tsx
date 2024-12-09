@@ -6,7 +6,7 @@ import { useCreateOrUpdateCart, useDeleteCartItem } from "@/hooks/cart/useCart";
 import useDebounce from "@/hooks/useDebounce";
 import { FetchCart } from "@/types/types";
 import { toast } from "@/hooks/use-toast";
-import { AlertCircle, BaggageClaim } from "lucide-react";
+import { AlertCircle, ArrowRight, BaggageClaim } from "lucide-react";
 import CartItemsCardSkeleton, { OrderSummarySkeleton } from "./CartSkeleton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -76,7 +76,6 @@ export default function CartPage() {
         productId
       );
     } else if (typeof window !== "undefined") {
-
       localStorage.setItem("guestCart", JSON.stringify([...updatedItems]));
     }
   };
@@ -142,7 +141,7 @@ export default function CartPage() {
       {loading ? (
         <div className="mt-14 w-full flex gap-16 flex-col lg:flex-row">
           <CartItemsCardSkeleton className="flex-1" />
-          <OrderSummarySkeleton className="lg:w-5/12" />
+          <OrderSummarySkeleton className="lg:w-5/12 max-h-min" />
         </div>
       ) : error && !error.includes("Not Found") ? (
         <div className="mt-24 w-full flex flex-col gap-4 items-center justify-center text-red-500">
@@ -165,8 +164,9 @@ export default function CartPage() {
             Looks like you haven&apos;t added anything to your cart yet.
           </p>
           <Link href={"/"}>
-            <Button className="w-full sm:w-auto">
-              Continue Shopping -&gt;
+            <Button className="w-full sm:w-auto gap-2">
+              Continue Shopping
+              <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
             </Button>
           </Link>
         </div>

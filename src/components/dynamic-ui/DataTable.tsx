@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import {
@@ -18,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CircleAlert } from "lucide-react"; // Import icons
+import { CircleAlert, Loader2 } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -37,6 +36,7 @@ export interface Column {
 }
 
 export interface Row {
+  id: string | number;
   [key: string]: any;
 }
 
@@ -50,10 +50,10 @@ interface DataTableProps {
   className?: string;
   isLoading?: boolean;
   error?: unknown;
-  currentPage: number;
-  totalPages: number;
-  setPage: Function;
-
+  currentPage?: number;
+  totalPages?: number;
+  setPage?: Function;
+  onRowClick?: (row: Row) => void;
 }
 
 export function DataTable({
@@ -69,7 +69,7 @@ export function DataTable({
   currentPage,
   totalPages,
   setPage,
-
+  onRowClick,
 }: DataTableProps) {
   const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".avif", ".webp"];
 
@@ -80,6 +80,25 @@ export function DataTable({
         value.toLowerCase().endsWith(extension)
       ) || value.startsWith("http")
     );
+  };
+
+  const renderLoadingSkeletons = (count: number) => {
+    return [...Array(count)].map((_, rowIndex) => (
+      <TableRow key={`skeleton-${rowIndex}`}>
+        {columns.map((column, colIndex) => (
+          <TableCell
+            key={colIndex}
+            className={`${column.important ? "" : "hidden sm:table-cell"}`}
+          >
+            {column.header === "Image" || colIndex === 0 ? (
+              <Skeleton className="w-12 h-12 rounded-md" />
+            ) : (
+              <Skeleton className="w-[100px] h-[20px] rounded-full" />
+            )}
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
   };
 
   return (
@@ -105,116 +124,91 @@ export function DataTable({
               later.
             </p>
           </div>
-        ) : isLoading ? (
-          <Table>
-            <TableHeader>
-              <TableRow className="flex w-full">
-                {columns.map((column, index) => (
-                  <TableHead
-                    key={index}
-                    className={`flex-1 flex justify-center items-center ${
-                      column.important ? "" : "hidden sm:flex"
-                    }`}
-                  >
-                    {column.header}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[...Array(5)].map((_, rowIndex) => (
-                <TableRow key={rowIndex} className="flex w-full">
-                  {columns.map((column, colIndex) => (
-                    <TableCell
-                      key={colIndex}
-                      className={`flex-1 flex justify-center items-center ${
-                        column.important ? "" : "hidden sm:flex"
-                      }`}
-                    >
-                      {column.header === "Image" ? (
-                        <Skeleton className="w-12 h-12 rounded-md" />
-                      ) : (
-                        <Skeleton className="w-[100px] h-[20px] rounded-full" />
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
         ) : (
           <>
-            <Table>
-              <TableHeader>
-                <TableRow className="flex w-full">
-                  {columns.map((column, index) => (
-                    <TableHead
-                      key={index}
-                      className={`flex-1 flex justify-center items-center ${
-                        column.important ? "" : "hidden sm:flex"
-                      }`}
-                    >
-                      {column.header}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row, rowIndex) => (
-                  <TableRow key={rowIndex} className="flex w-full">
-                    {columns.map((column, colIndex) => {
-                      const cellData =
-                        row[column.header.toLowerCase().replace(/ /g, "_")];
-                      const columnClass = column.important
-                        ? ""
-                        : "hidden sm:flex";
-
-                      return (
-                        <TableCell
-                          key={colIndex}
-                          className={`flex-1 flex justify-center items-center ${columnClass}`}
-                        >
-                          {isImage(cellData) ? (
-                            <div className="relative w-16 h-16 sm:w-14 sm:h-14 md:w-12 md:h-12 lg:w-10 lg:h-10 xl:w-8 xl:h-8 2xl:w-6 2xl:h-6">
-                              <Image
-                                src={cellData}
-                                alt="Data"
-                                className="object-cover"
-                                width={89}
-                                height={89}
-                                unoptimized={cellData.startsWith("http")}
-                              />
-                            </div>
-                          ) : column.badge ? (
-                            <Badge
-                              className="text-xs"
-                              variant={cellData?.filled ? "default" : "outline"}
-                            >
-                              {cellData?.value || cellData}
-                            </Badge>
-                          ) : (
-                            <div className="flex flex-col items-center">
-                              {column.hasSecondaryData && cellData ? (
-                                <>
-                                  <div className="font-medium">
-                                    {cellData.primary}
-                                  </div>
-                                  <div className="hidden sm:block text-sm text-gray-500">
-                                    {cellData.secondary}
-                                  </div>
-                                </>
-                              ) : (
-                                <div className="text-center">{cellData}</div>
-                              )}
-                            </div>
-                          )}
-                        </TableCell>
-                      );
-                    })}
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {columns.map((column, index) => (
+                      <TableHead
+                        key={index}
+                        className={`text-center ${
+                          column.important ? "" : "hidden sm:table-cell"
+                        }`}
+                      >
+                        {column.header}
+                      </TableHead>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {rows.map((row, rowIndex) => (
+                    <TableRow
+                      key={rowIndex}
+                      className={
+                        onRowClick ? "cursor-pointer hover:bg-gray-100" : ""
+                      }
+                      onClick={() => onRowClick && onRowClick(row)}
+                    >
+                      {columns.map((column, colIndex) => {
+                        const cellData =
+                          row[column.header.toLowerCase().replace(/ /g, "_")];
+                        const columnClass = column.important
+                          ? ""
+                          : "hidden sm:table-cell";
+
+                        return (
+                          <TableCell
+                            key={colIndex}
+                            className={`text-center ${columnClass}`}
+                          >
+                            {isImage(cellData) ? (
+                              <div className="relative w-16 h-16 sm:w-14 sm:h-14 md:w-12 md:h-12 lg:w-10 lg:h-10 xl:w-8 xl:h-8 2xl:w-6 2xl:h-6 mx-auto">
+                                <Image
+                                  src={cellData}
+                                  alt="Data"
+                                  className="object-cover"
+                                  width={89}
+                                  height={89}
+                                  unoptimized={cellData.startsWith("http")}
+                                />
+                              </div>
+                            ) : column.badge ? (
+                              <Badge
+                                className="text-xs mx-auto"
+                                variant={
+                                  cellData?.filled ? "default" : "outline"
+                                }
+                              >
+                                {cellData?.value || cellData}
+                              </Badge>
+                            ) : (
+                              <div className="flex flex-col items-center">
+                                {column.hasSecondaryData && cellData ? (
+                                  <>
+                                    <div className="font-medium">
+                                      {cellData.primary}
+                                    </div>
+                                    <div className="hidden sm:block text-sm text-gray-500">
+                                      {cellData.secondary}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div>{cellData}</div>
+                                )}
+                              </div>
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                  {isLoading && renderLoadingSkeletons(8)}
+                </TableBody>
+              </Table>
+            </div>
+
             {rows.length === 0 && !isLoading && !error && (
               <div className="text-center mt-5 text-gray-500">
                 No data available
@@ -222,33 +216,41 @@ export function DataTable({
             )}
           </>
         )}
-        {rows.length != 0 && !isLoading && !error && totalPages > 1 && (
-          <Pagination className="flex justify-end mt-8 ">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious onClick={() => setPage(currentPage - 1)} />
-              </PaginationItem>
-              {Array.from({ length: totalPages }, (_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    isActive={index + 1 === currentPage}
-                    onClick={() => setPage(index + 1)}
-                  >
-                    {currentPage + index}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              {totalPages > 1 && (
+        {rows.length !== 0 &&
+          !isLoading &&
+          !error &&
+          totalPages &&
+          currentPage &&
+          setPage &&
+          totalPages > 1 && (
+            <Pagination className="flex justify-end mt-8 ">
+              <PaginationContent>
                 <PaginationItem>
-                  <PaginationEllipsis />
+                  <PaginationPrevious
+                    onClick={() => setPage(currentPage - 1)}
+                  />
                 </PaginationItem>
-              )}
-              <PaginationItem>
-                <PaginationNext onClick={() => setPage(currentPage + 1)} />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      isActive={index + 1 === currentPage}
+                      onClick={() => setPage(index + 1)}
+                    >
+                      {currentPage + index}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                {totalPages > 1 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+                <PaginationItem>
+                  <PaginationNext onClick={() => setPage(currentPage + 1)} />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
       </CardContent>
       {footer && (
         <CardFooter className="flex justify-center">{footer}</CardFooter>

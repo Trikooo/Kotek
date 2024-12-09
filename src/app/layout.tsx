@@ -15,7 +15,7 @@ import { AddressProvider } from "@/context/AddressContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "KOTEK",
+  title: "Kotek",
   description:
     "kotek informatique, vente de materiel informatique, draria alger, ouedkniss, facebook instagram tiktok, informatics, geekzone, el assli, chiinformatique, lahlou",
 };

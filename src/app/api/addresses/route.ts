@@ -5,6 +5,8 @@ import {
   getAllAddresses,
   updateAddress,
 } from "../APIservices/controllers/addresses";
+import { Prisma } from "@prisma/client";
+import { ZodError } from "zod";
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,18 +52,58 @@ export async function POST(request: NextRequest) {
     const addressData = await request.json();
 
     const address = await createAddress(userId, addressData);
-    if (address)
-      return NextResponse.json({ addresses: address }, { status: 201 });
-
-    return NextResponse.json(
-      { message: "Failed to create address" },
-      { status: 400 }
-    );
+    return NextResponse.json({ address: address }, { status: 201 });
   } catch (error) {
     console.error("POST Address Error:", error);
+
+    // Handle Zod validation errors
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          message: "Validation failed",
+          errors: error.errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Handle Prisma unique constraint violations
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // P2002 is the Prisma error code for unique constraint violations
+      if (error.code === "P2002") {
+        return NextResponse.json(
+          { message: "An address with these details already exists" },
+          { status: 409 } // Conflict status code
+        );
+      }
+
+      // Handle other Prisma-specific errors
+      switch (error.code) {
+        case "P2003": // Foreign key constraint failed
+          return NextResponse.json(
+            { message: "Related record not found" },
+            { status: 404 }
+          );
+        case "P2025": // Record not found
+          return NextResponse.json(
+            { message: "Resource not found" },
+            { status: 404 }
+          );
+        default:
+          return NextResponse.json(
+            {
+              message: "Database error occurred",
+              errorCode: error.code,
+            },
+            { status: 500 }
+          );
+      }
+    }
+
+    // Catch-all for unexpected errors
     return NextResponse.json(
       {
-        message: "Failed to create address",
+        message: "An unexpected error occurred",
         error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

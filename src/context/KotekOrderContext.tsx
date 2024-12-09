@@ -1,26 +1,62 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { KotekOrder } from "@/types/types";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
+import { KotekOrder, PaginationMetadata } from "@/types/types";
 import { useSession } from "next-auth/react";
-import { useAddress } from "./AddressContext";
-import { useGetKotekOrders } from "@/hooks/orders/usKotekOrder";
+import {
+  useGetAllKotekOrders,
+  useGetUserKotekOrders,
+} from "@/hooks/orders/useKotekOrder";
+import { AxiosError } from "axios";
 
 // Create the context
-const KotekOrderContext = createContext<{
-  kotekOrder: KotekOrder;
-  setKotekOrder: React.Dispatch<React.SetStateAction<KotekOrder>>;
-  existingKotekOrders: KotekOrder[];
-  loading: boolean;
-  error: string | null;
-} | null>(null);
+const KotekOrderContext = createContext<
+  | {
+      kotekOrder: KotekOrder;
+      setKotekOrder: React.Dispatch<React.SetStateAction<KotekOrder>>;
+      userKotekOrders: KotekOrder[];
+      setUserKotekOrders: React.Dispatch<React.SetStateAction<KotekOrder[]>>;
+      userOrdersLoading: boolean;
+      userOrdersError: AxiosError | null;
+      allKotekOrders: KotekOrder[];
+      setAllKotekOrders: React.Dispatch<React.SetStateAction<KotekOrder[]>>;
+      allKotekOrdersLoading: boolean;
+      allKotekOrdersError: AxiosError | null;
+      loadMoreAllKotekOrders: () => void;
+      allKotekOrdersPagination: PaginationMetadata | null;
+      loadMoreUserKotekOrders: () => void;
+      userKotekOrdersPagination: PaginationMetadata | null;
+    }
+  | undefined
+>(undefined);
 
 // Provider component
 export const KotekOrderProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { data: session } = useSession();
-  const { selectedAddress } = useAddress();
-  const { existingKotekOrders, loading, error } = useGetKotekOrders(); // Use the hook
+  const {
+    orders: userKotekOrders,
+    setOrders: setUserKotekOrders,
+    loading: userOrdersLoading,
+    error: userOrdersError,
+    loadMoreOrders: loadMoreUserKotekOrders,
+    pagination: userKotekOrdersPagination,
+  } = useGetUserKotekOrders();
+
+  const {
+    orders: allKotekOrders,
+    setOrders: setAllKotekOrders,
+    loading: allKotekOrdersLoading,
+    error: allKotekOrdersError,
+    loadMoreOrders: loadMoreAllKotekOrders,
+    pagination: allKotekOrdersPagination,
+  } = useGetAllKotekOrders();
 
   const [kotekOrder, setKotekOrder] = useState<KotekOrder>({
     status: "PENDING",
@@ -39,16 +75,37 @@ export const KotekOrderProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [session]);
 
+  // Memoize the context value
+  const contextValue = useMemo(
+    () => ({
+      kotekOrder,
+      setKotekOrder,
+      userKotekOrders,
+      setUserKotekOrders,
+      userOrdersLoading,
+      userOrdersError,
+      loadMoreUserKotekOrders,
+      userKotekOrdersPagination,
+      allKotekOrders,
+      setAllKotekOrders,
+      allKotekOrdersLoading,
+      allKotekOrdersError,
+      loadMoreAllKotekOrders,
+      allKotekOrdersPagination,
+    }),
+    [
+      kotekOrder,
+      userKotekOrders,
+      userOrdersLoading,
+      userOrdersError,
+      allKotekOrders,
+      allKotekOrdersLoading,
+      allKotekOrdersError,
+    ]
+  );
+
   return (
-    <KotekOrderContext.Provider
-      value={{
-        kotekOrder,
-        setKotekOrder,
-        existingKotekOrders,
-        loading,
-        error,
-      }}
-    >
+    <KotekOrderContext.Provider value={contextValue}>
       {children}
     </KotekOrderContext.Provider>
   );
@@ -57,7 +114,7 @@ export const KotekOrderProvider: React.FC<{ children: React.ReactNode }> = ({
 // Custom hook to use the context
 export const useKotekOrder = () => {
   const context = useContext(KotekOrderContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useKotekOrder must be used within a KotekOrderProvider");
   }
   return context;

@@ -1,10 +1,10 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Truck, User, MapPin, Phone, AlertCircle, Loader2 } from "lucide-react";
 import { useAddress } from "@/context/AddressContext";
 
 export default function ShippingReview() {
-  const { selectedAddress, selectedAddressLoading, loading, error } =
-    useAddress();
+  const { selectedAddress, selectedAddressLoading } = useAddress();
 
   const hasAddress =
     selectedAddress &&
@@ -21,15 +21,10 @@ export default function ShippingReview() {
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6 space-y-4">
-        {selectedAddressLoading || loading ? (
+        {selectedAddressLoading ? (
           <div className="flex items-center justify-center text-muted-foreground gap-2">
             <Loader2 className="h-5 w-5 animate-spin" />
             <p>Loading...</p>
-          </div>
-        ) : error ? (
-          <div className="flex items-center gap-3 text-red-600">
-            <AlertCircle className="h-5 w-5" strokeWidth={1.5} />
-            <p>Error: {error}</p>
           </div>
         ) : hasAddress ? (
           <>
@@ -99,7 +94,8 @@ export default function ShippingReview() {
           <div className="flex items-center gap-3 text-yellow-600">
             <AlertCircle className="h-5 w-5" strokeWidth={1.5} />
             <p>
-              It seems like you haven&apos;t entered a shipping address yet.
+              It seems like you haven&apos;t entered a shipping address yet,
+              please go back.
             </p>
           </div>
         )}

@@ -200,6 +200,7 @@ model Order {
   items     OrderItem[] @relation("OrderToOrderItems")
   addressId String?     @db.Uuid
   address   Address?    @relation(fields: [addressId], references: [id])
+  tracking  String?
 
   @@index([userId])
 }
@@ -285,7 +286,7 @@ model Address {
   user   User    @relation(fields: [userId], references: [id])
   Order  Order[]
 
-  @@unique([wilayaValue, commune, address]) // Unique constraint on the combination of wilayaValue, commune, and address
+  @@unique([wilayaValue, commune, address, userId]) // Unique constraint on the combination of wilayaValue, commune, and address
   @@index([userId])
 }
 

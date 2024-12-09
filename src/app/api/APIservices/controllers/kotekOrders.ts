@@ -2,26 +2,142 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { KotekOrderSchema } from "../lib/validation";
 import { KotekOrder } from "@/types/types";
 import { DefaultArgs } from "@prisma/client/runtime/library";
+import prisma from "../lib/prisma";
 
-const prisma = new PrismaClient();
+export async function getAllKotekOrders(
+  userRole: string, // Add user role parameter
+  page: number = 1,
+  limit: number = 10
+) {
+  try {
+    // Role-based access control
+    if (userRole !== "ADMIN") {
+      throw new Error("Unauthorized: Only admins can retrieve all orders");
+    }
 
-export async function getAllKotekOrders(userId: string) {
+    // Validate pagination parameters
+    const pageNumber = Math.max(1, page);
+    const pageSize = Math.min(100, Math.max(1, limit));
+    const skip = (pageNumber - 1) * pageSize;
+
+    // Fetch total count of orders
+    const totalOrders = await prisma.order.count();
+
+    // Fetch orders with pagination
+    const kotekOrders = await prisma.order.findMany({
+      skip: skip,
+      take: pageSize,
+      include: {
+        items: {
+          select: {
+            productId: true,
+            price: true,
+            quantity: true,
+            product: {
+              select: {
+                imageUrls: true,
+                name: true,
+                weight: true,
+              },
+            },
+          },
+        },
+        address: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc", // Optional: sort by most recent first
+      },
+    });
+
+    return {
+      orders: kotekOrders,
+      pagination: {
+        currentPage: pageNumber,
+        pageSize: pageSize,
+        totalOrders: totalOrders,
+        totalPages: Math.ceil(totalOrders / pageSize),
+        hasNextPage: skip + pageSize < totalOrders,
+        hasPrevPage: pageNumber > 1,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching all Kotek Orders:", error);
+    throw error;
+  }
+}
+export async function getAllUserKotekOrders(
+  userId: string,
+  page: number = 1,
+  limit: number = 10
+) {
   try {
     // Validate userId
     if (!userId) {
       throw new Error("User ID is required");
     }
 
-    // Fetch all Kotek Orders for the user with related items and address
+    // Validate pagination parameters
+    const pageNumber = Math.max(1, page);
+    const pageSize = Math.min(100, Math.max(1, limit));
+    const skip = (pageNumber - 1) * pageSize;
+
+    // Fetch total count of user's orders
+    const totalUserOrders = await prisma.order.count({
+      where: { userId },
+    });
+
+    // Fetch user's orders with pagination
     const kotekOrders = await prisma.order.findMany({
       where: { userId },
+      skip: skip,
+      take: pageSize,
       include: {
-        items: true,
+        items: {
+          select: {
+            productId: true,
+            price: true,
+            quantity: true,
+            product: {
+              select: {
+                imageUrls: true,
+                name: true,
+                weight: true,
+              },
+            },
+          },
+        },
         address: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc", // Optional: sort by most recent first
       },
     });
 
-    return kotekOrders;
+    return {
+      orders: kotekOrders,
+      pagination: {
+        currentPage: pageNumber,
+        pageSize: pageSize,
+        totalOrders: totalUserOrders,
+        totalPages: Math.ceil(totalUserOrders / pageSize),
+        hasNextPage: skip + pageSize < totalUserOrders,
+        hasPrevPage: pageNumber > 1,
+      },
+    };
   } catch (error) {
     console.error("Error fetching Kotek Orders:", error);
     throw error;

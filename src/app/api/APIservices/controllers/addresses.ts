@@ -1,4 +1,3 @@
-
 import { PrismaClient } from "@prisma/client";
 import { AddressSchema } from "../lib/validation";
 import { Address } from "@/types/types";
@@ -25,6 +24,7 @@ export async function getAllAddresses(userId: string) {
 }
 
 export async function createAddress(userId: string, addressData: Address) {
+  console.log(addressData);
   try {
     // Validate userId
     if (!userId) {

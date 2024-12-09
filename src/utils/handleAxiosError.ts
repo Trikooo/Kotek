@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
-export const handleAxiosError = (error: unknown): Error => {
+export const handleAxiosError = (error: unknown): Error | AxiosError => {
   if (axios.isAxiosError(error)) {
     // Extract more detailed error information
     const errorMessage =

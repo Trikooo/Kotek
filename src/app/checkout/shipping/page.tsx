@@ -41,7 +41,7 @@ export default function Shipping() {
           </p>
           <Button
             onClick={() => {
-              setSelectedAddress(EMPTY_ADDRESS);
+              setSelectedAddress(null);
               setShowForm(!showForm);
             }}
             variant={"outline"}

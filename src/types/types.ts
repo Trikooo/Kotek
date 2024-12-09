@@ -1,4 +1,4 @@
-import { $Enums, Category, OrderStatus, Product } from "@prisma/client";
+import { $Enums, Category, OrderStatus, Product, User } from "@prisma/client";
 
 export interface CreateProductT {
   name: string;
@@ -76,7 +76,7 @@ export type Cart = {
   userId: string;
   createdAt: string;
   updatedAt: string;
-  items: Omit<CartItem, "id" | "product">[];
+  items: Omit<CartItem, "id">[];
 };
 
 export type FetchCart = {
@@ -142,17 +142,27 @@ export type NoestOrderForm = {
 };
 
 export type KotekOrder = {
+  id?: string;
+  createdAt?: string;
   status: OrderStatus;
   totalAmount: number;
   subtotalAmount: number;
   userId: string;
   addressId?: string; // Optional addressId field (can be null or undefined if no address id is provided (user logged out))
-  guestAddress?: Address; // Optional address object, reflects the Address model
+  guestAddress?: Address; // Optional address object, reflects the Address model (should only be present if the user places an order as guest)
   items: {
     quantity: number;
     price: number;
     productId: string;
+    product?: {
+      name: string;
+      imageUrls: string[];
+      weight: number;
+    }; // the product is always fetched back from the database. (made optional for client side order creation)
   }[];
+  user?: User;
+  address?: Address;
+  tracking?: string;
 };
 export interface Address {
   id?: string;
@@ -167,4 +177,22 @@ export interface Address {
   stopDesk: boolean;
   stationCode?: string;
   stationName?: string;
+}
+
+export interface PaginationMetadata {
+  currentPage: number;
+  pageSize: number;
+  totalOrders: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      NOEST_TOKEN: string;
+      NOEST_GUID: string;
+    }
+  }
 }

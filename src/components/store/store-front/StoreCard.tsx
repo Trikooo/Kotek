@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Cart, FetchCart } from "@/types/types";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
+import { ToastAction } from "@/components/ui/toast";
 
 // Interface for StoreCard props
 interface StoreCardProps {
@@ -66,7 +67,6 @@ const StoreCard = ({
 
   // Check if the product is already in the cart
 
-
   const isProductInCart = cart?.items.some((item) => item.productId === id);
 
   const hasMultipleImages = imageUrls.length > 1;
@@ -79,11 +79,22 @@ const StoreCard = ({
     if (userId) {
       const cartData: Omit<Cart, "id" | "createdAt" | "updatedAt"> = {
         userId: userId,
-        items: [{ productId: id, quantity: 1, price: price }],
+        items: [
+          {
+            productId: id,
+            quantity: 1,
+            price: price,
+            product: {
+              name: title,
+              imageUrls: imageUrls,
+            },
+          },
+        ],
       };
 
       try {
         await handleCreateOrUpdate(cartData);
+
         toast({
           title: (
             <>
@@ -92,6 +103,11 @@ const StoreCard = ({
             </>
           ),
           description: "Item has been added to cart.",
+          action: (
+            <Link href="/cart">
+              <ToastAction altText={"View cart"}>View Cart</ToastAction>
+            </Link>
+          ),
         });
       } catch (error) {
         toast({

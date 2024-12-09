@@ -1,118 +1,165 @@
-import { File, ListFilter } from "lucide-react";
-
+"use client";
+import React, { useEffect, useRef, useCallback } from "react";
+import { Column, DataTable, Row } from "@/components/dynamic-ui/DataTable";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Column, DataTable, Row } from "@/components/dynamic-ui/DataTable";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useKotekOrder } from "@/context/KotekOrderContext";
+import { KotekOrder } from "@/types/types";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
+import { formatCurrency } from "@/utils/generalUtils";
+import {
+  getStatusColor,
+  getStatusVariant,
+} from "@/app/admin/orders/[orderId]/AdminOrderUtils";
 
 interface OrderListProps {
   className?: string;
 }
-const columns: Column[] = [
-  { header: "Customer", important: true, hasSecondaryData: true }, // Indicate secondary data for Customer
-  { header: "Type" },
-  { header: "Status", badge: true },
-  { header: "Date" },
-  { header: "Amount", important: true },
-];
 
-const rows: Row[] = [
-  {
-    customer: {
-      primary: "Liam Johnson",
-      secondary: "liam@example.com",
-    },
-    type: "Sale",
-    status: { value: "Fulfilled", filled: true },
-    date: "2023-06-23",
-    amount: "$250.00",
-  },
-  {
-    customer: {
-      primary: "Olivia Smith",
-      secondary: "olivia@example.com",
-    },
-    type: "Refund",
-    status: { value: "Declined", filled: false },
-    date: "2023-06-24",
-    amount: "$150.00",
-  },
-  {
-    customer: {
-      primary: "Noah Williams",
-      secondary: "noah@example.com",
-    },
-    type: "Subscription",
-    status: { value: "Fulfilled", filled: true },
-    date: "2023-06-25",
-    amount: "$350.00",
-  },
-  {
-    customer: {
-      primary: "Emma Brown",
-      secondary: "emma@example.com",
-    },
-    type: "Sale",
-    status: { value: "Fulfilled", filled: true },
-    date: "2023-06-26",
-    amount: "$450.00",
-  },
+const columns: Column[] = [
+  { header: "Customer", important: true },
+  { header: "wilaya", important: true },
+  { header: "Status", important: true },
+  { header: "Date", important: true },
+  { header: "Subtotal", important: true },
+  { header: "Shipping price" },
+  { header: "Approval" },
 ];
 
 export default function OrderList({ className = "" }: OrderListProps) {
+  const {
+    allKotekOrders,
+    allKotekOrdersLoading,
+    allKotekOrdersError,
+    loadMoreAllKotekOrders,
+    allKotekOrdersPagination,
+  } = useKotekOrder();
+
+  // Ref for the scrollable container and load more trigger
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
+
+  // Intersection Observer to trigger load more
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (
+        target.isIntersecting &&
+        allKotekOrdersPagination?.hasNextPage &&
+        !allKotekOrdersLoading
+      ) {
+        loadMoreAllKotekOrders();
+      }
+    },
+    [loadMoreAllKotekOrders, allKotekOrdersPagination, allKotekOrdersLoading]
+  );
+
+  // Set up Intersection Observer
+  useEffect(() => {
+    // Create a root margin to trigger 100px before the end
+    const options: IntersectionObserverInit = {
+      root: null, // viewport
+      rootMargin: "0px 0px 100px 0px", // 100px from bottom
+      threshold: 0, // trigger as soon as any part is visible
+    };
+
+    if (loadMoreTriggerRef.current) {
+      observerRef.current = new IntersectionObserver(handleObserver, options);
+      observerRef.current.observe(loadMoreTriggerRef.current);
+    }
+
+    // Cleanup
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [handleObserver]);
+
+  // Prepare rows for the DataTable
+  const rows: Row[] = allKotekOrders.map((order) => ({
+    id: order.id ? order.id : "",
+    customer: <OrderUserInfo order={order} />,
+    wilaya:
+      order.address?.wilayaLabel || order.guestAddress?.wilayaLabel || "N/A",
+    status: (
+      <Badge
+        variant={getStatusVariant(order.status)}
+        className={getStatusColor(order.status)}
+      >
+        {order.status}
+      </Badge>
+    ),
+    subtotal: formatCurrency(order.subtotalAmount),
+    shipping_price: formatCurrency(order.totalAmount - order.subtotalAmount),
+    date: order.createdAt ? humanReadableDate(order.createdAt) : "N/A",
+    approval:
+      order.status === "PROCESSING" ? (
+        <Badge className="bg-green-50 text-green-600" variant="outline">
+          APPROVED
+        </Badge>
+      ) : (
+        <Button variant="outline">Approve</Button>
+      ),
+  }));
+
   return (
-    <Tabs defaultValue="week">
-      <div className="flex items-center">
-        <TabsList>
-          <TabsTrigger value="week">Week</TabsTrigger>
-          <TabsTrigger value="month">Month</TabsTrigger>
-          <TabsTrigger value="year">Year</TabsTrigger>
-        </TabsList>
-        <div className="ml-auto flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-7 gap-1 text-sm">
-                <ListFilter className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only">Filter</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem checked>
-                Fulfilled
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Declined</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Refunded</DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button size="sm" variant="outline" className="h-7 gap-1 text-sm">
-            <File className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only">Export</span>
-          </Button>
-        </div>
-      </div>
-      <TabsContent value="week">
-        <DataTable
-          title="Orders"
-          description="Orders from this week."
-          columns={columns}
-          rows={rows}
-          currentPage={0}
-          totalPages={0}
-          setPage={() => {
-            console.log("not implemented in OrderList");
-          }}
-        />
-      </TabsContent>
-    </Tabs>
+    <div>
+      <DataTable
+        title="Orders"
+        description="All your orders"
+        columns={columns}
+        rows={rows}
+        isLoading={allKotekOrdersLoading}
+        error={allKotekOrdersError}
+      />
+      {/* Load more trigger at the end of the table */}
+      <div ref={loadMoreTriggerRef} style={{ height: "1px" }} />
+    </div>
+  );
+}
+
+// Existing helper functions remain the same
+const humanReadableDate = (isoString: string): string => {
+  const date = new Date(isoString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+};
+
+export function OrderUserInfo({ order }: { order: KotekOrder }) {
+  const name = order.user?.name || order.guestAddress?.fullName || "Nameless";
+  const email = order.user?.email || "Non registered.";
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            href={`/admin/orders/${order.id}`}
+            className="block p-2 hover:bg-gray-100 rounded transition-colors"
+          >
+            <div className="font-medium">{name}</div>
+            <div className="text-sm text-gray-500">{email}</div>
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>View details</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

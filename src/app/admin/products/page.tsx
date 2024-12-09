@@ -2,6 +2,7 @@ import Stock from "@/components/admin/products/Stock";
 import AdminLayout from "../AdminLayout";
 import ViewProducts from "@/components/admin/products/ViewProducts";
 import LowestStock from "@/components/admin/products/LowestStock";
+import { useKotekOrder } from "@/context/KotekOrderContext";
 
 const ProductProps = {
   title: "🔻 12% from last week",

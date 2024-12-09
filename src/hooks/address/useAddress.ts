@@ -2,7 +2,7 @@ import { Address } from "@/types/types";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { fetchUserAddresses } from "./getAddressUtils";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { handleAxiosError } from "@/utils/handleAxiosError";
 
 export function useGetAddresses() {
@@ -10,7 +10,7 @@ export function useGetAddresses() {
   const userId = session?.user?.id ?? null;
   const [addresses, setAddresses] = useState<Address[] | []>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AxiosError | null>(null);
   useEffect(() => {
     async function loadAddresses() {
       setLoading(true);
@@ -21,7 +21,7 @@ export function useGetAddresses() {
           setAddresses(userAddress);
         }
       } catch (error) {
-        setError(error instanceof Error ? error.message : (error as string));
+        setError(error as AxiosError);
       } finally {
         setLoading(false);
       }
@@ -66,9 +66,7 @@ export function useAddressRequest() {
       );
       return response;
     } catch (error) {
-      throw new Error(
-        error instanceof Error ? error.message : (error as string)
-      );
+      throw error;
     }
   };
 
@@ -91,6 +89,6 @@ const handleAddressRequest = async (
     const response = await axios(config);
     return response.data;
   } catch (error) {
-    throw handleAxiosError(error);
+    throw error;
   }
 };

@@ -8,6 +8,9 @@ import {
   ShoppingCart,
   Users2,
   PanelLeft,
+  ClipboardList,
+  ChartColumnIncreasing,
+  Settings,
 } from "lucide-react";
 
 import SidebarLink from "./SideBarLink";
@@ -18,9 +21,9 @@ export default function SideBar() {
   const { isExpanded, toggleSideBar } = useContext(SideBarContext);
   let width;
   if (typeof window !== "undefined") {
-     width = window.innerWidth
+    width = window.innerWidth;
   }
-  const [isLg, setIsLg] = useState(width? width < 1024 : false);
+  const [isLg, setIsLg] = useState(width ? width < 1024 : false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -57,13 +60,13 @@ export default function SideBar() {
           }`}
           disabled={!isLg}
         >
-          <PanelLeft className="w-5 h-5" strokeWidth={1.5}/>
+          <PanelLeft className="w-5 h-5" strokeWidth={1.5} />
         </button>
         <nav className="space-y-1">
           <SidebarLink href="/admin/dashboard" icon={Home} label="Dashboard" />
           <SidebarLink
             href="/admin/orders"
-            icon={ShoppingCart}
+            icon={ClipboardList}
             label="Orders"
           />
           <SidebarLink href="/admin/products" icon={Package} label="Products" />
@@ -74,14 +77,14 @@ export default function SideBar() {
           />
           <SidebarLink
             href="/admin/analytics"
-            icon={LineChart}
+            icon={ChartColumnIncreasing}
             label="Analytics"
           />
         </nav>
       </div>
 
       <nav>
-        <SidebarLink href="/admin/settings" icon={Settings2} label="Settings" />
+        <SidebarLink href="/admin/settings" icon={Settings} label="Settings" />
       </nav>
     </aside>
   );

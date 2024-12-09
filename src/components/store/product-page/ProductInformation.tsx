@@ -1,5 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CircleCheck, Loader2, Minus, Plus } from "lucide-react";
+import {
+  AlertCircle,
+  Banknote,
+  CircleCheck,
+  Clock,
+  Loader2,
+  Minus,
+  Package,
+  Plus,
+  Truck,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -9,6 +19,15 @@ import { toast } from "@/hooks/use-toast";
 import { Cart, FetchCart } from "@/types/types";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/context/CartContext"; // Import useCart
+import Link from "next/link";
+import { ToastAction } from "@/components/ui/toast";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface ProductInformationProps {
   product: {
@@ -48,7 +67,15 @@ export default function ProductInformation({
       const cartData: Omit<Cart, "id" | "createdAt" | "updatedAt"> = {
         userId: userId,
         items: [
-          { productId: product.id, quantity: quantity, price: product.price },
+          {
+            productId: product.id,
+            quantity: quantity,
+            price: product.price,
+            product: {
+              name: product.name,
+              imageUrls: product.imageUrls,
+            },
+          },
         ],
       };
 
@@ -62,6 +89,11 @@ export default function ProductInformation({
             </>
           ),
           description: "Item has been added to cart.",
+          action: (
+            <Link href="/cart">
+              <ToastAction altText={"View cart"}>View Cart</ToastAction>
+            </Link>
+          ),
         });
       } catch (error) {
         toast({
@@ -236,14 +268,15 @@ export default function ProductInformation({
           </span>
         </div>
         {isProductInCart ? (
-          <Button
-            variant="outline"
-            className="w-full mt-2"
-            onClick={handleViewCart}
-            disabled={updateLoading}
-          >
-            View Cart
-          </Button>
+          <Link href={"/cart"}>
+            <Button
+              variant="outline"
+              className="w-full mt-2"
+              disabled={updateLoading}
+            >
+              View Cart
+            </Button>
+          </Link>
         ) : (
           <Button
             className="bg-indigo-600 hover:bg-indigo-500 w-full"
@@ -257,6 +290,31 @@ export default function ProductInformation({
             )}
           </Button>
         )}
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card className="w-full border">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center space-x-2 text-2xl">
+                <Truck className="h-8 w-8 text-primary" strokeWidth={1.5} />
+                <span>Shipping Available</span>
+              </CardTitle>
+              <CardDescription className="pb-3">
+                Fast and reliable delivery to your doorstep
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="w-full border">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center space-x-2 text-2xl">
+                <Banknote className="h-8 w-8 text-primary" strokeWidth={1.5} />
+                <span>Cash on Delivery</span>
+              </CardTitle>
+              <CardDescription className="pb-3">
+                Pay when you receive your order at your doorstep
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
     );
   }

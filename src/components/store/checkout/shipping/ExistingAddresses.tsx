@@ -40,13 +40,16 @@ export default function ExistingAddresses({
   };
 
   if (loading) {
-    return (
-      <ExistingAddressesSkeleton />
-    );
+    return <ExistingAddressesSkeleton />;
   }
 
-  if (error) {
-    return <ErrorComponent />;
+  if (error && error?.status !== 404) {
+    return (
+      <>
+        {JSON.stringify(error)}
+        <ErrorComponent />
+      </>
+    );
   }
 
   return (
@@ -63,7 +66,7 @@ export default function ExistingAddresses({
           const matchedAddress = addresses.find(
             (addr) => addr.commune === commune && addr.address === address
           );
-          setSelectedAddress(matchedAddress || EMPTY_ADDRESS);
+          setSelectedAddress(matchedAddress || null);
         }}
       >
         {addresses.map((address) => (
@@ -182,7 +185,7 @@ export default function ExistingAddresses({
             {status === "authenticated" ? (
               <Button
                 onClick={() => {
-                  setSelectedAddress(EMPTY_ADDRESS);
+                  setSelectedAddress(null);
                   onAddNew();
                 }}
               >
@@ -198,7 +201,7 @@ export default function ExistingAddresses({
       <CardFooter className="p-0 mt-4 justify-end">
         <Button
           onClick={handleContinue}
-          disabled={selectedAddress.wilayaLabel === ""}
+          disabled={selectedAddress || addresses.length === 0 ? false : true}
           className="w-32"
         >
           Continue
