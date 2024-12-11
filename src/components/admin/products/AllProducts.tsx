@@ -13,21 +13,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import EditProduct from "./EditProduct";
-import { useProductContext } from "@/context/ProductsContext";
+import { useProductsContext } from "@/context/ProductsContext";
 import { DeleteProduct } from "./DeleteProduct";
 import Image from "next/image";
 import Link from "next/link";
-import { useKotekOrder } from "@/context/KotekOrderContext";
 
 export default function AllProducts() {
-  const { data, loading, error, page, setPage } = useProductContext();
+  const { products, loading, error } = useProductsContext();
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(
     new Set()
   );
   const [sortOption, setSortOption] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
-  const { products, total } = data;
-  const totalPages = Math.ceil(total / 10);
+
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesSearch = product.name
@@ -114,9 +112,6 @@ export default function AllProducts() {
         rows={rows}
         isLoading={loading}
         error={error}
-        currentPage={page}
-        totalPages={totalPages}
-        setPage={setPage}
       />
     </>
   );

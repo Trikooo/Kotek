@@ -1,73 +1,52 @@
 "use client";
-
-import React, {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, ReactNode } from "react";
+import { PaginationMetadata, ProductSearchParams } from "@/types/types"; // Adjust the import path as needed
+import { AxiosError } from "axios";
 import { useGetAllProducts } from "@/hooks/products/useGetAllProducts";
-import { ProductData } from "@/types/types";
+import { Product } from "@prisma/client";
 
-const defaultData: ProductData = {
-  products: [],
-  total: 0,
-};
-
-interface ProductContextType {
-  data: ProductData;
+// Define the shape of the context
+interface ProductsContextType {
+  products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   loading: boolean;
-  error: unknown;
-  page: number;
-  pageSize: number;
-  setPage: (page: number) => void;
-  setPageSize: (pageSize: number) => void;
-  setData: (data: ProductData) => void; // New setter for updating products
+  error: AxiosError | null;
+  pagination: PaginationMetadata | null;
+  loadMoreProducts: () => void;
+  resetProducts: (newParams: ProductSearchParams) => void;
+  productSearchParams: ProductSearchParams;
+  setProductSearchParams: React.Dispatch<
+    React.SetStateAction<ProductSearchParams>
+  >;
 }
 
-const ProductContext = createContext<ProductContextType | undefined>(undefined);
+// Create the context
+export const ProductsContext = createContext<ProductsContextType | undefined>(
+  undefined
+);
 
-export const useProductContext = () => {
-  const context = useContext(ProductContext);
-  if (context === undefined) {
-    throw new Error("useProductContext must be used within ProductProvider");
-  }
-  return context;
-};
-
-export const ProductProvider: React.FC<{
-  children: ReactNode;
-  initialPage?: number;
-  initialPageSize?: number;
-}> = ({ children, initialPage = 1, initialPageSize = 10 }) => {
-  const [page, setPage] = useState(initialPage);
-  const [pageSize, setPageSize] = useState(initialPageSize);
-  const {
-    data: fetchedData = defaultData,
-    loading,
-    error,
-  } = useGetAllProducts(page, pageSize); // Ensure defaultData is used if undefined
-  const [data, setData] = useState<ProductData>(fetchedData); // Local state to manage data
-
-  useEffect(() => {
-    setData(fetchedData); // Update local data state whenever fetchedData changes
-  }, [fetchedData]);
+// Create a provider component
+export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  // Use the custom hook to get all the products-related state and functions
+  const productsState = useGetAllProducts();
 
   return (
-    <ProductContext.Provider
-      value={{
-        data,
-        loading,
-        error,
-        page,
-        pageSize,
-        setPage,
-        setPageSize,
-        setData,
-      }}
-    >
+    <ProductsContext.Provider value={productsState}>
       {children}
-    </ProductContext.Provider>
+    </ProductsContext.Provider>
   );
+};
+
+// Custom hook to use the Products context
+export const useProductsContext = () => {
+  const context = useContext(ProductsContext);
+
+  // Throw an error if the hook is used outside of a ProductsProvider
+  if (context === undefined) {
+    throw new Error("useProducts must be used within a ProductsProvider");
+  }
+
+  return context;
 };

@@ -1,11 +1,11 @@
 "use client";
 import { Search } from "lucide-react";
 import SearchOptions from "./SearchOptions";
-import { useProductContext } from "@/context/ProductsContext";
+import { useProductsContext } from "@/context/ProductsContext";
 import StoreCardList from "./StoreCard";
 
 export default function StoreMain() {
-  const { data, loading, error } = useProductContext(); // Use the context to get products
+  const { products, loading, error } = useProductsContext(); // Use the context to get products
 
   return (
     <div className="lg:pl-10">
@@ -26,8 +26,8 @@ export default function StoreMain() {
 
       <div className="flex flex-col mt-5 gap-4">
         <StoreCardList
-          products={data.products}
-          error={error as boolean}
+          products={products}
+          error={error ? true : false}
           loading={loading}
         />
       </div>

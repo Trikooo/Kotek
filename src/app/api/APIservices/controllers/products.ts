@@ -2,26 +2,51 @@ import { Prisma, ProductStatus } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { NextRequest } from "next/server";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { ProductValidationT } from "@/types/types";
+import { GetAllProductsResponse, ProductValidationT } from "@/types/types";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { productSchema, updateProductSchema } from "../lib/validation";
 import fs from "fs/promises";
-export async function getAllProducts(page: number, pageSize: number) {
+export async function getAllProducts(
+  currentPage: number,
+  pageSize: number
+): Promise<GetAllProductsResponse> {
   try {
+    // Ensure page and pageSize are valid numbers
+    currentPage = Math.max(1, currentPage);
+    pageSize = Math.max(1, pageSize);
+
     // Calculate the offset
-    const skip = (page - 1) * pageSize;
+    const skip = (currentPage - 1) * pageSize;
 
     // Fetch products with pagination
     const products = await prisma.product.findMany({
       skip,
       take: pageSize,
+      include: {
+        category: true,
+      },
     });
 
     // Get total count of products for pagination calculations
     const total = await prisma.product.count();
 
-    return { products, total };
+    // Calculate pagination information
+    const totalPages = Math.ceil(total / pageSize);
+    const hasNextPage = currentPage < totalPages;
+    const hasPrevPage = currentPage > 1;
+
+    return {
+      products,
+      pagination: {
+        total,
+        currentPage,
+        pageSize,
+        totalPages,
+        hasPrevPage,
+        hasNextPage,
+      },
+    };
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error fetching products", error.message);
@@ -32,7 +57,6 @@ export async function getAllProducts(page: number, pageSize: number) {
     }
   }
 }
-
 export async function getProductById(id: string) {
   try {
     const product = await prisma.product.findUnique({
@@ -197,7 +221,6 @@ export async function productValidation(
     ...(await saveProductImages(files, name)),
   ];
 
-
   // Prepare data object
   const data: Partial<ProductValidationT> = {
     ...(name && { name: capitalizeFirstLetter(name) }),
@@ -316,7 +339,6 @@ async function deleteProductImagesDir(dirName: string): Promise<void> {
 
     // Remove the directory and its contents
     await fs.rm(dirPath, { recursive: true, force: true });
-
   } catch (error) {
     console.error(`Error deleting directory ${dirPath}:`, error);
     throw new Error(

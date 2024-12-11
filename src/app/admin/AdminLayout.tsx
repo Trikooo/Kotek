@@ -6,9 +6,6 @@ import SideBarContext, {
 } from "@/context/SideBarContext";
 import { useContext } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { CategoryProvider } from "@/context/CategoriesContext";
-import { ProductProvider } from "@/context/ProductsContext";
-import { KotekOrderProvider } from "@/context/KotekOrderContext";
 
 export default function AdminLayout({
   children,

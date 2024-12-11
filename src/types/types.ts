@@ -60,10 +60,7 @@ export interface ProductValidationT {
   weight: number | null;
 }
 
-export interface ProductData {
-  products: Product[];
-  total: number;
-}
+
 
 // types.ts
 export type CartProduct = {
@@ -182,7 +179,7 @@ export interface Address {
 export interface PaginationMetadata {
   currentPage: number;
   pageSize: number;
-  totalOrders: number;
+  total: number;
   totalPages: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
@@ -195,4 +192,28 @@ declare global {
       NOEST_GUID: string;
     }
   }
+}
+export interface ProductSearchResult extends Product {
+  similarity_score: number;
+}
+export type ProductSearchResponse = {
+  products: ProductSearchResult[];
+  pagination: PaginationMetadata;
+};
+
+export type GetAllProductsResponse = {
+  products: Product[];
+  pagination: PaginationMetadata;
+};
+
+export interface ProductSearchParams {
+  query?: string;
+  categoryId?: string;
+  brands?: string[];
+  tags?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  currentPage: number;
+  pageSize: number;
+  status?: "ACTIVE" | "INACTIVE" | "DRAFT";
 }

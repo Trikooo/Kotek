@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { KotekOrderSchema } from "../lib/validation";
-import { KotekOrder } from "@/types/types";
+import { KotekOrder, PaginationMetadata } from "@/types/types";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import prisma from "../lib/prisma";
 
@@ -58,10 +58,10 @@ export async function getAllKotekOrders(
 
     return {
       orders: kotekOrders,
-      pagination: {
+      pagination: <PaginationMetadata>{
         currentPage: pageNumber,
         pageSize: pageSize,
-        totalOrders: totalOrders,
+        total: totalOrders,
         totalPages: Math.ceil(totalOrders / pageSize),
         hasNextPage: skip + pageSize < totalOrders,
         hasPrevPage: pageNumber > 1,
@@ -129,10 +129,10 @@ export async function getAllUserKotekOrders(
 
     return {
       orders: kotekOrders,
-      pagination: {
+      pagination: <PaginationMetadata>{
         currentPage: pageNumber,
         pageSize: pageSize,
-        totalOrders: totalUserOrders,
+        total: totalUserOrders,
         totalPages: Math.ceil(totalUserOrders / pageSize),
         hasNextPage: skip + pageSize < totalUserOrders,
         hasPrevPage: pageNumber > 1,

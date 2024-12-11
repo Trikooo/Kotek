@@ -56,7 +56,7 @@ export default function ProductDetailsImages({
             height={1000}
             width={1000}
             className={`w-full h-auto rounded-md ${
-              zoom ? "scale-150" : ""
+              zoom ? "scale-200" : ""
             } transition-transform duration-300`}
             style={{
               transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,

@@ -149,3 +149,51 @@ export const KotekOrderSchema = z.object({
 
 // Note: Make sure to import or define AddressSchema separately
 export type KotekOrder = z.infer<typeof KotekOrderSchema>;
+
+export const ProductSearchParamsSchema = z
+  .object({
+    query: z.string().trim().max(100).optional(),
+    categoryId: z.string().uuid("Invalid category ID").optional(),
+    minPrice: z
+      .number()
+      .int()
+      .positive("Price must be positive")
+      .max(1000000, "Price is too high")
+      .optional(),
+    maxPrice: z
+      .number()
+      .int()
+      .positive("Price must be positive")
+      .max(1000000, "Price is too high")
+      .optional(),
+    brands: z
+      .array(z.string().trim().max(50))
+      .max(10, "Too many brands")
+      .optional(),
+    status: z.enum(["ACTIVE", "INACTIVE", "DRAFT"]).optional(),
+    tags: z
+      .array(z.string().trim().max(50))
+      .max(20, "Too many tags")
+      .optional(),
+    pageSize: z
+      .number()
+      .int()
+      .min(1, "Limit must be at least 1")
+      .max(100, "Limit cannot exceed 100")
+      .default(20),
+    currentPage: z
+      .number()
+      .int()
+      .min(1, "Page should be greater than 1")
+      .default(0),
+  })
+  .refine(
+    (data) => {
+      // Optional: Add custom validation for price range
+      if (data.minPrice !== undefined && data.maxPrice !== undefined) {
+        return data.minPrice <= data.maxPrice;
+      }
+      return true;
+    },
+    { message: "Minimum price must be less than or equal to maximum price" }
+  );

@@ -1,36 +1,30 @@
-"use client"
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { OrderSuccessModal } from '@/components/store/checkout/review/OrderSuccessModal';
+"use client";
+import { Input } from "@/components/ui/input";
+import { useProductsContext } from "@/context/ProductsContext";
+import useDebounce from "@/hooks/useDebounce";
+import { ProductSearchParams } from "@/types/types";
+import { useEffect } from "react";
 
-
-export default function OrderSuccessPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+export default function TestPage() {
+  const {
+    productSearchParams,
+    products,
+    setProductSearchParams,
+    resetProducts,
+  } = useProductsContext();
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newState: ProductSearchParams = {
+      ...productSearchParams,
+      query: e.target.value,
+    };
+    console.log(newState);
+    setProductSearchParams(newState);
+    resetProducts(newState);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">Order Success Modal Test Page</h1>
-        <Button
-          onClick={handleOpenModal}
-          className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-        >
-          Place Test Order
-        </Button>
-      </div>
-
-      <OrderSuccessModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
+    <div className="w-full h-[100vh] flex items-center justify-center">
+      <Input className="w-40" onChange={handleInputChange} />
     </div>
   );
 }

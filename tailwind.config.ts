@@ -19,6 +19,9 @@ const config = {
       },
     },
     extend: {
+      scale: {
+        200: "2",
+      },
       boxShadow: {
         md: "0 0 3px rgba(0, 0, 0, 0.2)",
       },
@@ -26,8 +29,8 @@ const config = {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       colors: {
-        facebookBlue: '#0765FF',
-        discordBlue: '#5865F2',
+        facebookBlue: "#0765FF",
+        discordBlue: "#5865F2",
         googleBlue: "#4285F4",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -85,9 +88,9 @@ const config = {
           "0%": { transform: "scale(0.95) translateY(+15px)", opacity: "0" },
           "100%": { transform: "scale(1) translateY(0)", opacity: "1" },
         },
-        'slide-down': {
-          '0%': { transform: 'translateY(-100%)' },
-          '100%': { transform: 'translateY(0)' },
+        "slide-down": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(0)" },
         },
       },
       animation: {
@@ -95,7 +98,7 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "dropdown-in": "dropdown-in 0.1s ease-out forwards",
         "drop-in": "drop-in 0.1s ease-out forwards",
-        'slide-down': 'slide-down 0.3s ease-out',
+        "slide-down": "slide-down 0.3s ease-out",
       },
     },
   },

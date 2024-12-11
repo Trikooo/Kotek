@@ -9,6 +9,7 @@ import {
   Package,
   Plus,
   Truck,
+  Calendar,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
@@ -18,7 +19,7 @@ import { useCreateOrUpdateCart } from "@/hooks/cart/useCart";
 import { toast } from "@/hooks/use-toast";
 import { Cart, FetchCart } from "@/types/types";
 import { Input } from "@/components/ui/input";
-import { useCart } from "@/context/CartContext"; // Import useCart
+import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import { ToastAction } from "@/components/ui/toast";
 import {
@@ -28,6 +29,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ProductStatus } from "@prisma/client";
+import { formatCurrency } from "@/utils/generalUtils";
 
 interface ProductInformationProps {
   product: {
@@ -38,6 +41,7 @@ interface ProductInformationProps {
     keyFeatures: string[];
     stock: number;
     imageUrls: [];
+    status: ProductStatus;
   } | null;
   loading: boolean;
   error?: boolean;
@@ -53,11 +57,10 @@ export default function ProductInformation({
     useCreateOrUpdateCart();
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
-  const { cart, setCart } = useCart(); // Get the cart state
+  const { cart, setCart } = useCart();
 
   const userId = session?.user?.id;
 
-  // Check if the product is already in the cart
   const isProductInCart = cart?.items.some(
     (item) => item.productId === product?.id
   );
@@ -118,7 +121,6 @@ export default function ProductInformation({
           } as FetchCart)
       );
     } else {
-      // For guests (no userId)
       if (typeof window !== "undefined" && window.localStorage && product) {
         const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
 
@@ -189,14 +191,13 @@ export default function ProductInformation({
   const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleOnBlur(e as unknown as React.ChangeEvent<HTMLInputElement>);
-      e.currentTarget.blur(); // Remove focus
+      e.currentTarget.blur();
     }
   };
 
   if (loading) {
     return (
       <div className="md:p-6 md:space-y-6 space-y-4">
-        {/* Skeletons */}
         <Skeleton className="h-9 w-3/4" />
         <div className="space-y-2 w-1/3">
           {Array(3)
@@ -217,79 +218,90 @@ export default function ProductInformation({
     return (
       <div className="md:p-6 space-y-4">
         <h3 className="text-xl md:text-3xl font-semibold">{product.name}</h3>
-        <ul className=" space-y-1 list-disc pl-4">
-          {product.keyFeatures.map((feature, index) => (
-            <li key={index}>{feature}</li>
-          ))}
-        </ul>
-        <div className="flex items-center gap-2">
-          <p className="text-2xl font-bold">{product.price} DA</p>
-          {product.originalPrice && (
-            <span className="text-xs md:text-sm line-through text-muted-foreground">
-              {product.originalPrice} DA
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <p className="font-semibold mb-1">Quantity</p>
-          <Button
-            variant="outline"
-            size="icon"
-            className="p-2"
-            onClick={handleDecrease}
-            disabled={quantity <= 1}
-          >
-            <Minus className="w-4 h-4" strokeWidth={1.5} />
-          </Button>
-          <Input
-            type="number"
-            value={quantity}
-            onChange={handleQuantityChange}
-            onBlur={handleOnBlur}
-            onKeyDown={handleEnterKey} // Handle Enter key
-            className="w-[60px] text-center"
-            min={1}
-            max={product.stock}
-          />
-          <Button
-            variant="outline"
-            size="icon"
-            className="p-2"
-            onClick={handleIncrease}
-            disabled={quantity >= product.stock}
-          >
-            <Plus className="w-4 h-4" strokeWidth={1.5} />
-          </Button>
-        </div>
-        <div className="flex items-center text-green-500">
-          <CircleCheck className="mr-1 w-4 h-4" strokeWidth={1.5} />
-          <span className="text-sm md:text-base">
-            {product.stock > 0 ? "In stock" : "Out of stock"}
-          </span>
-        </div>
-        {isProductInCart ? (
-          <Link href={"/cart"}>
-            <Button
-              variant="outline"
-              className="w-full mt-2"
-              disabled={updateLoading}
-            >
-              View Cart
-            </Button>
-          </Link>
-        ) : (
-          <Button
-            className="bg-indigo-600 hover:bg-indigo-500 w-full"
-            onClick={handleAddToCart}
-            disabled={updateLoading}
-          >
-            {updateLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
+        <div className="flex justify-between items-start">
+          <div className="space-y-4">
+            <ul className=" space-y-1 list-disc pl-4">
+              {product.keyFeatures.map((feature, index) => (
+                <li key={index}>{feature}</li>
+              ))}
+            </ul>
+            <div className="flex items-center gap-2">
+              <p className="text-2xl font-bold">
+                {formatCurrency(product.price)}
+              </p>
+              {product.originalPrice && (
+                <span className="text-xs md:text-sm line-through text-muted-foreground">
+                  {product.originalPrice} DA
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold mb-1">Quantity</p>
+              <Button
+                variant="outline"
+                size="icon"
+                className="p-2"
+                onClick={handleDecrease}
+                disabled={quantity <= 1}
+              >
+                <Minus className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+              <Input
+                type="number"
+                value={quantity}
+                onChange={handleQuantityChange}
+                onBlur={handleOnBlur}
+                onKeyDown={handleEnterKey}
+                className="w-[60px] text-center"
+                min={1}
+                max={product.stock}
+              />
+              <Button
+                variant="outline"
+                size="icon"
+                className="p-2"
+                onClick={handleIncrease}
+                disabled={quantity >= product.stock}
+              >
+                <Plus className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+            </div>
+            {product.status === "ACTIVE" ? (
+              <div className="flex items-center justify-start text-sm">
+                <Package className="w-4 h-4 mr-1 text-green-500" />
+                <span className="font-semibold text-green-500">In Stock</span>
+              </div>
             ) : (
-              "Add to Cart"
+              <div className="flex items-center justify-start text-sm">
+                <Package className="w-4 h-4 mr-1 text-red-500" />
+                <span className="font-semibold text-red-500">Out of Stock</span>
+              </div>
             )}
-          </Button>
-        )}
+            {isProductInCart ? (
+              <Link href={"/cart"}>
+                <Button
+                  variant="outline"
+                  className="w-full mt-2"
+                  disabled={updateLoading}
+                >
+                  View Cart
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                className="bg-indigo-600 hover:bg-indigo-500 w-full"
+                onClick={handleAddToCart}
+                disabled={updateLoading || product.status !== "ACTIVE"}
+              >
+                {updateLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
+                ) : (
+                  "Add to Cart"
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           <Card className="w-full border">
             <CardHeader className="pb-2">

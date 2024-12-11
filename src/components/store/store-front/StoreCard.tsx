@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import { AlertCircle, CheckCircle, CircleCheck, Loader2 } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  CircleCheck,
+  Loader2,
+  Package,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Product } from "@prisma/client";
+import { Product, ProductStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCreateOrUpdateCart } from "@/hooks/cart/useCart";
@@ -13,6 +19,8 @@ import { Cart, FetchCart } from "@/types/types";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { ToastAction } from "@/components/ui/toast";
+import ErrorComponent from "@/components/error/error";
+import { formatCurrency } from "@/utils/generalUtils";
 
 // Interface for StoreCard props
 interface StoreCardProps {
@@ -21,7 +29,7 @@ interface StoreCardProps {
   features: string[];
   price: number;
   originalPrice?: number;
-  inStock: boolean;
+  productStatus: ProductStatus;
   id: string;
 }
 
@@ -54,7 +62,7 @@ const StoreCard = ({
   features,
   price,
   originalPrice,
-  inStock,
+  productStatus,
   id, // Add productId prop
 }: StoreCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -219,27 +227,32 @@ const StoreCard = ({
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <span className="text-lg md:text-xl font-semibold">
-                {price} DA
+                {formatCurrency(price)}
               </span>
               {originalPrice && (
                 <span className="text-xs md:text-sm line-through text-muted-foreground">
-                  {originalPrice} DA
+                  {formatCurrency(originalPrice)}
                 </span>
               )}
             </div>
-            <div className="flex items-center text-green-500">
-              <CircleCheck className="mr-1 w-4 h-4" strokeWidth={1.5} />
-              <span className="text-sm md:text-base">
-                {inStock ? "In stock" : "Out of stock"}
-              </span>
-            </div>
+            {productStatus === "ACTIVE" ? (
+              <div className="flex items-center justify-start text-sm">
+                <Package className="w-4 h-4 mr-1 text-green-500" />
+                <span className="font-semibold text-green-500">In Stock</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-start text-sm">
+                <Package className="w-4 h-4 mr-1 text-red-500" />
+                <span className="font-semibold text-red-500">Out of Stock</span>
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-2 mt-4">
             {!isProductInCart ? (
               <Button
                 className="w-full"
                 onClick={handleAddToCart}
-                disabled={loading}
+                disabled={loading || productStatus !== "ACTIVE"}
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
@@ -283,17 +296,11 @@ export default function StoreCardList({
       </div>
     );
   }
-  if (error)
-    return (
-      <Card className="w-full text-red-500 flex items-center justify-center flex-col p-8">
-        <AlertCircle className="w-8 h-8" strokeWidth={1.5} />
-        <span>An error has occurred, please reload to retry.</span>
-      </Card>
-    );
+  if (error) return <ErrorComponent />;
 
   return (
-    <div className="flex flex-col gap-4">
-      {products.map((product) => (
+    <div className="flex flex-col gap-4 w-full">
+      {products.map((product: Product) => (
         <StoreCard
           id={product.id}
           key={product.id}
@@ -302,7 +309,7 @@ export default function StoreCardList({
           features={product.keyFeatures}
           price={product.price}
           originalPrice={undefined}
-          inStock={product.stock > 0}
+          productStatus={product.status}
         />
       ))}
     </div>

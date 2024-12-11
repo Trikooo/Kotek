@@ -6,11 +6,12 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster as SonnerToaster } from "sonner";
 import { Toaster as RadixToaster } from "@/components/ui/toaster";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
-import { ProductProvider } from "@/context/ProductsContext";
+
 import { CategoryProvider } from "@/context/CategoriesContext";
 import { CartProvider } from "@/context/CartContext";
 import { KotekOrderProvider } from "@/context/KotekOrderContext";
 import { AddressProvider } from "@/context/AddressContext";
+import { ProductsProvider } from "@/context/ProductsContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,7 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("min-h-screen bg-background font-sans antialiased")}>
         <SessionProviderWrapper>
-          <ProductProvider>
+          <ProductsProvider>
             <CategoryProvider>
               <CartProvider>
                 <AddressProvider>
@@ -40,7 +41,7 @@ export default function RootLayout({
               <SonnerToaster />
               <RadixToaster />
             </CategoryProvider>
-          </ProductProvider>
+          </ProductsProvider>
         </SessionProviderWrapper>
       </body>
     </html>

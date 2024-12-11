@@ -51,10 +51,7 @@ export default function ProductPage() {
 
           <div className="relative w-full mt-14 px-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 py-10 w-full">
-              <FeaturedItemCard />
-              <FeaturedItemCard />
-              <FeaturedItemCard />
-              <FeaturedItemCard />
+              recommended items
             </div>
           </div>
         </div>

@@ -4,37 +4,62 @@ import {
   getAllProducts,
   productValidation,
 } from "../APIservices/controllers/products";
+import { ZodError } from "zod";
+import { ProductSearchService } from "../APIservices/controllers/search";
+import { GetAllProductsResponse, ProductSearchResponse } from "@/types/types";
 
 export async function GET(request: NextRequest) {
+  const searchService = new ProductSearchService();
+
   try {
-    let data;
-    const searchParams = request.nextUrl.searchParams;
-    const page = Number(searchParams.get("page"));
-    const pageSize = Number(searchParams.get("pageSize"));
-    if (page && pageSize) {
-      data = await getAllProducts(page, pageSize);
+    const searchParams = ProductSearchService.parseSearchParams(request);
+    let result: ProductSearchResponse | GetAllProductsResponse;
+
+    // Use the new static method to check for filters
+    const hasFilters = ProductSearchService.hasFilters(request);
+
+    if (hasFilters) {
+      // Use searchService if filtering queries are present
+      result = await searchService.searchProducts(searchParams);
     } else {
-      data = await getAllProducts(0, 0);
+      // Use getAllProducts for simple pagination
+      const page = searchParams.currentPage || 1;
+      const pageSize = searchParams.pageSize || 10;
+      result = await getAllProducts(page, pageSize);
     }
 
-    return new Response(
-      JSON.stringify({ products: data.products, total: data.total }),
+    return NextResponse.json(
       {
-        status: 200,
-      }
+        ...result,
+      },
+      { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    // Return a generic error message for unknown errors
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    console.error("Error in product retrieval:", error);
 
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
-    });
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: "Invalid search parameters", details: error.errors },
+        { status: 400 }
+      );
+    }
+
+    if (error instanceof Error) {
+      return NextResponse.json(
+        {
+          error: "An error occurred while retrieving products",
+          message: error.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "An unknown error occurred" },
+      { status: 500 }
+    );
   }
 }
-
 export async function POST(request: NextRequest) {
   try {
     const data = await productValidation(request, "POST", undefined);
