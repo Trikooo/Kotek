@@ -100,9 +100,9 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
         <div className="overflow-y-auto flex-grow pb-32">
           {!loading && products.length === 0 && productSearchParams.query ? (
             <div className="flex flex-col items-center justify-center mt-28">
-              <Cpu className="w-44 h-44 text-gray-400 mb-4" strokeWidth={1.5}/>
+              <Cpu className="w-44 h-44 text-gray-400 mb-4" strokeWidth={1.5} />
               <p className="text-lg text-gray-600">
-                No results for "{productSearchParams.query}"
+                No results for &quot;{productSearchParams.query}&quot;
               </p>
             </div>
           ) : (
