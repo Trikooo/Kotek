@@ -80,7 +80,7 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
     >
       <div
         ref={containerRef}
-        className={`mt-24 flex flex-col gap-3 relative transition-transform duration-300 ease-in-out lg:w-2/3 w-full h-full max-h-min ${
+        className={`mt-24 flex flex-col gap-3 relative transition-transform duration-300 ease-in-out lg:w-2/3 w-full h-full max-h-min px-4 ${
           open ? "transform scale-100" : "transform scale-105"
         }`}
       >

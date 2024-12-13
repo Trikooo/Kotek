@@ -60,8 +60,6 @@ export interface ProductValidationT {
   weight: number | null;
 }
 
-
-
 // types.ts
 export type CartProduct = {
   name: string;
@@ -216,4 +214,8 @@ export interface ProductSearchParams {
   currentPage: number;
   pageSize: number;
   status?: "ACTIVE" | "INACTIVE" | "DRAFT";
+}
+
+export interface BrandResponse {
+  brands: string[];
 }

@@ -17,7 +17,7 @@ import AnnouncementBanner from "@/components/dynamic-ui/AnnouncementBanner";
 import SearchPopup from "./SearchPopup";
 import { useHeaderContext } from "@/context/HeaderContext";
 import DynamicDropdownMenu from "@/components/dynamic-ui/DropDownMenu";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 
@@ -73,9 +73,17 @@ const Header = ({ setMobileMenuOpen }: any) => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isAtTop, setIsAtTop] = useState(true); // New state for checking top position
-  const { searchFieldVisible, setSearchFieldVisible } = useHeaderContext();
+  const { searchFieldVisible, setSearchFieldVisible, storeInputRef } =
+    useHeaderContext();
   const { cart } = useCart();
-
+  const pathname = usePathname();
+  const handleSearchFieldClick = () => {
+    if (storeInputRef.current && pathname === "/store") {
+      storeInputRef.current.focus();
+    } else {
+      setSearchFieldVisible(!searchFieldVisible);
+    }
+  };
   useEffect(() => {
     const controlHeader = () => {
       setIsAtTop(window.scrollY === 0); // Check if at the top
@@ -94,8 +102,13 @@ const Header = ({ setMobileMenuOpen }: any) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
-        event.preventDefault();
-        setSearchFieldVisible(!searchFieldVisible);
+        if (storeInputRef.current && pathname === "/store") {
+          event.preventDefault();
+          storeInputRef.current.focus();
+        } else {
+          event.preventDefault();
+          setSearchFieldVisible(!searchFieldVisible);
+        }
       } else if (event.key === "Escape") {
         setSearchFieldVisible(false);
       }
@@ -103,7 +116,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [searchFieldVisible, setSearchFieldVisible]);
+  }, [searchFieldVisible, setSearchFieldVisible, pathname, storeInputRef]);
 
   return (
     <>
@@ -133,20 +146,27 @@ const Header = ({ setMobileMenuOpen }: any) => {
             </a>
           </div>
           <div className="flex lg:hidden items-center">
-            <SearchField onClick={() => setSearchFieldVisible(true)} />
+            <SearchField onClick={handleSearchFieldClick} />
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
               className="-m-2.5 inline-flex items-center rounded-md p-2.5"
             >
               <span className="sr-only">Open main menu</span>
+              <div className="w-min">
               <Menu aria-hidden="true" className="h-5 w-5" />
+              {cart && cart.items.length > 0 && (
+                <span className="absolute top-3 right-3  flex items-center justify-center w-4 h-4 text-xs text-white bg-red-500 rounded-full  shadow-md">
+                  {cart.items.length}
+                </span>
+              )}
+              </div>
             </button>
           </div>
           <div className="hidden lg:flex flex-grow justify-center gap-20">
             <div className="hidden lg:flex justify-center">
               <AnnouncementBanner
-                message="Discover our sale for this week."
+                message="Discover our newest arrivals."
                 link="#"
                 linkText="Go Now"
               />
@@ -161,7 +181,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
                   {item.name}
                 </a>
               ))}
-              <SearchField onClick={() => setSearchFieldVisible(true)} />
+              <SearchField onClick={handleSearchFieldClick} />
             </div>
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-12 lg:border-l lg:border-slate-900/15 pl-5">
@@ -185,7 +205,6 @@ const Header = ({ setMobileMenuOpen }: any) => {
     </>
   );
 };
-
 
 export default Header;
 function AccountDropDown() {

@@ -61,7 +61,6 @@ export class ProductSearchService {
         searchParams[key as keyof ProductSearchParams] !== undefined
     );
   }
-
   async searchProducts(params: unknown): Promise<ProductSearchResponse> {
     // Validate input using Zod
     const validatedParams = ProductSearchParamsSchema.parse(params);
@@ -95,24 +94,29 @@ export class ProductSearchService {
             p.status,
             p."categoryId",
             p.tags,
+            c.tags AS category_tags,
 
             (
               GREATEST(
                 similarity(p.name, ${sanitizedQuery}) * 0.6,
                 similarity(p.description, ${sanitizedQuery}) * 0.3,
                 similarity(p.brand, ${sanitizedQuery}) * 0.3,
-                COALESCE(MAX(similarity(tag, ${sanitizedQuery})) * 0.21, 0)
+                COALESCE(MAX(similarity(tag, ${sanitizedQuery})) * 0.21, 0),
+                COALESCE(MAX(similarity(c_tag, ${sanitizedQuery})) * 0.2, 0)
               )
             ) AS similarity_score
           FROM
             "Product" p
+          LEFT JOIN "Category" c ON p."categoryId" = c.id
           LEFT JOIN LATERAL unnest(p.tags) AS tag ON true
+          LEFT JOIN LATERAL unnest(c.tags) AS c_tag ON true
           WHERE
             (${sanitizedQuery} = '' OR
             similarity(p.name, ${sanitizedQuery}) > 0.3 OR
             similarity(p.description, ${sanitizedQuery}) > 0.3 OR
             similarity(p.brand, ${sanitizedQuery}) > 0.3 OR
-            similarity(tag, ${sanitizedQuery}) > 0.3)
+            similarity(tag, ${sanitizedQuery}) > 0.3 OR
+            similarity(c_tag, ${sanitizedQuery}) > 0.3)
             AND (${
               categoryId
                 ? Prisma.sql`p."categoryId" = ${categoryId}`
@@ -138,7 +142,7 @@ export class ProductSearchService {
                 : Prisma.sql`TRUE`
             })
           GROUP BY
-            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags
+            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags, c.tags
         )
         SELECT COUNT(*) AS total_count FROM product_search
       `,
@@ -146,23 +150,28 @@ export class ProductSearchService {
         WITH product_search AS (
           SELECT
             p.*,
+            c.tags AS category_tags,
             (
               GREATEST(
                 similarity(p.name, ${sanitizedQuery}) * 0.6,
                 similarity(p.description, ${sanitizedQuery}) * 0.3,
                 similarity(p.brand, ${sanitizedQuery}) * 0.2,
-                COALESCE(MAX(similarity(tag, ${sanitizedQuery})) * 0.21, 0)
+                COALESCE(MAX(similarity(tag, ${sanitizedQuery})) * 0.21, 0),
+                COALESCE(MAX(similarity(c_tag, ${sanitizedQuery})) * 0.2, 0)
               )
             ) AS similarity_score
           FROM
             "Product" p
+          LEFT JOIN "Category" c ON p."categoryId" = c.id
           LEFT JOIN LATERAL unnest(p.tags) AS tag ON true
+          LEFT JOIN LATERAL unnest(c.tags) AS c_tag ON true
           WHERE
             (${sanitizedQuery} = '' OR
             similarity(p.name, ${sanitizedQuery}) > 0.3 OR
             similarity(p.description, ${sanitizedQuery}) > 0.3 OR
             similarity(p.brand, ${sanitizedQuery}) > 0.3 OR
-            similarity(tag, ${sanitizedQuery}) > 0.3)
+            similarity(tag, ${sanitizedQuery}) > 0.3 OR
+            similarity(c_tag, ${sanitizedQuery}) > 0.3)
             AND (${
               categoryId
                 ? Prisma.sql`p."categoryId" = ${categoryId}`
@@ -188,7 +197,7 @@ export class ProductSearchService {
                 : Prisma.sql`TRUE`
             })
           GROUP BY
-            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags
+            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags, c.tags
         )
         SELECT
           ps.*
