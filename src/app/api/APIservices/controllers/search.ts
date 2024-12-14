@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, ProductStatus } from "@prisma/client";
 import { ProductSearchParamsSchema } from "../lib/validation";
 import {
   ProductSearchParams,
@@ -24,54 +24,81 @@ export class ProductSearchService {
       .slice(0, 100);
   }
 
+  // UPDATED: Modify static parseSearchParams to handle array-based parameters
   static parseSearchParams(request: NextRequest): ProductSearchParams {
     const searchParams: ProductSearchParams = {
       currentPage: 1,
       pageSize: 10,
     };
-    const urlParams = Object.fromEntries(request.nextUrl.searchParams);
 
-    if (urlParams.brands) searchParams.brands = urlParams.brands.split(",");
-    if (urlParams.tags) searchParams.tags = urlParams.tags.split(",");
-    if (urlParams.minPrice) searchParams.minPrice = Number(urlParams.minPrice);
-    if (urlParams.maxPrice) searchParams.maxPrice = Number(urlParams.maxPrice);
-    if (
-      urlParams.currentPage &&
-      typeof urlParams.currentPage === "number" &&
-      urlParams.currentPage > 0
-    ) {
-      searchParams.currentPage = Number(urlParams.currentPage);
-    } else {
-      searchParams.currentPage = 1;
+    // Properly handle multi-value parameters
+    const processMultiValueParam = (key: string): string[] | undefined => {
+      const values = request.nextUrl.searchParams.getAll(key);
+      return values.length > 0 ? values : undefined;
+    };
+
+    // Process specific multi-value parameters
+    const categoryIds = processMultiValueParam("categoryIds[]");
+    if (categoryIds) {
+      searchParams.categoryIds = categoryIds;
     }
-    if (urlParams.pageSize) searchParams.pageSize = Number(urlParams.pageSize);
-    if (urlParams.query) searchParams.query = urlParams.query;
-    if (urlParams.categoryId) searchParams.categoryId = urlParams.categoryId;
-    if (urlParams.status)
-      searchParams.status = urlParams.status as "ACTIVE" | "INACTIVE" | "DRAFT";
+
+    const brands = processMultiValueParam("brands[]");
+    if (brands) {
+      searchParams.brands = brands;
+    }
+
+    const statuses = processMultiValueParam("statuses[]");
+    if (statuses) {
+      searchParams.statuses = statuses as ProductStatus[];
+    }
+
+    const tags = processMultiValueParam("tags[]");
+    if (tags) {
+      searchParams.tags = tags;
+    }
+
+    // Process single-value parameters
+    const minPrice = request.nextUrl.searchParams.get("minPrice");
+    if (minPrice) searchParams.minPrice = Number(minPrice);
+
+    const maxPrice = request.nextUrl.searchParams.get("maxPrice");
+    if (maxPrice) searchParams.maxPrice = Number(maxPrice);
+
+    const currentPage = request.nextUrl.searchParams.get("currentPage");
+    if (currentPage && !isNaN(Number(currentPage)) && Number(currentPage) > 0) {
+      searchParams.currentPage = Number(currentPage);
+    }
+
+    const pageSize = request.nextUrl.searchParams.get("pageSize");
+    if (pageSize) searchParams.pageSize = Number(pageSize);
+    const query = request.nextUrl.searchParams.get("query");
+    if (query) searchParams.query = query;
     return searchParams;
   }
 
+  // UPDATED: Modify hasFilters to check new array-based parameters
   static hasFilters(request: NextRequest): boolean {
     const searchParams = this.parseSearchParams(request);
     return Object.keys(searchParams).some(
       (key) =>
-        key !== "page" &&
+        key !== "currentPage" &&
         key !== "pageSize" &&
         searchParams[key as keyof ProductSearchParams] !== undefined
     );
   }
+
   async searchProducts(params: unknown): Promise<ProductSearchResponse> {
     // Validate input using Zod
     const validatedParams = ProductSearchParamsSchema.parse(params);
 
     const {
       query = "",
-      categoryId,
+      categoryIds,
       minPrice,
       maxPrice,
       brands,
-      status,
+      statuses,
       tags,
       currentPage = 1,
       pageSize = 10,
@@ -81,7 +108,7 @@ export class ProductSearchService {
     const offset = (currentPage - 1) * pageSize;
     // Sanitize query
     const sanitizedQuery = this.sanitizeQuery(query);
-
+    console.log(validatedParams);
     const [countResult, productResults] = await this.prisma.$transaction([
       this.prisma.$queryRaw<Array<{ total_count: bigint }>>`
         WITH product_search AS (
@@ -118,8 +145,10 @@ export class ProductSearchService {
             similarity(tag, ${sanitizedQuery}) > 0.3 OR
             similarity(c_tag, ${sanitizedQuery}) > 0.3)
             AND (${
-              categoryId
-                ? Prisma.sql`p."categoryId" = ${categoryId}`
+              categoryIds
+                ? Prisma.sql`p."categoryId" IN (${Prisma.join(
+                    categoryIds.map((id) => Prisma.sql`${id}::uuid`)
+                  )})`
                 : Prisma.sql`TRUE`
             })
             AND (${
@@ -134,7 +163,11 @@ export class ProductSearchService {
                 : Prisma.sql`TRUE`
             })
             AND (${
-              status ? Prisma.sql`p.status = ${status}` : Prisma.sql`TRUE`
+              statuses
+                ? Prisma.sql`p.status::text IN (${Prisma.join(
+                    statuses.map((status) => Prisma.sql`${status}::text`)
+                  )})`
+                : Prisma.sql`TRUE`
             })
             AND (${
               tags
@@ -173,8 +206,10 @@ export class ProductSearchService {
             similarity(tag, ${sanitizedQuery}) > 0.3 OR
             similarity(c_tag, ${sanitizedQuery}) > 0.3)
             AND (${
-              categoryId
-                ? Prisma.sql`p."categoryId" = ${categoryId}`
+              categoryIds
+                ? Prisma.sql`p."categoryId" IN (${Prisma.join(
+                    categoryIds.map((id) => Prisma.sql`${id}::uuid`)
+                  )})`
                 : Prisma.sql`TRUE`
             })
             AND (${
@@ -189,7 +224,11 @@ export class ProductSearchService {
                 : Prisma.sql`TRUE`
             })
             AND (${
-              status ? Prisma.sql`p.status = ${status}` : Prisma.sql`TRUE`
+              statuses
+                ? Prisma.sql`p.status::text IN (${Prisma.join(
+                    statuses.map((status) => Prisma.sql`${status}::text`)
+                  )})`
+                : Prisma.sql`TRUE`
             })
             AND (${
               tags

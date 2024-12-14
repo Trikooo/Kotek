@@ -14,11 +14,14 @@ import { useCart } from "@/context/CartContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAddress } from "@/context/AddressContext";
 import { OrderSummarySkeleton } from "./CartSkeleton";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useKotekOrder } from "@/context/KotekOrderContext";
 import { ArrowRight } from "lucide-react";
 import { EMPTY_ADDRESS } from "@/lib/constants";
 import { formatCurrency } from "@/utils/generalUtils";
+import { LoginModal } from "./loginModal";
+import { useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 interface OrderSummaryProps {
   className?: string;
@@ -37,8 +40,12 @@ export default function OrderSummary({
   } = useAddress();
   const { kotekOrder, setKotekOrder } = useKotekOrder();
   const { cart, loading: cartLoading } = useCart();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const router = useRouter();
+
   useEffect(() => {
     const calculateOrderItems = () => {
       return (
@@ -88,6 +95,20 @@ export default function OrderSummary({
   }, [kotekOrder.userId, selectedAddress, setKotekOrder, addresses]);
 
   const handleProceed = () => {
+    if (isAuthenticated) {
+      router.push("/checkout/shipping");
+    } else {
+      setIsLoginModalOpen(true);
+    }
+  };
+
+  const handleLogin = () => {
+    setIsLoginModalOpen(false);
+    signIn();
+  };
+
+  const handleContinueAsGuest = () => {
+    setIsLoginModalOpen(false);
     router.push("/checkout/shipping");
   };
 
@@ -121,69 +142,78 @@ export default function OrderSummary({
   }
 
   return (
-    <Card className={`${className} shadow-sm bg-gray-50 border-0`}>
-      <CardHeader className="border-b">
-        <CardTitle className="text-2xl font-bold">Order Summary</CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <ScrollArea className="mb-4">
-          {cart.items.map((item, index) => {
-            // Skip rendering if product details are missing
-            if (!item.product) {
-              console.warn("Order summary item missing product details:", item);
-              return null;
-            }
+    <>
+      <Card className={`${className} shadow-sm bg-gray-50 border-0`}>
+        <CardHeader className="border-b">
+          <CardTitle className="text-2xl font-bold">Order Summary</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <ScrollArea className="mb-4">
+            {cart.items.map((item, index) => {
+              // Skip rendering if product details are missing
+              if (!item.product) {
+                console.warn(
+                  "Order summary item missing product details:",
+                  item
+                );
+                return null;
+              }
 
-            return (
-              <div
-                key={index}
-                className="flex justify-between items-center mb-2 text-sm"
-              >
-                <span className="font-medium">
-                  {item.quantity}×{item.product.name}
-                </span>
-                <span>{formatCurrency(item.price * item.quantity)}</span>
-              </div>
-            );
-          })}
-        </ScrollArea>
-        <Separator className="my-4" />
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Subtotal</span>
-            <span>{formatCurrency(kotekOrder.subtotalAmount)}</span>
+              return (
+                <div
+                  key={index}
+                  className="flex justify-between items-center mb-2 text-sm"
+                >
+                  <span className="font-medium">
+                    {item.quantity}×{item.product.name}
+                  </span>
+                  <span>{formatCurrency(item.price * item.quantity)}</span>
+                </div>
+              );
+            })}
+          </ScrollArea>
+          <Separator className="my-4" />
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Subtotal</span>
+              <span>{formatCurrency(kotekOrder.subtotalAmount)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Shipping</span>
+              {!inCheckout ? (
+                <span className="text-yellow-600">Proceed to calculate</span>
+              ) : shippingPrice !== 0 ? (
+                <span>{formatCurrency(shippingPrice)}</span>
+              ) : (
+                <span className="text-yellow-600">Select a wilaya first</span>
+              )}
+            </div>
+            <Separator className="my-2" />
+            <div className="flex justify-between font-bold text-lg">
+              <span>Total</span>
+              {shippingPrice !== 0 && inCheckout ? (
+                <span>{formatCurrency(kotekOrder.totalAmount)}</span>
+              ) : (
+                <span>--</span>
+              )}
+            </div>
           </div>
-          <div className="flex justify-between text-sm">
-            <span>Shipping</span>
-            {!inCheckout ? (
-              <span className="text-yellow-600">Proceed to calculate</span>
-            ) : shippingPrice !== 0 ? (
-              <span>{formatCurrency(shippingPrice)}</span>
-            ) : (
-              <span className="text-yellow-600">Select a wilaya first</span>
-            )}
-          </div>
-          <Separator className="my-2" />
-          <div className="flex justify-between font-bold text-lg">
-            <span>Total</span>
-            {shippingPrice !== 0 && inCheckout ? (
-              <span>{formatCurrency(kotekOrder.totalAmount)}</span>
-            ) : (
-              <span>--</span>
-            )}
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="p-6">
-        {!inCheckout && (
-          <Button
-            className="w-full text-white font-semibold py-2 px-4 rounded transition duration-200"
-            onClick={handleProceed}
-          >
-            Proceed to Checkout
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+        </CardContent>
+        <CardFooter className="p-6">
+          {!inCheckout && (
+            <Button
+              className="w-full text-white font-semibold py-2 px-4 rounded transition duration-200"
+              onClick={handleProceed}
+            >
+              Proceed to Checkout
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
+    </>
   );
 }

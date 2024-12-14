@@ -1,6 +1,10 @@
-export function formatCurrency(amount: number): string {
-  return (
-    amount.toLocaleString("en-US", { useGrouping: true }).replace(/,/g, " ") +
-    " DA"
-  );
+export function formatCurrency(
+  amount: number,
+  currencySuffix: boolean = true
+): string {
+  const formattedAmount = amount
+    .toLocaleString("en-US", { useGrouping: true })
+    .replace(/,/g, " ");
+
+  return currencySuffix ? `${formattedAmount} DA` : formattedAmount;
 }

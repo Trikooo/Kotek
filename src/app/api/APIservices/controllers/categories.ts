@@ -16,15 +16,33 @@ export async function getAllCategories() {
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error("Error fetching categories", error.message);
-      throw new Error(`Error fetching categories ${error.message}`);
+      console.error("Error fetching categories", error);
+      throw new Error(`Error fetching categories ${error}`);
     } else {
       console.error("Unknown error occurred while fetching categories");
       throw new Error("Unknown error occurred while fetching categories");
     }
   }
 }
-
+export async function getAllCategoryNames() {
+  try {
+    const categoryNames = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return categoryNames;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching categories", error);
+      throw new Error(`Error fetching categories ${error}`);
+    } else {
+      console.error("Unknown error occurred while fetching categories");
+      throw new Error("Unknown error occurred while fetching categories");
+    }
+  }
+}
 export async function getCategoryById(id: string) {
   try {
     const category = await prisma.category.findUnique({

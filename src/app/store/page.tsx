@@ -9,7 +9,7 @@ export default function Store() {
     <StoreLayout>
       <div className="flex pt-7">
         <FilterSideBar />
-        <div className="w-full lg:ml-60">
+        <div className="w-full lg:ml-10">
           <StoreMain />
         </div>
       </div>

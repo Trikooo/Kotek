@@ -1,6 +1,6 @@
 "use client";
-import React, { createContext, useContext, ReactNode } from "react";
-import { PaginationMetadata, ProductSearchParams } from "@/types/types"; // Adjust the import path as needed
+import React, { createContext, useContext, ReactNode, useState } from "react";
+import { PaginationMetadata, ProductSearchParams } from "@/types/types";
 import { AxiosError } from "axios";
 import { useGetAllProducts } from "@/hooks/products/useGetAllProducts";
 import { Product } from "@prisma/client";
@@ -18,6 +18,8 @@ interface ProductsContextType {
   setProductSearchParams: React.Dispatch<
     React.SetStateAction<ProductSearchParams>
   >;
+  hasFiltered: boolean;
+  setHasFiltered: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Create the context
@@ -31,9 +33,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   // Use the custom hook to get all the products-related state and functions
   const productsState = useGetAllProducts();
+  const [hasFiltered, setHasFiltered] = useState<boolean>(false);
 
   return (
-    <ProductsContext.Provider value={productsState}>
+    <ProductsContext.Provider
+      value={{
+        ...productsState,
+        hasFiltered,
+        setHasFiltered,
+      }}
+    >
       {children}
     </ProductsContext.Provider>
   );
@@ -45,7 +54,9 @@ export const useProductsContext = () => {
 
   // Throw an error if the hook is used outside of a ProductsProvider
   if (context === undefined) {
-    throw new Error("useProducts must be used within a ProductsProvider");
+    throw new Error(
+      "useProductsContext must be used within a ProductsProvider"
+    );
   }
 
   return context;

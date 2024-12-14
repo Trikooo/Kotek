@@ -16,6 +16,7 @@ export default function StoreMain() {
     productSearchParams,
     setProductSearchParams,
     resetProducts,
+    hasFiltered,
   } = useProductsContext(); // Use the context to get products
   const { storeInputRef } = useHeaderContext();
   const debouncedSearch = useDebounce(
@@ -33,7 +34,7 @@ export default function StoreMain() {
   };
 
   return (
-    <div className="lg:pl-10">
+    <div>
       <div>
         <SearchOptions />
       </div>
@@ -52,13 +53,11 @@ export default function StoreMain() {
       </div>
 
       <div className="flex flex-col mt-5 gap-4">
-        {!loading && products.length === 0 && productSearchParams.query ? (
-          <div className="flex flex-col items-center justify-center mt-28">
-            <Cpu className="w-44 h-44 text-gray-400 mb-4" strokeWidth={1.5} />
-            <p className="text-lg text-gray-600">
-              No results for &quot;{productSearchParams.query}&quot;
-            </p>
-          </div>
+        {!loading && products.length === 0 ? (
+          <NoResultsView
+            query={productSearchParams.query}
+            hasFiltered={hasFiltered}
+          />
         ) : (
           <StoreCardList
             products={products}
@@ -67,6 +66,28 @@ export default function StoreMain() {
           />
         )}
       </div>
+    </div>
+  );
+}
+
+interface NoResultsViewProps {
+  query?: string;
+  hasFiltered: boolean;
+}
+
+function NoResultsView({ query, hasFiltered }: NoResultsViewProps) {
+  return (
+    <div className="flex flex-col items-center justify-center mt-28">
+      <Cpu className="w-44 h-44 text-gray-400 mb-4" strokeWidth={1.5} />
+      <p className="text-lg text-gray-600">
+        {query && hasFiltered
+          ? `No results for "${query}" with these specific filters`
+          : !query && hasFiltered
+          ? "No results for your specific filters"
+          : query && !hasFiltered
+          ? `No results for "${query}"`
+          : "No results"}
+      </p>
     </div>
   );
 }

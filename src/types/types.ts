@@ -1,4 +1,11 @@
-import { $Enums, Category, OrderStatus, Product, User } from "@prisma/client";
+import {
+  $Enums,
+  Category,
+  OrderStatus,
+  Product,
+  ProductStatus,
+  User,
+} from "@prisma/client";
 
 export interface CreateProductT {
   name: string;
@@ -206,16 +213,20 @@ export type GetAllProductsResponse = {
 
 export interface ProductSearchParams {
   query?: string;
-  categoryId?: string;
+  categoryIds?: string[];
   brands?: string[];
   tags?: string[];
   minPrice?: number;
   maxPrice?: number;
   currentPage: number;
   pageSize: number;
-  status?: "ACTIVE" | "INACTIVE" | "DRAFT";
+  statuses?: ProductStatus[];
 }
 
 export interface BrandResponse {
   brands: string[];
+}
+export interface CategoryName {
+  id: string;
+  name: string;
 }
