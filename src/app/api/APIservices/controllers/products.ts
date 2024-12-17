@@ -197,6 +197,7 @@ export async function productValidation(
   }
 
   const files = formData.getAll("images[]") as File[];
+  const r2Urls = await r2Client.uploadImages(files, "products");
 
   if (method === "PUT" && id) {
     await renameDir(name, id);
@@ -206,8 +207,6 @@ export async function productValidation(
     ...remainingUrls,
     ...(await saveProductImages(files, name)),
   ];
-
-  const r2Urls = await r2Client.uploadImages(files, "products");
 
   // Prepare data object
   const data: Partial<ProductValidationT> = {
