@@ -57,11 +57,13 @@ export function useScrollPaginatedProducts(
         const { products: newProducts, pagination } = await fetchFunction(
           newParams
         );
-        setProducts((prevProducts) =>
-          productSearchParams.currentPage === 1
+        setProducts((prevProducts) => {
+          console.log("currentPage", productSearchParams.currentPage);
+          return pagination.currentPage === 1
             ? newProducts
-            : [...prevProducts, ...newProducts]
-        );
+            : [...prevProducts, ...newProducts];
+        });
+
         setPagination(pagination);
       } catch (error) {
         setError(error as AxiosError);

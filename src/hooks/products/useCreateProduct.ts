@@ -5,10 +5,12 @@ import { toast } from "sonner";
 import { ProductStatus } from "@prisma/client";
 import { CreateProductT } from "@/types/types";
 import generateCode128 from "@/utils/code128DataGenerator";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
 export function useCreateProduct() {
   const defaultProduct: Partial<CreateProductT> = {
     name: "",
+    featured: false,
     description: "",
     price: "",
     images: [],
@@ -37,7 +39,12 @@ export function useCreateProduct() {
   const [selectedStatus, setSelectedStatus] = useState<Option[]>(
     defaultStatus.value ? [defaultStatus] : []
   );
-
+  const handleCheckedChange = (checked: CheckedState) => {
+    setNewProduct((prevProduct) => ({
+      ...prevProduct,
+      featured: checked === true, // This explicitly converts to boolean
+    }));
+  };
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -96,6 +103,9 @@ export function useCreateProduct() {
       images: prevProduct.images.filter((_: any, i: any) => i !== index),
     }));
   };
+  useEffect(() => {
+    console.log(newProduct.featured);
+  }, [newProduct.featured]);
 
   return {
     newProduct,
@@ -110,5 +120,6 @@ export function useCreateProduct() {
     handleRemoveImage,
     handleSubmit,
     handleGenerateBarcode,
+    handleCheckedChange,
   };
 }

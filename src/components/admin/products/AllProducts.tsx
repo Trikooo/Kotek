@@ -5,7 +5,7 @@ import CreateProduct from "./CreateProduct";
 import SortBy from "@/components/ui/sort-by";
 import FilterBy from "@/components/ui/filter-by";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { STATUSES } from "@/lib/constants";
 import {
   Tooltip,
@@ -17,6 +17,7 @@ import { useProductsContext } from "@/context/ProductsContext";
 import { DeleteProduct } from "./DeleteProduct";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function AllProducts() {
   const { products, loading, error } = useProductsContext();
@@ -102,9 +103,11 @@ export default function AllProducts() {
           />
           <SortBy sortOption={sortOption} setSortOption={setSortOption} />
         </div>
-        <div>
-          <CreateProduct />
-        </div>
+        <Link href={"/admin/products/manage/create"}>
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" strokeWidth={1.5} /> Create New Product
+          </Button>
+        </Link>
       </div>
       <DataTable
         title={<ProductsTitle setSearchTerm={setSearchTerm} />}

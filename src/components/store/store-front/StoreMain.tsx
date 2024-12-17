@@ -1,4 +1,5 @@
 "use client";
+import React, { useEffect, useRef, useCallback } from "react";
 import { Cpu, Search } from "lucide-react";
 import SearchOptions from "./SearchOptions";
 import { useProductsContext } from "@/context/ProductsContext";
@@ -17,21 +18,61 @@ export default function StoreMain() {
     setProductSearchParams,
     resetProducts,
     hasFiltered,
-  } = useProductsContext(); // Use the context to get products
+    loadMoreProducts,
+    pagination,
+  } = useProductsContext();
+
   const { storeInputRef } = useHeaderContext();
-  const debouncedSearch = useDebounce(
-    (newParams: ProductSearchParams) => {
-      // Trigger reset to fetch products based on current search params
-      resetProducts(newParams);
-    },
-    500 // Reduced debounce time for better responsiveness
-  );
+
+  // Ref for the load more trigger
+  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Debounced search function
+  const debouncedSearch = useDebounce((newParams: ProductSearchParams) => {
+    resetProducts(newParams);
+  }, 500);
+
+  // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchQuery = e.target.value.trim();
     const newParams = { ...productSearchParams, query: searchQuery };
     setProductSearchParams(newParams);
     debouncedSearch(newParams);
   };
+
+  // Intersection Observer callback
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && pagination?.hasNextPage && !loading) {
+        loadMoreProducts();
+      }
+    },
+    [loadMoreProducts, pagination, loading]
+  );
+
+  // Set up Intersection Observer
+  useEffect(() => {
+    // Create a root margin to trigger 100px before the end
+    const options: IntersectionObserverInit = {
+      root: null, // viewport
+      rootMargin: "0px 0px 100px 0px", // 100px from bottom
+      threshold: 0, // trigger as soon as any part is visible
+    };
+
+    if (loadMoreTriggerRef.current) {
+      observerRef.current = new IntersectionObserver(handleObserver, options);
+      observerRef.current.observe(loadMoreTriggerRef.current);
+    }
+
+    // Cleanup
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [handleObserver]);
 
   return (
     <div>
@@ -59,11 +100,15 @@ export default function StoreMain() {
             hasFiltered={hasFiltered}
           />
         ) : (
-          <StoreCardList
-            products={products}
-            loading={loading}
-            error={error ? true : false}
-          />
+          <>
+            <StoreCardList
+              products={products}
+              loading={loading}
+              error={error ? true : false}
+            />
+            {/* Load more trigger at the end of the product list */}
+            <div ref={loadMoreTriggerRef} style={{ height: "1px" }} />
+          </>
         )}
       </div>
     </div>

@@ -1,76 +1,95 @@
-import React from 'react';
+import React, { useCallback, useRef } from "react";
+import { useDropzone } from "react-dropzone";
+import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 interface ImageUploaderProps {
-  images: (File | string)[];
-  onImagesChange: (newImages: File[]) => void;
-  onRemoveImage: (index: number) => void;
-  required? : boolean
+  images: (string | File)[];
+  onImagesChange: (images: (string | File)[]) => void;
+  onRemoveImage: (
+    e: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => void;
 }
 
-export default function ImageUploader({
+const ImageUploader: React.FC<ImageUploaderProps> = ({
   images,
   onImagesChange,
   onRemoveImage,
-  required = false
-}: ImageUploaderProps) {
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const fileArray = Array.from(files);
-      const newFiles = fileArray.filter((file) => {
-        return !images.some(
-          (image) => image instanceof File && image.name === file.name
-        );
-      });
-      if (newFiles.length > 0) {
-        onImagesChange(newFiles);
-      }
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const newImages = acceptedFiles.map((file) => URL.createObjectURL(file));
+      onImagesChange([...images, ...acceptedFiles]);
+    },
+    [images, onImagesChange]
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+  });
+
+  const handleDropzoneClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (inputRef.current) {
+      inputRef.current.click();
     }
   };
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className="relative group w-20 rounded overflow-hidden"
-          >
-            <Image
-              src={image instanceof File ? URL.createObjectURL(image) : image}
-              alt={`Uploaded image ${index + 1}`}
-              className="w-20 h-20 object-cover group-hover:opacity-80 duration-100"
-              height={80}
-              width={80}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="absolute top-2 right-1 p-1 h-min rounded-full"
-              onClick={() => onRemoveImage(index)}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-        ))}
-        <Card className="relative group flex items-center justify-center w-20 h-20 border-dashed focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-          <ImagePlus className="w-5 h-5" strokeWidth={1.5} />
-          <div className="absolute inset-0 pointer-events-none" />
-          <Input
-            type="file"
-            accept="image/*"
-            className="absolute inset-0 cursor-pointer opacity-0 w-full h-full"
-            onChange={handleFileChange}
-            multiple
-            required={required}
-          />
-        </Card>
+      <div
+        {...getRootProps()}
+        onClick={handleDropzoneClick}
+        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+          isDragActive
+            ? "border-primary bg-primary/10"
+            : "border-gray-200 hover:border-primary/35 hover:bg-gray-50"
+        }`}
+      >
+        <Input {...getInputProps()} ref={inputRef} />
+        <div className="flex flex-col items-center justify-center h-24">
+          <Upload className="h-6 w-6 text-gray-400 mb-2" />
+          <p className="text-sm text-gray-500">
+            Drop images or <span className="text-primary">browse</span>
+          </p>
+        </div>
       </div>
+      {images.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+          {images.map((image, index) => (
+            <div key={index} className="relative group aspect-square">
+              <Card className="h-full p-1">
+                <Image
+                  src={
+                    image instanceof File ? URL.createObjectURL(image) : image
+                  }
+                  alt={`Uploaded ${index + 1}`}
+                  className="rounded-md object-contain w-full h-full"
+                  width={50}
+                  height={50}
+                />
+              </Card>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity rounded-full h-6 w-6 bg-black/50 hover:bg-black/70"
+                onClick={(e) => onRemoveImage(e, index)}
+              >
+                <X className="h-3 w-3 text-white" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default ImageUploader;

@@ -151,6 +151,7 @@ model Product {
   status      ProductStatus @default(ACTIVE)
   tags        String[]
   keyFeatures String[]
+  featured    Boolean @default(false)
 
   // Dimensions
   length Float?

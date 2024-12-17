@@ -3,6 +3,7 @@ import { CreateProductT } from "@/types/types";
 export function createProductFormData(product: Partial<CreateProductT>) {
   const formData = new FormData();
   formData.append("name", product.name ?? "");
+  formData.append("featured", String(product.featured ?? false));
   formData.append("description", product.description ?? "");
   formData.append("price", product.price?.toString() ?? "");
   formData.append("stock", product.stock?.toString() ?? "");
@@ -34,6 +35,8 @@ export function updateProductFormData(updatedProduct: any) {
       });
     } else if (key === "imageUrls") {
       formData.append(key, JSON.stringify(value));
+    } else if (key === "featured" && typeof value === "boolean") {
+      formData.append(key, value.toString());
     } else if (value !== undefined && value !== null) {
       formData.append(key, value.toString());
     }

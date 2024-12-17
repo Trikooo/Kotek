@@ -7,6 +7,7 @@ import { writeFile } from "fs/promises";
 import path from "path";
 import { productSchema, updateProductSchema } from "../lib/validation";
 import fs from "fs/promises";
+import { r2Client } from "./r2";
 export async function getAllProducts(
   currentPage: number,
   pageSize: number
@@ -77,28 +78,10 @@ export async function getProductById(id: string) {
 }
 
 export async function createProduct(data: ProductValidationT) {
-  try {
-    const product = prisma.product.create({
-      data: data,
-    });
-    return product;
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      console.error(`Conflict: Product with this unique field already exists.`);
-      throw new Error(
-        "Conflict: Product with this unique field already exists."
-      );
-    } else if (error instanceof Error) {
-      console.error(`Error creating product: ${error.message}`);
-      throw new Error(`Error creating product: ${error.message}`);
-    } else {
-      console.error("Unknown error occurred while creating the product");
-      throw new Error("Unknown error occurred while creating the product");
-    }
-  }
+  const product = prisma.product.create({
+    data: data,
+  });
+  return product;
 }
 
 export async function updateProduct(id: string, data: any) {
@@ -175,6 +158,9 @@ export async function productValidation(
 
   // Extract fields and ensure they are strings
   const name = formData.get("name")?.toString().trim() || "";
+  const featured =
+    formData.get("featured")?.toString().trim().toLowerCase() === "true";
+
   const description = formData.get("description")?.toString().trim() || "";
   const price = parseInt(formData.get("price")?.toString().trim() || "0", 10);
   const stock = parseInt(formData.get("stock")?.toString().trim() || "0", 10);
@@ -212,14 +198,16 @@ export async function productValidation(
 
   const files = formData.getAll("images[]") as File[];
 
-  if (method === "PUT") {
-    if (id) await renameDir(name, id);
+  if (method === "PUT" && id) {
+    await renameDir(name, id);
   }
 
   const imageUrls = [
     ...remainingUrls,
     ...(await saveProductImages(files, name)),
   ];
+
+  const r2Urls = await r2Client.uploadImages(files, "products");
 
   // Prepare data object
   const data: Partial<ProductValidationT> = {
@@ -238,6 +226,7 @@ export async function productValidation(
     ...(height && { height }),
     ...(weight && { weight }),
     ...(imageUrls.length > 0 && { imageUrls }),
+    ...{ featured },
   };
 
   // Validate data with the appropriate schema based on request method

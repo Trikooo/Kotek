@@ -4,8 +4,8 @@ const phoneRegex = /^[0-9]+$/;
 
 export const shippingFormSchema = z
   .object({
-    fullName: z.string().min(2, {
-      message: "Full name must be at least 2 characters.",
+    fullName: z.string().min(4, {
+      message: "Full name must be at least 4 characters.",
     }),
     phoneNumber: z
       .string()

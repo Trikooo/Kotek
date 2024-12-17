@@ -1,164 +1,60 @@
-import { Product, ProductStatus } from "@prisma/client";
-import { FormEvent, useEffect, useState } from "react";
-import { Option } from "@/components/ui/better-select";
-import { useCategoryContext } from "@/context/CategoriesContext";
-import generateCode128 from "@/utils/code128DataGenerator";
-import axios from "axios";
+import { useState } from "react";
 import { toast } from "sonner";
-import { sendUpdateProduct } from "@/services/productService";
+import { ProductFormValues } from "@/components/admin/products/productSchema";
+import { sendProduct, sendUpdateProduct } from "@/services/productService";
+import { CreateProductT } from "@/types/types";
 
-export function useEditProduct(product: Product) {
-  const { categoryOptions } = useCategoryContext();
-  const [updatedProduct, setUpdatedProduct] = useState({
-    name: product.name,
-    description: product.description,
-    price: product.price,
-    newImages: [] as File[],
-    imageUrls: product.imageUrls || [],
-    stock: product.stock,
-    barcode: product.barcode,
-    categoryId: product.categoryId,
-    tags: product.tags?.join(", "),
-    keyFeatures: product.keyFeatures?.join(", "),
-    brand: product.brand,
-    status: product.status,
-    length: product.length || undefined,
-    width: product.width || undefined,
-    height: product.height || undefined,
-    weight: product.weight || undefined,
-  });
-  const [barcode, setBarcode] = useState(generateCode128());
-  const [selectedCategory, setSelectedCategory] = useState<Option[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<Option[]>([]);
-  const [updateIsLoading, setUpdateIsLoading] = useState(false);
-  const [displayedImages, setDisplayedImages] = useState([
-    ...updatedProduct.imageUrls,
-    ...updatedProduct.newImages,
-  ]);
-  useEffect(() => {
-    if (product.categoryId) {
-      setSelectedCategory([
-        {
-          value: product.categoryId,
-          label:
-            categoryOptions.find((opt) => opt.value === product.categoryId)
-              ?.label || "",
-        },
-      ]);
-    }
-    if (product.status) {
-      setSelectedStatus([
-        {
-          value: product.status,
-          label: product.status,
-        },
-      ]);
-    }
-  }, [product, categoryOptions]);
-  useEffect(() => {
-    if (selectedCategory[0]) {
-      setUpdatedProduct((prevProduct) => ({
-        ...prevProduct,
-        categoryId: selectedCategory[0].value,
-      }));
-    }
-    if (selectedStatus[0]?.value !== product.status) {
-      setUpdatedProduct((prevProduct) => ({
-        ...prevProduct,
-        status: selectedStatus[0]?.value as ProductStatus,
-      }));
-    }
-  }, [selectedCategory, selectedStatus, setUpdatedProduct, product.status]);
+export const useEditProduct = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<unknown | null>(null);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  const updateProduct = async (
+    data: ProductFormValues & { imageUrls: string[] },
+    id: string
   ) => {
-    const { name, value } = e.target;
-    setUpdatedProduct((prevProduct) => ({
-      ...prevProduct,
-      [name]: value,
-    }));
-  };
-
-  const handleFileChange = (newImages: File[]) => {
-    setUpdatedProduct((prevProduct) => {
-      return {
-        ...prevProduct,
-        newImages: [...prevProduct.newImages, ...newImages],
-      };
-    });
-  };
-
-  useEffect(() => {
-    setDisplayedImages([
-      ...updatedProduct.imageUrls,
-      ...updatedProduct.newImages,
-    ]);
-  }, [updatedProduct.newImages, updatedProduct.imageUrls]);
-
-  const handleRemoveImage = (index: number) => {
-    setUpdatedProduct((prevProduct) => {
-      if (index < prevProduct.newImages.length) {
-        // Remove from newImages
-        const newImages = prevProduct.newImages.filter((_, i) => i !== index);
-        return { ...prevProduct, newImages };
-      } else {
-        // Remove from imageUrls
-        const adjustedIndex = index - prevProduct.newImages.length;
-        const imageUrls = prevProduct.imageUrls.filter(
-          (_, i) => i !== adjustedIndex
-        );
-        return { ...prevProduct, imageUrls };
-      }
-    });
-  };
-  const handleGenerateBarcode = (e: any) => {
-    e.preventDefault();
-    setBarcode(generateCode128());
-    updatedProduct.barcode = barcode;
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setUpdateIsLoading(true);
+    // Reset error state
+    setError(null);
 
     try {
-      await sendUpdateProduct(updatedProduct, product.id);
-      toast.success("Product updated successfully.");
+      // Set loading state
+      setIsLoading(true);
+
+      // Call API to create product
+      const updatedProduct = await sendUpdateProduct(data, id);
+
+      // Show success toast
+      toast.success("Product created successfully", {
+        description: `${updatedProduct.name} has been added to your inventory.`,
+      });
+
+      // Return the created product in case it's needed
+      return updatedProduct;
     } catch (error) {
-      console.error("Failed to update product: ", error);
+      // Handle any errors during product creation
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred while creating the product";
 
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data.message;
+      // Set error state
+      setError(error);
 
-        if (errorMessage.includes("Conflict")) {
-          toast.error("A product with the same unique fields already exists.");
-        } else {
-          toast.error("Internal server error.");
-        }
-      } else {
-        toast.error("An unknown error occurred.");
-      }
+      // Show error toast
+      toast.error("Failed to create product", {
+        description: errorMessage,
+      });
+      console.error(error);
+      // Rethrow the error for the component to handle if needed
+      throw error;
     } finally {
-      setUpdateIsLoading(false);
+      // Reset loading state
+      setIsLoading(false);
     }
   };
+
   return {
-    updatedProduct,
-    setUpdatedProduct,
-    barcode,
-    setBarcode,
-    selectedCategory,
-    setSelectedCategory,
-    selectedStatus,
-    setSelectedStatus,
-    updateIsLoading,
-    setUpdateIsLoading,
-    displayedImages,
-    handleInputChange,
-    handleFileChange,
-    handleRemoveImage,
-    handleGenerateBarcode,
-    handleSubmit,
+    updateProduct,
+    isLoading,
+    error,
   };
-}
+};

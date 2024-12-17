@@ -9,6 +9,7 @@ import {
 
 export interface CreateProductT {
   name: string;
+  featured: boolean;
   description: string;
   price: string;
   images: File[];
@@ -195,6 +196,11 @@ declare global {
     interface ProcessEnv {
       NOEST_TOKEN: string;
       NOEST_GUID: string;
+      R2_TOKEN: string;
+      R2_ACCESS_KEY_ID: string;
+      R2_SECRET_ACCESS_KEY: string;
+      R2_ENDPOINT: string;
+      R2_BUCKET_NAME: string;
     }
   }
 }

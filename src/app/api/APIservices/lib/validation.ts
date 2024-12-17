@@ -35,6 +35,7 @@ export const updateCategorySchema = z.object({
 // Define the Product schema
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"), // Ensure name is not empty
+  featured: z.boolean(),
   description: z.string().optional(),
   price: z.number().int().positive("Price must be a positive integer"), // Positive integer for price
   stock: z.number().int().nonnegative("Stock must be a non-negative integer"), // Non-negative integer for stock
@@ -56,6 +57,7 @@ export type ProductSchemaType = z.infer<typeof productSchema>;
 
 export const updateProductSchema = z.object({
   name: z.string().min(1, "Name is required"), // Ensure name is not empty
+  featured: z.boolean(),
   description: z.string().optional(), // Ensure description is not empty
   price: z.number().int().positive("Price must be a positive integer"), // Positive integer for price
   stock: z.number().int().nonnegative("Stock must be a non-negative integer"), // Non-negative integer for stock

@@ -3,7 +3,12 @@
 import { useState, useEffect } from "react";
 import { X, Filter, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Accordion,
   AccordionItem,
@@ -139,6 +144,7 @@ export default function FilterSideBar() {
     setHasFiltered(false);
     const newParams: ProductSearchParams = {
       ...productSearchParams,
+      currentPage: 1,
       minPrice: MIN_PRICE,
       maxPrice: MAX_PRICE,
       brands: [],
@@ -344,7 +350,11 @@ export default function FilterSideBar() {
             <Filter className="h-4 w-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <SheetContent
+          side="left"
+          className="w-[300px] sm:w-[400px] overflow-y-auto"
+        >
+          <SheetTitle className="hidden"> Filter </SheetTitle>
           {filterContent}
         </SheetContent>
       </Sheet>

@@ -120,6 +120,8 @@ const Select: React.FC<SelectProps> = ({
     if (!multiple) {
       closeDropdown();
     }
+
+    console.log(`${option.label} clicked`);
   };
 
   const handleRemoveSelectedOption = (
@@ -131,6 +133,7 @@ const Select: React.FC<SelectProps> = ({
       (o) => o.value !== option.value
     );
     setSelectedOptions(newSelectedOptions);
+    console.log(`${option.label} remove button clicked`);
   };
 
   const filteredOptions = search.trim()
@@ -181,7 +184,7 @@ const Select: React.FC<SelectProps> = ({
       const containerRect = containerRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - containerRect.bottom;
       const spaceAbove = containerRect.top;
-      const dropdownHeight = 240; // Approximate height of dropdown (max-h-60 is 15rem = 240px)
+      const dropdownHeight = 300; // Approximate height of dropdown (max-h-60 is 15rem = 240px)
 
       if (spaceBelow >= dropdownHeight) {
         setDropdownPosition("bottom");
@@ -221,9 +224,11 @@ const Select: React.FC<SelectProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (
         containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
+        !containerRef.current.contains(event.target as Node) &&
+        open
       ) {
         closeDropdown();
+        console.log("Clicked outside the select");
       }
     };
 
@@ -281,7 +286,10 @@ const Select: React.FC<SelectProps> = ({
       <button
         ref={buttonRef}
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          setOpen(!open);
+          console.log("Select button clicked");
+        }}
         className={cn(
           "flex items-start w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
           "cursor-pointer"
@@ -344,7 +352,10 @@ const Select: React.FC<SelectProps> = ({
                   type="text"
                   placeholder="Search..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    console.log("Search input changed");
+                  }}
                   className="flex h-11 w-full rounded-md bg-transparent py-3 pl-10 text-sm outline-none placeholder:text-muted-foreground"
                   ref={inputRef}
                 />

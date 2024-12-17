@@ -287,19 +287,11 @@ export default function StoreCardList({
   loading = false,
   error = false,
 }: StoreCardListProps) {
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4">
-        {[...Array(4)].map((_, index) => (
-          <SkeletonCard key={index} />
-        ))}
-      </div>
-    );
-  }
   if (error) return <ErrorComponent />;
 
   return (
     <div className="flex flex-col gap-4 w-full">
+      {/* Render existing products */}
       {products.map((product: Product) => (
         <StoreCard
           id={product.id}
@@ -312,6 +304,15 @@ export default function StoreCardList({
           productStatus={product.status}
         />
       ))}
+
+      {/* Show skeleton loaders when loading more products */}
+      {loading && (
+        <>
+          {[...Array(4)].map((_, index) => (
+            <SkeletonCard key={`skeleton-${index}`} />
+          ))}
+        </>
+      )}
     </div>
   );
 }
