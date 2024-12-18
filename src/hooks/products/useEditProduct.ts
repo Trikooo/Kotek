@@ -9,7 +9,7 @@ export const useEditProduct = () => {
   const [error, setError] = useState<unknown | null>(null);
 
   const updateProduct = async (
-    data: ProductFormValues & { imageUrls: string[] },
+    data: ProductFormValues & { imageUrls: string[]; imagesToDelete: string[] },
     id: string
   ) => {
     // Reset error state

@@ -1,5 +1,4 @@
 import * as z from "zod";
-import { $Enums } from "@prisma/client";
 
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),

@@ -22,19 +22,59 @@ export async function GET(request: NextRequest, { params }: Params) {
     }
 
     return NextResponse.json(product, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching product:", error);
+  } catch (error: unknown) {
+    // Handle Prisma errors
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (error.code) {
+        case "P2025": // Record not found
+          console.error("Prisma Record Not Found Error", {
+            errorCode: error.code,
+            cause: error.meta ? error.meta.cause : "Unknown",
+            originalError: error.message,
+          });
 
-    if (error instanceof Error) {
+          return NextResponse.json(
+            {
+              message: "Product not found",
+              details: error.meta ? error.meta.cause : "Unknown cause",
+            },
+            { status: 404 }
+          );
+      }
+    }
+
+    // Handle network or database connection errors
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      console.error("Prisma Database Connection Error", {
+        errorName: error.name,
+        errorMessage: error.message,
+        errorStack: error.stack,
+      });
+
       return NextResponse.json(
-        { message: error.message },
+        {
+          message: "Database connection error",
+          details: error.message,
+        },
         { status: 500 }
       );
     }
 
-    console.error("Unexpected error type:", error);
+    // Generic server error for unexpected exceptions
+    console.error("Unexpected Server Error", {
+      errorName: error instanceof Error ? error.name : "Unknown Error",
+      errorMessage: error instanceof Error ? error.message : "No error message",
+      errorStack: error instanceof Error ? error.stack : "No stack trace",
+      errorType: typeof error,
+      stringRepresentation: String(error),
+    });
+
     return NextResponse.json(
-      { message: "An unexpected error occurred" },
+      {
+        message: "Internal Server Error",
+        details:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      },
       { status: 500 }
     );
   }
@@ -171,21 +211,74 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       { message: "Product deleted successfully" },
       { status: 200 }
     );
-  } catch (error) {
-    console.error("Error occurred while deleting product:", error);
+  } catch (error: unknown) {
+    // Handle Prisma errors
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (error.code) {
+        case "P2025": // Record not found
+          console.error("Prisma Record Not Found Error", {
+            errorCode: error.code,
+            cause: error.meta ? error.meta.cause : "Unknown",
+            originalError: error.message,
+          });
 
-    if (error instanceof Error) {
-      let status = 500;
-      let message = error.message;
+          return NextResponse.json(
+            {
+              message: "Product not found",
+              details: error.meta ? error.meta.cause : "Unknown cause",
+            },
+            { status: 404 }
+          );
 
-      if (message.includes("not found")) status = 404;
+        case "P2003": // Foreign key constraint violation
+          console.error("Prisma Foreign Key Constraint Violation", {
+            errorCode: error.code,
+            field: error.meta ? error.meta.field_name : "Unknown",
+            originalError: error.message,
+          });
 
-      return NextResponse.json({ message: message }, { status: status });
+          return NextResponse.json(
+            {
+              message: "Cannot delete product due to existing relationships",
+              details: error.meta ? error.meta.field_name : "Unknown relation",
+            },
+            { status: 400 }
+          );
+      }
     }
 
-    console.error("Unexpected error type:", error); // Log unexpected error types
+    // Handle network or database connection errors
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      console.error("Prisma Database Connection Error", {
+        errorName: error.name,
+        errorMessage: error.message,
+        errorStack: error.stack,
+      });
+
+      return NextResponse.json(
+        {
+          message: "Database connection error",
+          details: error.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    // Generic server error for unexpected exceptions
+    console.error("Unexpected Server Error", {
+      errorName: error instanceof Error ? error.name : "Unknown Error",
+      errorMessage: error instanceof Error ? error.message : "No error message",
+      errorStack: error instanceof Error ? error.stack : "No stack trace",
+      errorType: typeof error,
+      stringRepresentation: String(error),
+    });
+
     return NextResponse.json(
-      { message: "An unexpected error occurred" },
+      {
+        message: "Internal Server Error",
+        details:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      },
       { status: 500 }
     );
   }

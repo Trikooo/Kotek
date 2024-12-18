@@ -1,5 +1,8 @@
+import { generateKey } from "@/utils/generalUtils";
 import {
   DeleteObjectCommand,
+  DeleteObjectCommandInput,
+  HeadObjectCommand,
   PutObjectCommand,
   PutObjectCommandInput,
   S3Client,
@@ -24,10 +27,8 @@ export class R2Client {
 
     try {
       const uploadPromises = files.map(async (file) => {
-        const startTime = getCurrentTimeString();
-
         const buffer = Buffer.from(await file.arrayBuffer());
-        const key = `${prefix}/${file.name.replace(/\s+/g, "")}`;
+        const key = generateKey(prefix);
         const uploadParams: PutObjectCommandInput = {
           Bucket: this.bucketName,
           Key: key,
@@ -35,18 +36,14 @@ export class R2Client {
           ContentType: file.type,
         };
 
-        console.log(`Start uploading ${file.name} at: ${startTime}`);
         await this.client.send(new PutObjectCommand(uploadParams));
-        const endTime = getCurrentTimeString();
 
-        console.log(`Finished uploading ${file.name} at: ${endTime}`);
-        uploadedImages.push(`${process.env.R2_ENDPOINT}/${key}`);
+        uploadedImages.push(`${process.env.R2_PUBLIC_ENDPOINT}/${key}`);
       });
 
       // Wait for all uploads to finish
       await Promise.all(uploadPromises);
 
-      console.log("All files uploaded successfully.");
       return uploadedImages;
     } catch (error) {
       console.error("Batch upload failed:", error);
@@ -55,36 +52,27 @@ export class R2Client {
   }
 
   async deleteImages(imageUrls: string[]): Promise<number> {
-    let deletedCount = 0;
-
-    for (const imageUrl of imageUrls) {
-      try {
-        const key = imageUrl.split(
-          `https://pub-${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.dev/`
-        )[1];
-
-        if (!key) continue;
-
-        await this.client.send(
-          new DeleteObjectCommand({
-            Bucket: this.bucketName,
-            Key: key,
-          })
-        );
-
-        deletedCount++;
-      } catch (error) {
-        console.error(`Error deleting image ${imageUrl}:`, error);
-      }
+    try {
+      let deletedCount = 0;
+      const deletePromises = imageUrls.map(async (url) => {
+        const params: DeleteObjectCommandInput = {
+          Bucket: this.bucketName,
+          Key: url.split(`${process.env.R2_PUBLIC_ENDPOINT}/`)[1],
+        };
+        if (params.Key) {
+          console.log("params: ", params);
+          await this.client.send(new HeadObjectCommand(params));
+          await this.client.send(new DeleteObjectCommand(params));
+          deletedCount++;
+        }
+      });
+      await Promise.all(deletePromises);
+      return deletedCount;
+    } catch (error) {
+      console.error(error);
+      throw new Error(`${error}`);
     }
-
-    return deletedCount;
   }
 }
 
 export const r2Client = new R2Client();
-
-const getCurrentTimeString = () => {
-  const now = new Date();
-  return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}.${now.getMilliseconds()}`;
-};

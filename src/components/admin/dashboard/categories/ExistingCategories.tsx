@@ -13,7 +13,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useCategoryContext } from "@/context/CategoriesContext";
-import { CreateCategoryT } from "@/types/types";
 
 export default function ExistingCategories() {
   const { categories, error, loading } = useCategoryContext();
@@ -83,11 +82,6 @@ export default function ExistingCategories() {
         rows={rows}
         isLoading={loading}
         error={error}
-        currentPage={0}
-        totalPages={0}
-        setPage={() => {
-          console.log("");
-        }}
       />
     </>
   );

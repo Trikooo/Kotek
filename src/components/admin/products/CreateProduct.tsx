@@ -64,6 +64,7 @@ export default function CreateProduct() {
     console.log(data);
     await createProduct(data);
     form.reset();
+    setSelectedCategory([]);
   };
 
   return (
@@ -214,6 +215,7 @@ export default function CreateProduct() {
                             onChange={(_, current) => {
                               if (current[0]?.value) {
                                 field.onChange(current[0].value);
+                                console.log(current[0].value);;
                               } else {
                                 field.onChange("");
                               }

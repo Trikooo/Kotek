@@ -8,6 +8,7 @@ import { ZodError } from "zod";
 import { ProductSearchService } from "../APIservices/controllers/search";
 import { GetAllProductsResponse, ProductSearchResponse } from "@/types/types";
 import { Prisma } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
 
 export async function GET(request: NextRequest) {
   const searchService = new ProductSearchService();
@@ -64,9 +65,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await productValidation(request, "POST", undefined);
+    const id = uuidv4();
+    const data = await productValidation(request, "POST", id);
 
-    const createdProduct = await createProduct(data);
+    const createdProduct = await createProduct(id, data);
 
     return NextResponse.json({ product: createdProduct }, { status: 201 });
   } catch (error: unknown) {

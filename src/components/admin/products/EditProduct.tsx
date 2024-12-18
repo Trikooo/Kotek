@@ -86,8 +86,17 @@ export default function EditProduct({ product }: EditProductProps) {
   const onSubmit = async (data: ProductFormValues) => {
     const imageUrls = data.images.filter((image) => typeof image === "string");
     const images = data.images.filter((image) => image instanceof File);
+    const imagesToDelete = product.imageUrls.filter(
+      (image) => !imageUrls.includes(image)
+    );
+    console.log(imagesToDelete);
     await updateProduct(
-      { ...data, images: images, imageUrls: imageUrls },
+      {
+        ...data,
+        images: images,
+        imageUrls: imageUrls,
+        imagesToDelete: imagesToDelete,
+      },
       product.id
     );
   };
