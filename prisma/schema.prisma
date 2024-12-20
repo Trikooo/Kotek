@@ -11,8 +11,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url       = env("NEON_POSTGRES_URL") // uses connection pooling
+  directUrl = env("NEON_DIRECT_URL") // uses a direct connection
 }
 
 // ------------------------------
@@ -151,7 +151,7 @@ model Product {
   status      ProductStatus @default(ACTIVE)
   tags        String[]
   keyFeatures String[]
-  featured    Boolean @default(false)
+  featured    Boolean       @default(false)
 
   // Dimensions
   length Float?

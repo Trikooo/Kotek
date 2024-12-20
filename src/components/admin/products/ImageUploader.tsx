@@ -24,8 +24,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const newImages = acceptedFiles.map((file) => URL.createObjectURL(file));
-      onImagesChange([...images, ...acceptedFiles]);
+      console.log("acceptedFiles: ", acceptedFiles);
+      const isDuplicateFile = (file: File): boolean => {
+        return images.some((existingImage) => {
+          if (existingImage instanceof File) {
+            return (
+              existingImage.name === file.name &&
+              existingImage.size === file.size
+            );
+          }
+          return false;
+        });
+      };
+      const newFiles = acceptedFiles.filter((file) => !isDuplicateFile(file));
+      if (newFiles.length > 0) {
+        console.log("newFiles: ", newFiles);
+        onImagesChange([...images, ...newFiles]);
+      }
     },
     [images, onImagesChange]
   );
@@ -44,9 +59,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Add a key here to force remount when images change */}
       <div
         {...getRootProps()}
         onClick={handleDropzoneClick}
+        key={images.length}
         className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
           isDragActive
             ? "border-primary bg-primary/10"

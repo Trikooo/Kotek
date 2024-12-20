@@ -128,14 +128,17 @@ export async function productValidation(
 }
 
 export async function processImages(formData: FormData, id: string) {
+  console.log("formData: ", formData);
   const imagesToDelete: string[] = JSON.parse(
     formData.get("imagesToDelete")?.toString() || "[]"
   );
+
   let remainingUrls: string[] = JSON.parse(
     formData.get("imageUrls")?.toString() || "[]"
   );
-  const files = formData.getAll("images[]") as File[];
 
+  const files = formData.getAll("images[]") as File[];
+  console.log(files);
   const prefix = `products/${id}`;
   const r2Urls = await r2Client.uploadImages(files, prefix);
 

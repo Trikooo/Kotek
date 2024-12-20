@@ -6,6 +6,8 @@ import AdminLayout from "@/app/admin/AdminLayout";
 import AdminProductDetails from "@/components/admin/products/ProductDetails";
 import { Category, Product } from "@prisma/client";
 import { Card } from "@/components/ui/card";
+import ProductDetailsSkeleton from "@/components/admin/products/ProductDetailsSkeleton";
+import ErrorComponent from "@/components/error/error";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -50,9 +52,9 @@ export default function ProductDetailPage() {
   return (
     <AdminLayout>
       {loading ? (
-        <p>Loading...</p>
+        <ProductDetailsSkeleton />
       ) : error ? (
-        <p>Error: {error}</p>
+        <ErrorComponent />
       ) : product ? (
         <div className="grid grid-cols-3 w-full gap-4 sm:gap-8">
           <AdminProductDetails
@@ -60,7 +62,9 @@ export default function ProductDetailPage() {
             category={category}
             className="col-span-3 lg:col-span-2"
           />
-          <Card className="flex justify-center items-center col-span-3 lg:col-span-1 h-96 lg:h-auto">Orders Card</Card>
+          <Card className="flex justify-center items-center col-span-3 lg:col-span-1 h-96 lg:h-auto">
+            Orders Card
+          </Card>
           <Card className="flex justify-center items-center h-96 col-span-3">
             Reviews Card
           </Card>

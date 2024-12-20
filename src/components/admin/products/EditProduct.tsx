@@ -31,7 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCategoryContext } from "@/context/CategoriesContext";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { $Enums } from "@prisma/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import generateCode128 from "@/utils/code128DataGenerator";
 import { useEditProduct } from "@/hooks/products/useEditProduct";
 
@@ -76,7 +76,11 @@ export default function EditProduct({ product }: EditProductProps) {
       weight: product.weight,
     },
   });
-
+  useEffect(() => {
+    setSelectedCategory(
+      categoryOptions.filter((o) => o.value === product.categoryId)
+    );
+  }, [categoryOptions, product]);
   const handleGenerateBarcode = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const generatedBarcode = generateCode128();
@@ -90,6 +94,7 @@ export default function EditProduct({ product }: EditProductProps) {
       (image) => !imageUrls.includes(image)
     );
     console.log(imagesToDelete);
+    console.log("images to save: ", images);
     await updateProduct(
       {
         ...data,

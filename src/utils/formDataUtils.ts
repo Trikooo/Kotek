@@ -29,11 +29,13 @@ export function createProductFormData(product: Partial<CreateProductT>) {
 export function updateProductFormData(updatedProduct: any) {
   const formData = new FormData();
   Object.entries(updatedProduct).forEach(([key, value]) => {
-    if (key === "newImages" && Array.isArray(value)) {
+    if (key === "images" && Array.isArray(value)) {
       (value as File[]).forEach((image: File) => {
         formData.append("images[]", image);
       });
     } else if (key === "imageUrls") {
+      formData.append(key, JSON.stringify(value));
+    } else if (key === "imagesToDelete") {
       formData.append(key, JSON.stringify(value));
     } else if (key === "featured" && typeof value === "boolean") {
       formData.append(key, value.toString());
