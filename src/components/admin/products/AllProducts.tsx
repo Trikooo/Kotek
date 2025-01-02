@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { DataTable, Column, Row } from "@/components/dynamic-ui/DataTable";
 import CreateProduct from "./CreateProduct";
 import SortBy from "@/components/ui/sort-by";
@@ -20,7 +20,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function AllProducts() {
-  const { products, loading, error } = useProductsContext();
+  const { products, loading, error, loadMoreProducts, pagination } =
+    useProductsContext();
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(
     new Set()
   );
@@ -38,6 +39,7 @@ export default function AllProducts() {
       return matchesSearch && matchesStatus;
     });
   }, [products, searchTerm, selectedStatuses]);
+
   const columns: Column[] = [
     { header: "Image", important: true },
     { header: "Name", important: true },
@@ -92,6 +94,41 @@ export default function AllProducts() {
     ),
   }));
 
+  // Ref for the scrollable container and load more trigger
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
+
+  // Intersection Observer to trigger load more
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && pagination?.hasNextPage && !loading) {
+        loadMoreProducts();
+      }
+    },
+    [loadMoreProducts, pagination, loading]
+  );
+
+  // Set up Intersection Observer
+  useEffect(() => {
+    const options: IntersectionObserverInit = {
+      root: null, // viewport
+      rootMargin: "0px 0px 100px 0px", // 100px from bottom
+      threshold: 0, // trigger as soon as any part is visible
+    };
+
+    if (loadMoreTriggerRef.current) {
+      observerRef.current = new IntersectionObserver(handleObserver, options);
+      observerRef.current.observe(loadMoreTriggerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [handleObserver]);
+
   return (
     <>
       <div className="flex justify-between items-center mb-2">
@@ -116,6 +153,8 @@ export default function AllProducts() {
         isLoading={loading}
         error={error}
       />
+      {/* Load more trigger at the end of the table */}
+      <div ref={loadMoreTriggerRef} style={{ height: "1px" }} />
     </>
   );
 }

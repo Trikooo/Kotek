@@ -1,4 +1,5 @@
-import { CreateProductT } from "@/types/types";
+import { EMPTY_ADDRESS } from "@/lib/constants";
+import { CreateProductT, KotekOrder, NoestOrderForm } from "@/types/types";
 
 export function createProductFormData(product: Partial<CreateProductT>) {
   const formData = new FormData();
@@ -46,4 +47,59 @@ export function updateProductFormData(updatedProduct: any) {
   return formData;
 }
 
-export function createCategoryFormData(category: any) {}
+export function createNoestForms(order: KotekOrder): NoestOrderForm[] {
+  const address = order.address || order.guestAddress || EMPTY_ADDRESS;
+
+  // Group items by tracking number
+  const itemsByTracking: Record<string, typeof order.items> = {};
+
+  order.items.forEach((item) => {
+    const trackingNumber = item.tracking?.trackingNumber || "untracked";
+    if (!itemsByTracking[trackingNumber] && trackingNumber === "untracked") {
+      itemsByTracking[trackingNumber] = [];
+    }
+    if (trackingNumber === "untracked" && item.noestReady === true) {
+      itemsByTracking[trackingNumber].push(item);
+    }
+  });
+
+  // Create a Noest form for each tracking group
+  return Object.entries(itemsByTracking).map(([trackingNumber, items]) => {
+    const totalWeight = Math.ceil(
+      items.reduce(
+        (sum, item) => sum + (item.product?.weight || 1) * item.quantity,
+        0
+      ) / 1000
+    );
+
+    const totalAmount =
+      items.reduce((sum, item) => sum + item.price * item.quantity, 0) +
+      order.shippingPrice;
+
+    return {
+      reference: order.id,
+      client: address.fullName,
+      phone: address.phoneNumber,
+      phone_2: address.secondPhoneNumber || undefined,
+      adresse: address.address,
+      wilaya_id: parseInt(address.wilayaValue, 10),
+      commune: address.commune,
+      montant: totalAmount,
+      produit: items
+        .filter(
+          (item) => item.noestReady === true && !item.tracking?.trackingNumber
+        )
+        .map(
+          (item) =>
+            `${item.product?.name || "Unknown Product"} (x${item.quantity})`
+        )
+        .join(", "),
+      type_id: 1,
+      poids: totalWeight,
+      stop_desk: address.stopDesk ? 1 : 0,
+      station_code: address.stationCode,
+      stock: 0,
+      can_open: 1,
+    };
+  });
+}

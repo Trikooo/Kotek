@@ -1,4 +1,4 @@
-import { Prisma, ProductStatus } from "@prisma/client";
+import { Prisma, Product, ProductStatus } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { NextRequest } from "next/server";
 import { capitalizeFirstLetter } from "@/lib/utils";
@@ -56,7 +56,6 @@ export async function getProductById(id: string) {
 }
 
 export async function createProduct(id: string, data: ProductValidationT) {
-  console.log(data.categoryId);
   try {
     const product = prisma.product.create({
       data: { id: id, ...data },
@@ -75,7 +74,6 @@ export async function updateProduct(id: string, data: any) {
     },
     data: data,
   });
-  if (!updatedProduct) throw new Error("product not found");
   return updatedProduct;
 }
 
@@ -84,12 +82,9 @@ export async function deleteProduct(id: string) {
   const product = await prisma.product.findUnique({
     where: { id },
   });
-
-  if (!product) {
-    throw new Error(`Product with id ${id} not found`);
-  }
-  // delete product images from r2
-  await r2Client.deleteImages(product.imageUrls);
+  if (product)
+    // delete product images from r2
+    await r2Client.deleteImages(product.imageUrls);
 
   // Delete the product from the database
   const deletedProduct = await prisma.product.delete({
@@ -118,6 +113,17 @@ export async function productValidation(
   if (method === "POST") {
     productSchema.parse(data as ProductValidationT);
   } else if (method === "PUT") {
+    const existingProduct = await getProductById(id); // Fetch the existing product details by ID
+    if (data.price && existingProduct && data.price >= existingProduct.price) {
+      // Handle price comparison and update originalPrice accordingly
+      data.originalPrice = data.price;
+    } else if (
+      data.price &&
+      existingProduct &&
+      data.price <= existingProduct.price
+    ) {
+      data.originalPrice = undefined;
+    }
     updateProductSchema.parse(data as ProductValidationT);
   } else {
     console.error("Method not allowed.");
@@ -128,7 +134,6 @@ export async function productValidation(
 }
 
 export async function processImages(formData: FormData, id: string) {
-  console.log("formData: ", formData);
   const imagesToDelete: string[] = JSON.parse(
     formData.get("imagesToDelete")?.toString() || "[]"
   );
@@ -138,7 +143,7 @@ export async function processImages(formData: FormData, id: string) {
   );
 
   const files = formData.getAll("images[]") as File[];
-  console.log(files);
+
   const prefix = `products/${id}`;
   const r2Urls = await r2Client.uploadImages(files, prefix);
 
@@ -155,6 +160,7 @@ export function extractFormData(formData: FormData) {
     formData.get("featured")?.toString().trim().toLowerCase() === "true";
   const description = formData.get("description")?.toString().trim() || "";
   const price = parseInt(formData.get("price")?.toString().trim() || "0", 10);
+  const originalPrice = price;
   const stock = parseInt(formData.get("stock")?.toString().trim() || "0", 10);
   const barcode = formData.get("barcode")?.toString().trim() || null;
   const categoryId = formData.get("categoryId")?.toString().trim() || null;
@@ -182,6 +188,7 @@ export function extractFormData(formData: FormData) {
     featured,
     description,
     price,
+    originalPrice,
     stock,
     barcode,
     categoryId,
@@ -204,6 +211,7 @@ export function prepareProductData(
     name,
     description,
     price,
+    originalPrice,
     stock,
     barcode,
     categoryId,
@@ -217,11 +225,11 @@ export function prepareProductData(
     weight,
     featured,
   } = extractedData;
-
   return {
     ...(name && { name: capitalizeFirstLetter(name) }),
     ...(description && { description: capitalizeFirstLetter(description) }),
     ...(price && { price }),
+    ...(originalPrice && { originalPrice }),
     ...(stock && { stock }),
     ...(barcode && { barcode }),
     ...(categoryId && { categoryId }),

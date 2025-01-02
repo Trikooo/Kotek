@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useGetCart } from "@/hooks/cart/useCart";
 import { FetchCart } from "@/types/types";
 import React, { createContext, useContext, ReactNode, useMemo } from "react";
@@ -6,6 +6,7 @@ import React, { createContext, useContext, ReactNode, useMemo } from "react";
 interface CartContextType {
   cart: FetchCart | null;
   setCart: React.Dispatch<React.SetStateAction<FetchCart | null>>;
+  subtotal: number;
   loading: boolean;
   error: string | null;
 }
@@ -19,6 +20,7 @@ const CartContext = createContext<CartContextType>({
   setCart: () => {},
   loading: false,
   error: null,
+  subtotal: 0,
 });
 
 export const useCart = () => {
@@ -33,6 +35,16 @@ export const CartProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
   const { cart, setCart, loading, error } = useGetCart();
+  const calculateSubtotal = () => {
+    return (
+      cart?.items.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      ) ?? 0
+    );
+  };
+
+  const subtotal = calculateSubtotal();
 
   const value = useMemo(
     () => ({
@@ -40,8 +52,9 @@ export const CartProvider: React.FC<{
       setCart,
       loading,
       error,
+      subtotal,
     }),
-    [cart, setCart, loading, error]
+    [cart, setCart, loading, error, subtotal]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

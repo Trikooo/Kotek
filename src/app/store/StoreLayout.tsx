@@ -7,26 +7,28 @@ import Footer from "@/components/store/home/footer/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { useSession } from "next-auth/react";
 
-export default function StoreLayout({ children }: { children: ReactNode }) {
+export default function StoreLayout({
+  children,
+  hideHeader = true,
+}: {
+  children: ReactNode;
+  hideHeader?: boolean;
+}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
 
   return (
-
-      <HeaderProvider>
-        <div className="flex flex-col min-h-screen">
-          <Header setMobileMenuOpen={setMobileMenuOpen} />
-          <MobileMenu
-            mobileMenuOpen={mobileMenuOpen}
-            setMobileMenuOpen={setMobileMenuOpen}
-          />
-          <main className="flex-1 mt-[72px] lg:mt-20 mx-2 md:mx-5">
-            {children}
-          </main>
-          <Footer />
-        </div>
-      </HeaderProvider>
-
+    <HeaderProvider>
+      <div className="flex flex-col min-h-screen">
+        <Header setMobileMenuOpen={setMobileMenuOpen} hide={hideHeader} />
+        <MobileMenu
+          mobileMenuOpen={mobileMenuOpen}
+          setMobileMenuOpen={setMobileMenuOpen}
+        />
+        <main className="flex-1 mt-[72px] lg:mt-20 mx-2 md:mx-5">
+          {children}
+        </main>
+        <Footer />
+      </div>
+    </HeaderProvider>
   );
 }

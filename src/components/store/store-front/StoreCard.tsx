@@ -2,13 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import {
-  AlertCircle,
-  CheckCircle,
-  CircleCheck,
-  Loader2,
-  Package,
-} from "lucide-react";
+import { AlertCircle, CircleCheck, Loader2, Package } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Product, ProductStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -21,17 +15,20 @@ import { useCart } from "@/context/CartContext";
 import { ToastAction } from "@/components/ui/toast";
 import ErrorComponent from "@/components/error/error";
 import { formatCurrency } from "@/utils/generalUtils";
+import DisplayBadge from "@/components/ui/display-badge";
 
-// Interface for StoreCard props
-interface StoreCardProps {
-  imageUrls: string[];
-  title: string;
-  features: string[];
-  price: number;
-  originalPrice?: number;
-  productStatus: ProductStatus;
-  id: string;
-}
+const gradientAnimation = `
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+`;
 
 // Skeleton component for loading state
 const SkeletonCard = () => (
@@ -56,15 +53,11 @@ const SkeletonCard = () => (
 );
 
 // StoreCard component
-const StoreCard = ({
-  imageUrls,
-  title,
-  features,
-  price,
-  originalPrice,
-  productStatus,
-  id, // Add productId prop
-}: StoreCardProps) => {
+interface StoreCardProps {
+  product: Product;
+}
+
+const StoreCard = ({ product }: StoreCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
   const { handleCreateOrUpdate, loading, error } = useCreateOrUpdateCart();
@@ -73,14 +66,13 @@ const StoreCard = ({
   const userId = session.data?.user?.id;
   const { toast } = useToast();
 
-  // Check if the product is already in the cart
-
-  const isProductInCart = cart?.items.some((item) => item.productId === id);
-
-  const hasMultipleImages = imageUrls.length > 1;
+  const isProductInCart = cart?.items.some(
+    (item) => item.productId === product.id
+  );
+  const hasMultipleImages = product.imageUrls.length > 1;
 
   const handleRedirect = () => {
-    router.push(`/store/${id}`);
+    router.push(`/store/${product.id}`);
   };
 
   const handleAddToCart = async () => {
@@ -89,12 +81,12 @@ const StoreCard = ({
         userId: userId,
         items: [
           {
-            productId: id,
+            productId: product.id,
             quantity: 1,
-            price: price,
+            price: product.price,
             product: {
-              name: title,
-              imageUrls: imageUrls,
+              name: product.name,
+              imageUrls: product.imageUrls,
             },
           },
         ],
@@ -113,7 +105,7 @@ const StoreCard = ({
           description: "Item has been added to cart.",
           action: (
             <Link href="/cart">
-              <ToastAction altText={"View cart"}>View Cart</ToastAction>
+              <ToastAction altText="View cart">View Cart</ToastAction>
             </Link>
           ),
         });
@@ -140,17 +132,16 @@ const StoreCard = ({
           } as FetchCart)
       );
     } else {
-      // For guests (no userId)
       if (typeof window !== "undefined" && window.localStorage) {
         const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
 
         const newItem = {
-          productId: id,
+          productId: product.id,
           quantity: 1,
-          price: price,
+          price: product.price,
           product: {
-            name: title,
-            imageUrls: imageUrls,
+            name: product.name,
+            imageUrls: product.imageUrls,
           },
         };
         const updatedCart = [...guestCart, newItem];
@@ -188,21 +179,24 @@ const StoreCard = ({
           onClick={handleRedirect}
         >
           <div className="w-[200px] h-[200px] relative cursor-pointer">
+            <div className="absolute -right-2 -top-2 z-10">
+              <DisplayBadge product={product} />
+            </div>
             <Image
-              src={imageUrls[0]}
+              src={product.imageUrls[0]}
               layout="fill"
               objectFit="cover"
-              alt={title}
+              alt={product.name}
               className={`rounded-md transition-opacity duration-300 ${
                 hasMultipleImages && isHovered ? "opacity-0" : "opacity-100"
               }`}
             />
-            {hasMultipleImages && imageUrls[1] && (
+            {hasMultipleImages && product.imageUrls[1] && (
               <Image
-                src={imageUrls[1]}
+                src={product.imageUrls[1]}
                 layout="fill"
                 objectFit="cover"
-                alt={title}
+                alt={product.name}
                 className={`rounded-md absolute top-0 left-0 transition-opacity duration-300 ${
                   isHovered ? "opacity-100" : "opacity-0"
                 }`}
@@ -213,12 +207,12 @@ const StoreCard = ({
         <div className="flex-1">
           <Link
             className="text md:text-2xl font-semibold pb-2 cursor-pointer hover:text-indigo-600 hover:underline w-max"
-            href={`/store/${id}`}
+            href={`/store/${product.id}`}
           >
-            {title}
+            {product.name}
           </Link>
           <ul className="text-sm md:text-base list-disc pl-5">
-            {features.map((feature, index) => (
+            {product.keyFeatures.map((feature, index) => (
               <li key={index}>{feature}</li>
             ))}
           </ul>
@@ -227,15 +221,16 @@ const StoreCard = ({
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <span className="text-lg md:text-xl font-semibold">
-                {formatCurrency(price)}
+                {formatCurrency(product.price)}
               </span>
-              {originalPrice && (
+
+              {product.originalPrice > product.price && (
                 <span className="text-xs md:text-sm line-through text-muted-foreground">
-                  {formatCurrency(originalPrice)}
+                  {formatCurrency(product.originalPrice)}
                 </span>
               )}
             </div>
-            {productStatus === "ACTIVE" ? (
+            {product.status === "ACTIVE" ? (
               <div className="flex items-center justify-start text-sm">
                 <Package className="w-4 h-4 mr-1 text-green-500" />
                 <span className="font-semibold text-green-500">In Stock</span>
@@ -252,7 +247,7 @@ const StoreCard = ({
               <Button
                 className="w-full"
                 onClick={handleAddToCart}
-                disabled={loading || productStatus !== "ACTIVE"}
+                disabled={loading || product.status !== "ACTIVE"}
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
@@ -277,11 +272,10 @@ const StoreCard = ({
 // StoreCardList component
 interface StoreCardListProps {
   products: Product[];
-  loading: boolean;
-  error: boolean;
+  loading?: boolean;
+  error?: boolean;
 }
 
-// StoreCardList component
 export default function StoreCardList({
   products,
   loading = false,
@@ -291,21 +285,10 @@ export default function StoreCardList({
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      {/* Render existing products */}
-      {products.map((product: Product) => (
-        <StoreCard
-          id={product.id}
-          key={product.id}
-          imageUrls={product.imageUrls}
-          title={product.name}
-          features={product.keyFeatures}
-          price={product.price}
-          originalPrice={undefined}
-          productStatus={product.status}
-        />
+      {products.map((product) => (
+        <StoreCard key={product.id} product={product} />
       ))}
 
-      {/* Show skeleton loaders when loading more products */}
       {loading && (
         <>
           {[...Array(4)].map((_, index) => (

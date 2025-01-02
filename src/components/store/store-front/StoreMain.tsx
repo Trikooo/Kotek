@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useRef, useCallback } from "react";
 import { Cpu, Search } from "lucide-react";
-import SearchOptions from "./SearchOptions";
 import { useProductsContext } from "@/context/ProductsContext";
 import StoreCardList from "./StoreCard";
 import { Input } from "@/components/ui/input";
 import { useHeaderContext } from "@/context/HeaderContext";
 import useDebounce from "@/hooks/useDebounce";
 import { ProductSearchParams } from "@/types/types";
+import SearchSort from "./SearchOptions";
 
 export default function StoreMain() {
   const {
@@ -77,7 +77,7 @@ export default function StoreMain() {
   return (
     <div>
       <div>
-        <SearchOptions />
+        <SearchSort />
       </div>
       <div className="relative mt-5">
         <Input

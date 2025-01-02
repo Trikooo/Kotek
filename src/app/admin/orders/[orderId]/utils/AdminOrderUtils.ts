@@ -26,3 +26,20 @@ export function getStatusVariant(status: OrderStatus) {
     return "outline";
   }
 }
+
+export function getCircleStatusColor(status: OrderStatus) {
+  switch (status) {
+    case "PENDING":
+      return "bg-orange-500";
+    case "PROCESSING":
+      return "bg-blue-600";
+    case "DISPATCHED":
+      return "bg-green-100 outline outline-green-600";
+    case "DELIVERED":
+      return "bg-green-600 hover:bg-green-500";
+    case "CANCELLED":
+      return "bg-red-600 hover:bg-red-500";
+    default:
+      return "";
+  }
+}

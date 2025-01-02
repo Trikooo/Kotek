@@ -8,10 +8,11 @@ import ExistingAddresses from "@/components/store/checkout/shipping/ExistingAddr
 import { useSession } from "next-auth/react";
 import { useAddress } from "@/context/AddressContext";
 import useShippingForm from "@/components/store/checkout/shipping/useShippingForm";
-import { EMPTY_ADDRESS } from "@/lib/constants";
+import { useKotekOrder } from "@/context/KotekOrderContext";
 
 export default function Shipping() {
-  const { setSelectedAddress } = useAddress();
+  const { selectedAddress, setSelectedAddress } = useAddress();
+  const { setKotekOrder } = useKotekOrder();
   const { data: session, status } = useSession();
   const { addresses, loading } = useAddress();
   const { addressLoading } = useShippingForm();
@@ -42,6 +43,10 @@ export default function Shipping() {
           <Button
             onClick={() => {
               setSelectedAddress(null);
+              setKotekOrder((prev) => ({
+                ...prev,
+                shippingPrice: 0,
+              }));
               setShowForm(!showForm);
             }}
             variant={"outline"}

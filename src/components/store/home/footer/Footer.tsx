@@ -1,5 +1,4 @@
 import { FaFacebook, FaTiktok, FaInstagram, FaWhatsapp } from "react-icons/fa";
-import { Phone } from "lucide-react";
 import Link from "next/link";
 import Ouedkniss from "@/components/icons/Ouedkniss";
 
@@ -42,7 +41,7 @@ const contactLinks = [
 export default function Footer() {
   let currentYear = new Date().getFullYear();
   return (
-    <footer className="flex flex-col sm:flex-row items-center justify-between px-4 py-10 sm:px-6 border-t mt-16 gap-6 sm:gap-0 mx-10">
+    <footer className="flex flex-col sm:flex-row items-center justify-between px-4 py-10 sm:px-6 border-t mt-16 gap-6 sm:gap-0 mx-10 z-50 bg-custom-gradient">
       <p className="text-sm text-muted-foreground text-center z-50">
         &copy; {currentYear} Kotek. All rights reserved.
       </p>

@@ -11,7 +11,7 @@ export async function sendProduct(product: Partial<CreateProductT>) {
   const response = await axios.post<Product>("/api/products", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  return response.data;8
+  return response.data;
 }
 
 export async function getAllProducts() {

@@ -62,6 +62,7 @@ export function loadGuestAddresses() {
 
 export async function fetchUserAddresses(userId: string): Promise<Address[]> {
   const response = await axios.get(`/api/addresses?userId=${userId}`);
+  console.log(response);
   if (response.status !== 200) {
     throw new Error("Failed to fetch addresses");
   }

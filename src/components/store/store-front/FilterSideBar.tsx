@@ -345,7 +345,7 @@ export default function FilterSideBar() {
         <SheetTrigger asChild>
           <Button
             size="icon"
-            className="fixed bottom-4 left-4 z-50 rounded-full lg:hidden"
+            className="fixed bottom-4 left-4 z-50 rounded-full lg:hidden shadow-md"
           >
             <Filter className="h-4 w-4" />
           </Button>

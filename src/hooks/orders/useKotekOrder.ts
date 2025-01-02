@@ -1,11 +1,10 @@
 import { KotekOrder } from "@/types/types";
-import { handleAxiosError } from "@/utils/handleAxiosError";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { fetchUserKotekOrders } from "./getKotekOrdersUtils";
 import { useScrollPaginatedKotekOrders } from "./useScrollPagination";
-import { usePathname } from "next/navigation";
+import { Order } from "@prisma/client";
 
 export function useGetUserKotekOrders() {
   const { data: session } = useSession();
@@ -40,6 +39,48 @@ export function useGetAllKotekOrders() {
   return useScrollPaginatedKotekOrders(fetchAllOrders, 10, ["/admin"]);
 }
 
+export function useGetKotekOrderById(orderId: string) {
+  const [order, setOrder] = useState<KotekOrder | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchOrder = useCallback(async (id: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.get(`/api/kotekOrders?kotekOrderId=${id}`);
+
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch Kotek order");
+      }
+      console.log(response);
+      setOrder(response.data);
+      return response.data;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error("An error occurred");
+      setError(error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (orderId) {
+      console.log("hi");
+      fetchOrder(orderId);
+    }
+  }, []);
+
+  return {
+    order,
+    loading,
+    error,
+    fetchOrder,
+  };
+}
+
 export function useKotekOrderRequest() {
   const handleCreateKotekOrder = (kotekOrder: KotekOrder, userId: string) => {
     return handleRequest(
@@ -51,23 +92,19 @@ export function useKotekOrderRequest() {
 
   const handleUpdateKotekOrder = (
     kotekOrder: Partial<KotekOrder>,
-    kotekOrderId: string,
-    userId: string
-  ) => {
+    kotekOrderId: string
+  ): Promise<Order> => {
     return handleRequest(
       "put",
-      `/api/kotekOrders?kotekOrderId=${kotekOrderId}&userId=${userId}`,
+      `/api/kotekOrders?kotekOrderId=${kotekOrderId}`,
       kotekOrder
     );
   };
 
-  const handleDeleteKotekOrder = async (
-    kotekOrderId: string,
-    userId: string
-  ) => {
+  const handleDeleteKotekOrder = async (kotekOrderId: string) => {
     return handleRequest(
       "delete",
-      `/api/kotekOrders/?kotekOrderId=${kotekOrderId}&userId=${userId}`,
+      `/api/kotekOrders/?kotekOrderId=${kotekOrderId}`,
       {}
     );
   };
@@ -85,7 +122,6 @@ const handleRequest = async (
   kotekOrder: KotekOrder | {}
 ): Promise<any> => {
   try {
-    console.log("url inside the handleRequest function: ", url);
     const config = {
       method,
       url,
@@ -95,6 +131,7 @@ const handleRequest = async (
     const response = await axios(config);
     return response.data;
   } catch (error) {
+    console.error(error);
     throw error;
   }
 };

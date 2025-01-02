@@ -21,13 +21,8 @@ export default function useShippingForm() {
   const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user?.id;
-  const {
-    addresses,
-    setAddresses,
-    selectedAddress,
-    setSelectedAddress,
-    shippingPrice,
-  } = useAddress();
+  const { addresses, setAddresses, selectedAddress, setSelectedAddress } =
+    useAddress();
 
   const { handleCreateAddress } = useAddressRequest();
   // const [address, setAddress] = useState<Address>({
@@ -118,7 +113,10 @@ export default function useShippingForm() {
   // Fourth useEffect to set shippingPrice
 
   // Validation and continue handler
-  const handleContinue = async (data: ShippingFormValues) => {
+  const handleContinue = async (
+    data: ShippingFormValues,
+    baseShippingPrice: number
+  ) => {
     // Prepare data for submission
     const dataToSend = {
       ...selectedAddress,
@@ -132,7 +130,7 @@ export default function useShippingForm() {
       stopDesk: data.stopDesk,
       stationCode: data.station?.value,
       stationName: data.station?.label,
-      shippingPrice: shippingPrice,
+      baseShippingPrice: baseShippingPrice,
     };
     console.log("dataToSend: ", dataToSend);
 

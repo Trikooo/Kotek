@@ -7,6 +7,7 @@
     "headlessui",
     "noest",
     "Paiement",
+    "produit",
     "Uncategorized"
   ],
   "cSpell.ignorePaths": [

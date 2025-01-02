@@ -2,15 +2,12 @@
 
 import {
   Home,
-  LineChart,
   Package,
-  Settings2,
-  ShoppingCart,
-  Users2,
   PanelLeft,
   ClipboardList,
   ChartColumnIncreasing,
   Settings,
+  Users,
 } from "lucide-react";
 
 import SidebarLink from "./SideBarLink";
@@ -70,11 +67,7 @@ export default function SideBar() {
             label="Orders"
           />
           <SidebarLink href="/admin/products" icon={Package} label="Products" />
-          <SidebarLink
-            href="/admin/customers"
-            icon={Users2}
-            label="Customers"
-          />
+          <SidebarLink href="/admin/customers" icon={Users} label="Customers" />
           <SidebarLink
             href="/admin/analytics"
             icon={ChartColumnIncreasing}

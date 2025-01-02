@@ -24,20 +24,17 @@ export class ProductSearchService {
       .slice(0, 100);
   }
 
-  // UPDATED: Modify static parseSearchParams to handle array-based parameters
   static parseSearchParams(request: NextRequest): ProductSearchParams {
     const searchParams: ProductSearchParams = {
       currentPage: 1,
       pageSize: 10,
     };
 
-    // Properly handle multi-value parameters
     const processMultiValueParam = (key: string): string[] | undefined => {
       const values = request.nextUrl.searchParams.getAll(key);
       return values.length > 0 ? values : undefined;
     };
 
-    // Process specific multi-value parameters
     const categoryIds = processMultiValueParam("categoryIds[]");
     if (categoryIds) {
       searchParams.categoryIds = categoryIds;
@@ -58,7 +55,6 @@ export class ProductSearchService {
       searchParams.tags = tags;
     }
 
-    // Process single-value parameters
     const minPrice = request.nextUrl.searchParams.get("minPrice");
     if (minPrice) searchParams.minPrice = Number(minPrice);
 
@@ -72,12 +68,21 @@ export class ProductSearchService {
 
     const pageSize = request.nextUrl.searchParams.get("pageSize");
     if (pageSize) searchParams.pageSize = Number(pageSize);
+
     const query = request.nextUrl.searchParams.get("query");
     if (query) searchParams.query = query;
+
+    const sort = request.nextUrl.searchParams.get("sort");
+    if (sort)
+      searchParams.sort = sort as
+        | "featured"
+        | "price-asc"
+        | "price-desc"
+        | "newest";
+
     return searchParams;
   }
 
-  // UPDATED: Modify hasFilters to check new array-based parameters
   static hasFilters(request: NextRequest): boolean {
     const searchParams = this.parseSearchParams(request);
     return Object.keys(searchParams).some(
@@ -89,7 +94,6 @@ export class ProductSearchService {
   }
 
   async searchProducts(params: unknown): Promise<ProductSearchResponse> {
-    // Validate input using Zod
     const validatedParams = ProductSearchParamsSchema.parse(params);
 
     const {
@@ -102,27 +106,31 @@ export class ProductSearchService {
       tags,
       currentPage = 1,
       pageSize = 10,
+      sort = "featured",
     } = validatedParams;
 
-    // Calculate offset
     const offset = (currentPage - 1) * pageSize;
-    // Sanitize query
     const sanitizedQuery = this.sanitizeQuery(query);
-    console.log(validatedParams);
+
+    const orderByClause = (() => {
+      switch (sort) {
+        case "price-asc":
+          return Prisma.sql`similarity_score DESC, price ASC, featured DESC`;
+        case "price-desc":
+          return Prisma.sql`similarity_score DESC, price DESC, featured DESC`;
+        case "newest":
+          return Prisma.sql`similarity_score DESC, "createdAt" DESC, featured DESC`;
+        default: // 'featured'
+          return Prisma.sql`featured DESC, similarity_score DESC, price ASC`;
+      }
+    })();
+
     const [countResult, productResults] = await this.prisma.$transaction([
       this.prisma.$queryRaw<Array<{ total_count: bigint }>>`
         WITH product_search AS (
           SELECT
-            p.id,
-            p.name,
-            p.description,
-            p.brand,
-            p.price,
-            p.status,
-            p."categoryId",
-            p.tags,
+            p.*,
             c.tags AS category_tags,
-
             (
               GREATEST(
                 similarity(p.name, ${sanitizedQuery}) * 0.6,
@@ -175,7 +183,7 @@ export class ProductSearchService {
                 : Prisma.sql`TRUE`
             })
           GROUP BY
-            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags, c.tags
+            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags, p.featured, c.tags, p."createdAt"
         )
         SELECT COUNT(*) AS total_count FROM product_search
       `,
@@ -236,21 +244,21 @@ export class ProductSearchService {
                 : Prisma.sql`TRUE`
             })
           GROUP BY
-            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags, c.tags
+            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags, p.featured, p."createdAt", c.tags
         )
         SELECT
-          ps.*
+          ps.*,
+          ps.similarity_score
         FROM
           product_search ps
         ORDER BY
-          similarity_score DESC,
-          price ASC
+          ${orderByClause}
         LIMIT ${pageSize}
         OFFSET ${offset}
       `,
     ]);
 
-    const totalCount = Number(countResult[0]?.total_count || 0); // Safely convert BigInt to number
+    const totalCount = Number(countResult[0]?.total_count || 0);
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return {

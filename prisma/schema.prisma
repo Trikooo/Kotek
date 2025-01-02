@@ -44,20 +44,23 @@ model User {
   addresses     Address[]
   reviews       Review[]
   role          UserRole        @default(USER)
+  Feedback      Feedback[]
 }
 
 model Account {
-  userId            String  @db.Uuid
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
+  userId             String  @db.Uuid
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  oauth_token        String?
+  oauth_token_secret String?
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -140,18 +143,19 @@ model Category {
 }
 
 model Product {
-  id          String        @id @default(uuid()) @db.Uuid
-  name        String
-  description String?       @db.Text
-  price       Int
-  imageUrls   String[]
-  stock       Int
-  barcode     String?       @unique
-  brand       String?
-  status      ProductStatus @default(ACTIVE)
-  tags        String[]
-  keyFeatures String[]
-  featured    Boolean       @default(false)
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String
+  description   String?       @db.Text
+  originalPrice Int
+  price         Int
+  imageUrls     String[]
+  stock         Int
+  barcode       String?       @unique
+  brand         String?
+  status        ProductStatus @default(ACTIVE)
+  tags          String[]
+  keyFeatures   String[]
+  featured      Boolean       @default(false)
 
   // Dimensions
   length Float?
@@ -188,37 +192,54 @@ model Order {
   status         OrderStatus
   subtotalAmount Int
   totalAmount    Int
-  // Timestamps
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  guestAddress   Json?
+  shippingPrice  Int
 
-  // Guest Address JSON field
-  guestAddress Json?
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   userId    String?     @db.Uuid
   user      User?       @relation(fields: [userId], references: [id])
   items     OrderItem[] @relation("OrderToOrderItems")
   addressId String?     @db.Uuid
-  address   Address?    @relation(fields: [addressId], references: [id])
-  tracking  String?
+  address   Address?    @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  tracking  Tracking[]
 
   @@index([userId])
 }
 
 model OrderItem {
-  id       String @id @default(uuid()) @db.Uuid
-  quantity Int
-  price    Int
+  id         String  @id @default(uuid()) @db.Uuid
+  quantity   Int
+  price      Int
+  noestReady Boolean @default(false)
 
   // Relations
-  orderId   String  @db.Uuid
-  order     Order   @relation("OrderToOrderItems", fields: [orderId], references: [id], onDelete: Cascade)
-  productId String  @db.Uuid
-  product   Product @relation(fields: [productId], references: [id])
+  orderId    String    @db.Uuid
+  order      Order     @relation("OrderToOrderItems", fields: [orderId], references: [id], onDelete: Cascade)
+  productId  String    @db.Uuid
+  product    Product   @relation(fields: [productId], references: [id])
+  trackingId String?   @db.Uuid
+  tracking   Tracking? @relation("TrackingToOrderItems", fields: [trackingId], references: [id], onDelete: SetNull)
 
   @@index([orderId])
   @@index([productId])
+}
+
+model Tracking {
+  id             String      @id @default(uuid()) @db.Uuid
+  trackingNumber String      @unique
+  trackingStatus OrderStatus
+  // Timestamps
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  orderId    String      @db.Uuid
+  order      Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[] @relation("TrackingToOrderItems")
 }
 
 enum OrderStatus {
@@ -276,7 +297,7 @@ model Address {
   stationCode       String?
   stationName       String?
   address           String
-  shippingPrice     Int
+  baseShippingPrice Int
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -287,7 +308,10 @@ model Address {
   user   User    @relation(fields: [userId], references: [id])
   Order  Order[]
 
-  @@unique([wilayaValue, commune, address, userId]) // Unique constraint on the combination of wilayaValue, commune, and address
+  // Archived flag for soft deletion
+  archived Boolean @default(false)
+
+  @@unique([wilayaValue, commune, address, userId, fullName, phoneNumber])
   @@index([userId])
 }
 
@@ -308,4 +332,18 @@ model Review {
 
   @@index([userId])
   @@index([productId])
+}
+
+model Feedback {
+  id        String  @id @default(uuid()) @db.Uuid
+  sentiment String // e.g., "Negative", "Neutral", "Positive"
+  message   String? @db.Text // Optional detailed feedback message
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId String? @db.Uuid
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 }

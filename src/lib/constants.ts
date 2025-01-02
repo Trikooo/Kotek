@@ -27,6 +27,6 @@ export const EMPTY_ADDRESS: Address = {
   wilayaLabel: "",
   commune: "",
   address: "",
-  shippingPrice: 0,
+  baseShippingPrice: 0,
   stopDesk: false,
 };

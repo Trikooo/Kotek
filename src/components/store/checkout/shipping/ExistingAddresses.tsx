@@ -16,6 +16,10 @@ import ErrorComponent from "@/components/error/error";
 import { useRouter } from "next/navigation";
 import { EMPTY_ADDRESS } from "@/lib/constants";
 import ExistingAddressesSkeleton from "./ExistingAddressesSkeleton";
+import { useKotekOrder } from "@/context/KotekOrderContext";
+import { useCart } from "@/context/CartContext";
+import { Address } from "@/types/types";
+import { calculateShipping } from "@/utils/generalUtils";
 
 type ExistingAddressesProps = {
   onAddNew: () => void;
@@ -27,14 +31,22 @@ export default function ExistingAddresses({
   const router = useRouter();
   const { addresses, loading, error, selectedAddress, setSelectedAddress } =
     useAddress();
+  const { setKotekOrder } = useKotekOrder();
+  const { subtotal } = useCart();
   const { status } = useSession();
 
   useEffect(() => {
     if (addresses.length > 0 && !selectedAddress) {
-      setSelectedAddress(addresses[0]);
+      handleSelectAddress(addresses[0]);
     }
   }, [addresses, selectedAddress, setSelectedAddress]);
-
+  const handleSelectAddress = (address: Address) => {
+    setSelectedAddress(address);
+    setKotekOrder((prev) => ({
+      ...prev,
+      shippingPrice: calculateShipping(subtotal, address.baseShippingPrice),
+    }));
+  };
   const handleContinue = () => {
     router.push("/checkout/review");
   };
@@ -82,7 +94,7 @@ export default function ExistingAddresses({
                   ? "border-indigo-600 border-2"
                   : ""
               } hover:border-indigo-600/60 cursor-pointer h-full transition-colors`}
-              onClick={() => setSelectedAddress(address)}
+              onClick={() => handleSelectAddress(address)}
             >
               <CardHeader className="p-0 m-0">
                 <CardTitle className="flex items-center gap-2 text-primary ">

@@ -16,7 +16,7 @@ import { useAddress } from "@/context/AddressContext";
 import { OrderSummarySkeleton } from "./CartSkeleton";
 import { useEffect, useState } from "react";
 import { useKotekOrder } from "@/context/KotekOrderContext";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Info } from "lucide-react";
 import { EMPTY_ADDRESS } from "@/lib/constants";
 import { formatCurrency } from "@/utils/generalUtils";
 import { LoginModal } from "./loginModal";
@@ -33,13 +33,12 @@ export default function OrderSummary({
   inCheckout = false,
 }: OrderSummaryProps) {
   const {
-    shippingPrice,
     loading: addressesLoading,
     selectedAddress,
     addresses,
   } = useAddress();
   const { kotekOrder, setKotekOrder } = useKotekOrder();
-  const { cart, loading: cartLoading } = useCart();
+  const { cart, loading: cartLoading, subtotal } = useCart();
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -53,21 +52,11 @@ export default function OrderSummary({
           quantity: item.quantity,
           price: item.price,
           productId: item.productId,
+          noestReady: false,
         })) || []
       );
     };
-
-    const calculateSubtotal = () => {
-      return (
-        cart?.items.reduce(
-          (total, item) => total + item.price * item.quantity,
-          0
-        ) ?? 0
-      );
-    };
-
-    const subtotal = calculateSubtotal();
-    const totalAmount = subtotal + shippingPrice;
+    const totalAmount = subtotal + kotekOrder.shippingPrice;
 
     setKotekOrder((prevOrder) => ({
       ...prevOrder,
@@ -75,10 +64,9 @@ export default function OrderSummary({
       subtotalAmount: subtotal,
       totalAmount,
     }));
-  }, [cart?.items, setKotekOrder, shippingPrice]);
+  }, [cart?.items, kotekOrder.shippingPrice, setKotekOrder]);
 
   useEffect(() => {
-    console.log(addresses);
     if (kotekOrder.userId) {
       setKotekOrder((prev) => ({
         ...prev,
@@ -100,16 +88,6 @@ export default function OrderSummary({
     } else {
       setIsLoginModalOpen(true);
     }
-  };
-
-  const handleLogin = () => {
-    setIsLoginModalOpen(false);
-    signIn();
-  };
-
-  const handleContinueAsGuest = () => {
-    setIsLoginModalOpen(false);
-    router.push("/checkout/shipping");
   };
 
   if (cartLoading || addressesLoading) {
@@ -179,11 +157,11 @@ export default function OrderSummary({
               <span>{formatCurrency(kotekOrder.subtotalAmount)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Shipping</span>
+              <span>Shipping ≈</span>
               {!inCheckout ? (
                 <span className="text-yellow-600">Proceed to calculate</span>
-              ) : shippingPrice !== 0 ? (
-                <span>{formatCurrency(shippingPrice)}</span>
+              ) : kotekOrder.shippingPrice > 0 ? (
+                <span>{formatCurrency(kotekOrder.shippingPrice)}</span>
               ) : (
                 <span className="text-yellow-600">Select a wilaya first</span>
               )}
@@ -191,7 +169,7 @@ export default function OrderSummary({
             <Separator className="my-2" />
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
-              {shippingPrice !== 0 && inCheckout ? (
+              {kotekOrder.shippingPrice > 0 && inCheckout ? (
                 <span>{formatCurrency(kotekOrder.totalAmount)}</span>
               ) : (
                 <span>--</span>
@@ -207,6 +185,12 @@ export default function OrderSummary({
             >
               Proceed to Checkout
             </Button>
+          )}
+          {inCheckout && (
+            <span className="text-sm flex items-center justify-start gap-2 text-muted-foreground">
+              <Info className="w-4 h-4" /> We will contact you if the shipping
+              price changes.{" "}
+            </span>
           )}
         </CardFooter>
       </Card>

@@ -98,6 +98,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 size="icon"
                 className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity rounded-full h-6 w-6 bg-black/50 hover:bg-black/70"
                 onClick={(e) => onRemoveImage(e, index)}
+                onKeyDown={(e) => {
+                  e.preventDefault();
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                  }
+                }}
               >
                 <X className="h-3 w-3 text-white" />
               </Button>

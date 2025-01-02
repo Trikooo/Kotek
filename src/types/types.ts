@@ -54,6 +54,7 @@ export interface ProductValidationT {
   name: string;
   description: string;
   price: number;
+  originalPrice: number;
   imageUrls: string[];
   stock: number;
   barcode: string | null;
@@ -123,24 +124,22 @@ export type Wilaya = {
 export type Wilayas = Record<string, Wilaya>;
 
 export type NoestOrderForm = {
-  api_token: string;
-  user_guid: string;
-  reference: string | null;
+  reference?: string | null;
   client: string;
   phone: string;
-  phone_2?: string;
+  phone_2?: string | null;
   adresse: string;
   wilaya_id: number;
   commune: string;
   montant: number;
-  remarque?: string;
+  remarque?: string | null;
   produit: string; // Assuming it's a list of product references
   type_id: 1 | 2 | 3; // 1: Livraison, 2: Echange, 3: Pick up
   poids: number;
   stop_desk: 0 | 1; // 0: à domicile, 1: stop desk
-  station_code?: string; // Required if stop_desk = 1
+  station_code?: string | null; // Required if stop_desk = 1
   stock: 0 | 1; // 0: Non, 1: Oui
-  quantite?: string; // Required if stock = 1
+  quantite?: string | null; // Required if stock = 1
   can_open: 0 | 1; // 0: Non, 1: Oui
 };
 
@@ -154,9 +153,16 @@ export type KotekOrder = {
   addressId?: string; // Optional addressId field (can be null or undefined if no address id is provided (user logged out))
   guestAddress?: Address; // Optional address object, reflects the Address model (should only be present if the user places an order as guest)
   items: {
+    id?: string;
     quantity: number;
     price: number;
+    noestReady: boolean;
     productId: string;
+    trackingId?: string | null;
+    tracking?: {
+      trackingNumber: string;
+      trackingStatus: OrderStatus;
+    } | null;
     product?: {
       name: string;
       imageUrls: string[];
@@ -165,7 +171,7 @@ export type KotekOrder = {
   }[];
   user?: User;
   address?: Address;
-  tracking?: string;
+  shippingPrice: number;
 };
 export interface Address {
   id?: string;
@@ -176,10 +182,10 @@ export interface Address {
   wilayaLabel: string;
   commune: string;
   address: string;
-  shippingPrice: number;
   stopDesk: boolean;
-  stationCode?: string;
-  stationName?: string;
+  stationCode?: string | null;
+  stationName?: string | null;
+  baseShippingPrice: number;
 }
 
 export interface PaginationMetadata {
@@ -228,6 +234,7 @@ export interface ProductSearchParams {
   currentPage: number;
   pageSize: number;
   statuses?: ProductStatus[];
+  sort?: string;
 }
 
 export interface BrandResponse {
@@ -236,4 +243,22 @@ export interface BrandResponse {
 export interface CategoryName {
   id: string;
   name: string;
+}
+
+export interface NoestCreateResponse {
+  success: boolean;
+  tracking: string;
+}
+export interface ExtendedNoestCreateResponse {
+  noest: {
+    response?: NoestCreateResponse;
+    error?: any;
+    items?: NoestOrderForm["produit"];
+  }[];
+  kotek: KotekOrder;
+}
+
+export interface OrderData {
+  kotek: Partial<KotekOrder>;
+  noest: NoestOrderForm[];
 }

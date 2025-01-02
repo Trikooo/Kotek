@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       }
 
       if (kotekOrder) {
-        return NextResponse.json({ kotekOrder }, { status: 200 });
+        return NextResponse.json(kotekOrder, { status: 200 });
       } else {
         return NextResponse.json(
           { message: "Kotek Order not found" },
@@ -148,11 +148,9 @@ export async function PUT(request: NextRequest) {
 
     // Extract user role from the token
     const userRole = token.role as string;
-
-    const userId = request.nextUrl.searchParams.get("userId");
     const kotekOrderId = request.nextUrl.searchParams.get("kotekOrderId");
 
-    if (!userId || !kotekOrderId) {
+    if (!kotekOrderId) {
       return NextResponse.json(
         { message: "User ID and Kotek Order ID are required" },
         { status: 400 }
@@ -179,10 +177,7 @@ export async function PUT(request: NextRequest) {
       kotekOrderData
     );
 
-    return NextResponse.json(
-      { kotekOrder: updatedKotekOrder },
-      { status: 200 }
-    );
+    return NextResponse.json(updatedKotekOrder, { status: 200 });
   } catch (error) {
     console.error("PUT Kotek Order Error:", error);
 

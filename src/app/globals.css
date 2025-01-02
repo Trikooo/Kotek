@@ -119,3 +119,11 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
 }
+
+background: rgb(245, 245, 245);
+background: linear-gradient(
+  0deg,
+  rgba(245, 245, 245, 1) 0%,
+  rgba(224, 179, 255, 1) 50%,
+  rgba(242, 217, 255, 1) 100%
+);

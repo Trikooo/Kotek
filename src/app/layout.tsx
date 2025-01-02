@@ -12,6 +12,10 @@ import { CartProvider } from "@/context/CartContext";
 import { KotekOrderProvider } from "@/context/KotekOrderContext";
 import { AddressProvider } from "@/context/AddressContext";
 import { ProductsProvider } from "@/context/ProductsContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import QueryProvider from "@/context/QueryProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +24,6 @@ export const metadata: Metadata = {
   description:
     "kotek informatique, vente de materiel informatique, draria alger, ouedkniss, facebook instagram tiktok, informatics, geekzone, el assli, chiinformatique, lahlou",
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,21 +31,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn("min-h-screen bg-background font-sans antialiased")}>
-        <SessionProviderWrapper>
-          <ProductsProvider>
-            <CategoryProvider>
-              <CartProvider>
-                <AddressProvider>
-                  <KotekOrderProvider>{children}</KotekOrderProvider>
-                </AddressProvider>
-              </CartProvider>
-              <SpeedInsights />
-              <SonnerToaster />
-              <RadixToaster />
-            </CategoryProvider>
-          </ProductsProvider>
-        </SessionProviderWrapper>
+      <body
+        className={cn("min-h-screen bg-custom-gradient font-sans antialiased")}
+      >
+
+          <SessionProviderWrapper>
+            <QueryProvider>
+              <ProductsProvider>
+                <CategoryProvider>
+                  <CartProvider>
+                    <KotekOrderProvider>
+                      <AddressProvider>{children}</AddressProvider>
+                    </KotekOrderProvider>
+                  </CartProvider>
+                  <SpeedInsights />
+                  <SonnerToaster />
+                  <RadixToaster />
+                  <ReactQueryDevtools />
+                </CategoryProvider>
+              </ProductsProvider>
+            </QueryProvider>
+          </SessionProviderWrapper>
+
       </body>
     </html>
   );

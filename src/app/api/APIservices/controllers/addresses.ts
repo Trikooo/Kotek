@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { AddressSchema } from "../lib/validation";
 import { Address } from "@/types/types";
 
@@ -6,14 +6,9 @@ const prisma = new PrismaClient();
 
 export async function getAllAddresses(userId: string) {
   try {
-    // Validate userId
-    if (!userId) {
-      throw new Error("User ID is required");
-    }
-
     // Fetch all addresses for the user
     const addresses = await prisma.address.findMany({
-      where: { userId },
+      where: { userId, archived: false },
     });
 
     return addresses;
@@ -24,17 +19,42 @@ export async function getAllAddresses(userId: string) {
 }
 
 export async function createAddress(userId: string, addressData: Address) {
-  console.log(addressData);
   try {
-    // Validate userId
-    if (!userId) {
-      throw new Error("User ID is required");
-    }
-
     // Validate address data
     const validatedAddress = AddressSchema.parse(addressData);
 
-    // Create new address
+    // Check if the address already exists and is archived
+    const existingAddress = await prisma.address.findUnique({
+      where: {
+        wilayaValue_commune_address_userId_fullName_phoneNumber: {
+          wilayaValue: validatedAddress.wilayaValue,
+          commune: validatedAddress.commune,
+          address: validatedAddress.address,
+          userId: userId,
+          fullName: validatedAddress.fullName,
+          phoneNumber: validatedAddress.phoneNumber,
+        },
+      },
+    });
+
+    if (existingAddress) {
+      // If the address exists and is archived, unarchive it
+      if (existingAddress.archived) {
+        const unArchivedAddress = await prisma.address.update({
+          where: { id: existingAddress.id },
+          data: { archived: false },
+        });
+        return unArchivedAddress;
+      }
+
+      // If the address is already active, throw an error with a custom message
+      throw new Prisma.PrismaClientKnownRequestError(
+        `Unique constraint failed on wilayaValue_commune_address_userId`,
+        { code: "P2002", clientVersion: Prisma.prismaVersion.client }
+      );
+    }
+
+    // If the address doesn't exist, create a new one
     const newAddress = await prisma.address.create({
       data: {
         ...validatedAddress,
@@ -71,12 +91,28 @@ export async function updateAddress(
 
 export async function deleteAddress(addressId: string) {
   try {
-    // Delete the address
-    const deletedAddress = await prisma.address.delete({
+    // Check if the address has related orders
+    const address = await prisma.address.findUnique({
       where: { id: addressId },
+      include: { Order: true },
     });
 
-    return deletedAddress;
+    if (address && address.Order.length > 0) {
+      // If related orders exist, archive the address
+      const archivedAddress = await prisma.address.update({
+        where: { id: addressId },
+        data: { archived: true },
+      });
+
+      return archivedAddress;
+    } else {
+      // If no related orders, delete the address
+      const deletedAddress = await prisma.address.delete({
+        where: { id: addressId },
+      });
+
+      return deletedAddress;
+    }
   } catch (error) {
     console.error("Error deleting address:", error);
     throw error;

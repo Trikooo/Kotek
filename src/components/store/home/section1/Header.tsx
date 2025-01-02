@@ -12,6 +12,7 @@ import {
   LogIn,
   UserPlus,
   LayoutDashboard,
+  Box,
 } from "lucide-react";
 import AnnouncementBanner from "@/components/dynamic-ui/AnnouncementBanner";
 import SearchPopup from "./SearchPopup";
@@ -65,18 +66,24 @@ const SearchField = ({ onClick }: { onClick: () => void }) => {
 
 const navigation = [
   { name: "Store", href: "/store" },
-  { name: "Categories", href: "#" },
-  { name: "Company", href: "#" },
+  { name: "Categories", href: "/categories" },
+  { name: "Contact", href: "/contact" },
 ];
 
-const Header = ({ setMobileMenuOpen }: any) => {
+interface HeaderProps {
+  setMobileMenuOpen: any;
+  hide?: boolean;
+}
+
+const Header = ({ setMobileMenuOpen, hide = true }: HeaderProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isAtTop, setIsAtTop] = useState(true); // New state for checking top position
+  const [isAtTop, setIsAtTop] = useState(true);
   const { searchFieldVisible, setSearchFieldVisible, storeInputRef } =
     useHeaderContext();
   const { cart } = useCart();
   const pathname = usePathname();
+
   const handleSearchFieldClick = () => {
     if (storeInputRef.current && pathname === "/store") {
       storeInputRef.current.focus();
@@ -84,9 +91,14 @@ const Header = ({ setMobileMenuOpen }: any) => {
       setSearchFieldVisible(!searchFieldVisible);
     }
   };
+
   useEffect(() => {
     const controlHeader = () => {
-      setIsAtTop(window.scrollY === 0); // Check if at the top
+      setIsAtTop(window.scrollY === 0);
+      if (!hide) {
+        setIsVisible(true);
+        return;
+      }
       if (window.scrollY < lastScrollY || window.scrollY < 100) {
         setIsVisible(true);
       } else {
@@ -97,7 +109,7 @@ const Header = ({ setMobileMenuOpen }: any) => {
 
     window.addEventListener("scroll", controlHeader);
     return () => window.removeEventListener("scroll", controlHeader);
-  }, [lastScrollY]);
+  }, [lastScrollY, hide]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -123,11 +135,11 @@ const Header = ({ setMobileMenuOpen }: any) => {
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           isVisible
-            ? isAtTop
+            ? isAtTop || !hide
               ? "bg-transparent backdrop-blur-none"
               : "bg-white/50 backdrop-blur-lg"
             : "-translate-y-full bg-transparent"
-        }`}
+        } ${!hide ? "border-b bg-custom-gradient" : ""}`}
       >
         <nav
           aria-label="Global"
@@ -154,12 +166,12 @@ const Header = ({ setMobileMenuOpen }: any) => {
             >
               <span className="sr-only">Open main menu</span>
               <div className="w-min">
-              <Menu aria-hidden="true" className="h-5 w-5" />
-              {cart && cart.items.length > 0 && (
-                <span className="absolute top-3 right-3  flex items-center justify-center w-4 h-4 text-xs text-white bg-red-500 rounded-full  shadow-md">
-                  {cart.items.length}
-                </span>
-              )}
+                <Menu aria-hidden="true" className="h-5 w-5" />
+                {cart && cart.items.length > 0 && (
+                  <span className="absolute top-3 right-3  flex items-center justify-center w-4 h-4 text-xs text-white bg-red-500 rounded-full  shadow-md">
+                    {cart.items.length}
+                  </span>
+                )}
               </div>
             </button>
           </div>
@@ -206,7 +218,6 @@ const Header = ({ setMobileMenuOpen }: any) => {
   );
 };
 
-export default Header;
 function AccountDropDown() {
   const router = useRouter();
   const { data: session, status } = useSession({
@@ -235,17 +246,17 @@ function AccountDropDown() {
   const authItems = [
     {
       label: "Profile",
-      onClick: () => router.push("/profile"),
+      onClick: () => router.push("/settings"),
       icon: <User />,
     },
     {
       label: "My Orders",
-      onClick: () => router.push("/orders"),
-      icon: <ShoppingCart />,
+      onClick: () => router.push("/settings/orders"),
+      icon: <Box />,
     },
     {
       label: "Settings",
-      onClick: () => router.push("/settings"),
+      onClick: () => router.push("/settings/orders"),
       icon: <Settings />,
     },
     { label: "Log Out", onClick: () => signOut(), icon: <LogOut /> },
@@ -290,3 +301,5 @@ function AccountDropDown() {
     />
   );
 }
+
+export default Header;

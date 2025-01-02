@@ -13,11 +13,12 @@ import { useKotekOrder } from "@/context/KotekOrderContext";
 import { KotekOrder } from "@/types/types";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import { formatCurrency } from "@/utils/generalUtils";
+import { formatCurrency, humanReadableDate } from "@/utils/generalUtils";
 import {
   getStatusColor,
   getStatusVariant,
-} from "@/app/admin/orders/[orderId]/AdminOrderUtils";
+} from "@/app/admin/orders/[orderId]/utils/AdminOrderUtils";
+import { useRouter } from "next/navigation";
 
 interface OrderListProps {
   className?: string;
@@ -25,12 +26,12 @@ interface OrderListProps {
 
 const columns: Column[] = [
   { header: "Customer", important: true },
-  { header: "wilaya", important: true },
+  { header: "Wilaya", important: true },
   { header: "Status", important: true },
   { header: "Date", important: true },
   { header: "Subtotal", important: true },
   { header: "Shipping price" },
-  { header: "Approval" },
+  { header: "Phone number" },
 ];
 
 export default function OrderList({ className = "" }: OrderListProps) {
@@ -98,16 +99,9 @@ export default function OrderList({ className = "" }: OrderListProps) {
       </Badge>
     ),
     subtotal: formatCurrency(order.subtotalAmount),
-    shipping_price: formatCurrency(order.totalAmount - order.subtotalAmount),
+    shipping_price: formatCurrency(order.shippingPrice),
     date: order.createdAt ? humanReadableDate(order.createdAt) : "N/A",
-    approval:
-      order.status === "PROCESSING" ? (
-        <Badge className="bg-green-50 text-green-600" variant="outline">
-          APPROVED
-        </Badge>
-      ) : (
-        <Button variant="outline">Approve</Button>
-      ),
+    phone_number: order.address?.phoneNumber || order.guestAddress?.phoneNumber,
   }));
 
   return (
@@ -126,22 +120,9 @@ export default function OrderList({ className = "" }: OrderListProps) {
   );
 }
 
-// Existing helper functions remain the same
-const humanReadableDate = (isoString: string): string => {
-  const date = new Date(isoString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-};
-
 export function OrderUserInfo({ order }: { order: KotekOrder }) {
-  const name = order.user?.name || order.guestAddress?.fullName || "Nameless";
+  const name =
+    order.address?.fullName || order.guestAddress?.fullName || "Nameless";
   const email = order.user?.email || "Non registered.";
 
   return (

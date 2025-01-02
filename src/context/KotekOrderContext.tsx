@@ -64,6 +64,7 @@ export const KotekOrderProvider: React.FC<{ children: React.ReactNode }> = ({
     subtotalAmount: 0,
     userId: "",
     items: [],
+    shippingPrice: 0,
   });
 
   useEffect(() => {

@@ -1,23 +1,40 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { FaXTwitter } from "react-icons/fa6";
 import Link from "next/link";
 import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { FaDiscord, FaFacebook } from "react-icons/fa";
+import { FaApple, FaDiscord, FaFacebook, FaTwitter } from "react-icons/fa";
 import Background from "@/components/store/home/section1/Background";
 import Footer from "@/components/store/home/footer/Footer";
 import GoogleIcon from "@/components/icons/Google";
 import { AlertCircle, Loader2, LoaderCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import EmailLoginForm from "./EmailLoginForm";
 
 export default function LoginPage() {
   const [isCreatingAccount, setIsCreatingAccount] = useState<boolean>(false);
   const router = useRouter();
   const { data: session, status } = useSession();
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/"); // Redirect to home or dashboard
+      router.refresh(); // Refresh the page to ensure new session state is reflected
+    }
+  }, [status, router]);
 
+  // Show loading state while checking authentication
+  if (status === "loading" || status === "authenticated") {
+    return (
+      <div className="w-full h-[100vh] flex justify-center items-center">
+        <Loader2 className="w-8 h-8 animate-spin" strokeWidth={1.5} />
+      </div>
+    );
+  }
   // Wrap the search params usage in a Suspense boundary
   return (
     <Suspense
@@ -49,7 +66,7 @@ export default function LoginPage() {
           </Button>
         </div>
 
-        <main className="w-full h-full flex flex-col justify-center items-center gap-8">
+        <main className="w-full h-full flex flex-col justify-center items-center">
           <h3 className="text-3xl font-bold">
             {isCreatingAccount
               ? "Create your account"
@@ -86,6 +103,7 @@ type LoginComponentProps = {
 function LoginComponent({ status }: LoginComponentProps) {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [error, setError] = useState(false);
+  const [showEmailInput, setShowEmailInput] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -118,8 +136,13 @@ function LoginComponent({ status }: LoginComponentProps) {
   };
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-center gap-3 w-80">
+    <div className="relative w-96 h-72 overflow-hidden">
+      {/* Providers */}
+      <div
+        className={`absolute w-full h-full flex flex-col items-center justify-center transition-transform transform duration-500 ease-in-out gap-3 ${
+          showEmailInput ? "-translate-x-[calc(100%+1.5rem)]" : "translate-x-0"
+        }`}
+      >
         <Button
           variant="outline"
           className="flex items-center justify-center gap-2 text-lg p-7 w-full"
@@ -137,20 +160,6 @@ function LoginComponent({ status }: LoginComponentProps) {
         <Button
           variant="outline"
           className="flex items-center justify-center gap-2 text-lg p-7 w-full"
-          onClick={() => handleSignIn("facebook")}
-          disabled={loadingProvider === "facebook" || status === "loading"}
-        >
-          {loadingProvider === "facebook" || status === "loading" ? (
-            <LoaderCircle className="w-5 h-5 animate-spin" />
-          ) : (
-            <FaFacebook className="w-5 h-5 text-facebookBlue" />
-          )}
-          Continue with Facebook
-        </Button>
-
-        <Button
-          variant="outline"
-          className="flex items-center justify-center gap-2 text-lg p-7 w-full"
           onClick={() => handleSignIn("discord")}
           disabled={loadingProvider === "discord" || status === "loading"}
         >
@@ -161,10 +170,24 @@ function LoginComponent({ status }: LoginComponentProps) {
           )}
           Continue with Discord
         </Button>
+
+        <Button
+          onClick={() => setShowEmailInput(true)}
+          className=" hover:text-indigo-600"
+          variant="link"
+        >
+          Or continue with email →
+        </Button>
       </div>
-      <Link href={"#"} className="underline hover:text-indigo-600">
-        Or continue with email -&gt;
-      </Link>
-    </>
+
+      {/* Email Input */}
+      <div
+        className={`absolute w-full h-full flex flex-col items-center justify-center transition-transform transform duration-500 ease-in-out gap-3 p-5 ${
+          showEmailInput ? "translate-x-0" : "translate-x-[calc(100%+1.5rem)]"
+        }`}
+      >
+        <EmailLoginForm onBack={() => setShowEmailInput(false)} />
+      </div>
+    </div>
   );
 }

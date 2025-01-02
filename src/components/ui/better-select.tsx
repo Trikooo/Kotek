@@ -12,7 +12,6 @@ import {
   Search,
   Loader2,
   AlertCircle,
-  MinusCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +45,8 @@ interface SelectProps {
   emptyMessage?: string;
   noResultsMessage?: string;
   disabledMessage?: string;
+  dbSearch?: (search: string) => void;
+  position?: "top" | "bottom"; // New position prop
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -62,13 +63,15 @@ const Select: React.FC<SelectProps> = ({
   emptyMessage = "No options available",
   noResultsMessage = "No results found",
   disabledMessage = "Unavailable",
+  dbSearch,
+  position, // Add position to destructuring
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [isKeyboardNav, setIsKeyboardNav] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
-    "bottom"
+    position || "bottom" // Initialize with prop value if provided
   );
   const [initialScrollDone, setInitialScrollDone] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -120,8 +123,6 @@ const Select: React.FC<SelectProps> = ({
     if (!multiple) {
       closeDropdown();
     }
-
-    console.log(`${option.label} clicked`);
   };
 
   const handleRemoveSelectedOption = (
@@ -133,7 +134,6 @@ const Select: React.FC<SelectProps> = ({
       (o) => o.value !== option.value
     );
     setSelectedOptions(newSelectedOptions);
-    console.log(`${option.label} remove button clicked`);
   };
 
   const filteredOptions = search.trim()
@@ -146,6 +146,13 @@ const Select: React.FC<SelectProps> = ({
         })
         .filter((option): option is Option => option !== undefined)
     : options;
+
+  useEffect(() => {
+    if (filteredOptions.length === 0 && dbSearch && !loading) {
+      dbSearch(search);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredOptions.length, search, options.length]);
 
   // Scroll to first selected option when dropdown opens
   useEffect(() => {
@@ -178,9 +185,9 @@ const Select: React.FC<SelectProps> = ({
     }
   }, [open]);
 
-  // Determine dropdown positioning
+  // Determine dropdown positioning if position prop is not provided
   useEffect(() => {
-    if (open && containerRef.current) {
+    if (open && containerRef.current && !position) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - containerRect.bottom;
       const spaceAbove = containerRect.top;
@@ -195,7 +202,7 @@ const Select: React.FC<SelectProps> = ({
         setDropdownPosition("bottom");
       }
     }
-  }, [open]);
+  }, [open, position]);
 
   useEffect(() => {
     if (open && inputRef.current) {
@@ -228,7 +235,6 @@ const Select: React.FC<SelectProps> = ({
         open
       ) {
         closeDropdown();
-        console.log("Clicked outside the select");
       }
     };
 
@@ -272,6 +278,7 @@ const Select: React.FC<SelectProps> = ({
     setOpen(false);
     setFocusedIndex(-1);
     setSearch("");
+    if (dbSearch) dbSearch("");
     if (buttonRef.current) {
       buttonRef.current.focus();
     }
@@ -288,7 +295,6 @@ const Select: React.FC<SelectProps> = ({
         type="button"
         onClick={() => {
           setOpen(!open);
-          console.log("Select button clicked");
         }}
         className={cn(
           "flex items-start w-full justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
@@ -327,13 +333,13 @@ const Select: React.FC<SelectProps> = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        ) : loading ? (
+        ) : loading && !open ? (
           <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
         ) : (
           <ChevronDown className="h-4 w-4 opacity-50" />
         )}
       </button>
-      {open && !loading && !error && (
+      {open && !error && (
         <DismissableLayer>
           <div
             className={cn(
@@ -354,7 +360,6 @@ const Select: React.FC<SelectProps> = ({
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
-                    console.log("Search input changed");
                   }}
                   className="flex h-11 w-full rounded-md bg-transparent py-3 pl-10 text-sm outline-none placeholder:text-muted-foreground"
                   ref={inputRef}
@@ -363,13 +368,17 @@ const Select: React.FC<SelectProps> = ({
             )}
             <div className="border-t"></div>
             <div className="p-1 max-h-60 overflow-y-auto" ref={optionsRef}>
-              {options.length === 0 ? (
+              {options.length === 0 && !search && !loading ? (
                 <div className="p-2 text-center text-muted-foreground">
                   {emptyMessage}
                 </div>
-              ) : filteredOptions.length === 0 ? (
+              ) : filteredOptions.length === 0 && !loading && search ? (
                 <div className="p-2 text-center text-muted-foreground">
                   {noResultsMessage}
+                </div>
+              ) : loading ? (
+                <div className="p-2 flex items-center justify-center">
+                  <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
                 </div>
               ) : (
                 filteredOptions.map((option, index) => (

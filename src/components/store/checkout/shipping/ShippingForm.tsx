@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CircleHelp, Loader2 } from "lucide-react";
+import { calculateShipping } from "@/utils/generalUtils";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,9 @@ import {
 import useShippingForm from "./useShippingForm";
 import { useAddress } from "@/context/AddressContext";
 import { shippingFormSchema, ShippingFormValues } from "./FormSchema";
+import { useCart } from "@/context/CartContext";
+import { useKotekOrder } from "@/context/KotekOrderContext";
+import { useState } from "react";
 
 export default function ShippingForm() {
   const {
@@ -48,12 +52,9 @@ export default function ShippingForm() {
     addressLoading,
     wilayaData,
   } = useShippingForm();
-  const {
-    selectedAddress,
-    setSelectedAddress,
-    shippingPrice,
-    setShippingPrice,
-  } = useAddress();
+  const { selectedAddress, setSelectedAddress } = useAddress();
+  const { kotekOrder, setKotekOrder } = useKotekOrder();
+  const { subtotal } = useCart();
 
   const form = useForm<ShippingFormValues>({
     resolver: zodResolver(shippingFormSchema),
@@ -71,6 +72,9 @@ export default function ShippingForm() {
   const stopDesk = form.watch("stopDesk");
 
   function onSubmit(data: ShippingFormValues) {
+    const baseShippingPrice = stopDesk
+      ? wilayaData?.[selectedWilaya[0].label].noest.prices.stopDesk || 0
+      : wilayaData?.[selectedWilaya[0].label].noest.prices.home || 0;
     setSelectedAddress({
       ...selectedAddress,
       fullName: data.fullName,
@@ -83,10 +87,12 @@ export default function ShippingForm() {
       stopDesk: data.stopDesk,
       stationCode: data.station?.value,
       stationName: data.station?.label,
-      shippingPrice: shippingPrice,
+      baseShippingPrice: stopDesk
+        ? wilayaData?.[selectedWilaya[0].label].noest.prices.stopDesk || 0
+        : wilayaData?.[selectedWilaya[0].label].noest.prices.home || 0,
     });
 
-    handleContinue(data);
+    handleContinue(data, baseShippingPrice);
   }
 
   return (
@@ -196,15 +202,28 @@ export default function ShippingForm() {
                       setSelectedStopDesk([]);
                     }
                     if (currentWilaya[0]?.label) {
-                      setShippingPrice(
-                        stopDesk
-                          ? wilayaData?.[currentWilaya[0].label].noest.prices
-                              .stopDesk || 0
-                          : wilayaData?.[currentWilaya[0].label].noest.prices
-                              .home || 0
+                      const baseShippingPrice = stopDesk
+                        ? wilayaData?.[currentWilaya[0].label].noest.prices
+                            .stopDesk || 0
+                        : wilayaData?.[currentWilaya[0].label].noest.prices
+                            .home || 0;
+                      console.log(
+                        "baseShippingPrice in wilaya: ",
+                        baseShippingPrice
                       );
+
+                      setKotekOrder((prev) => ({
+                        ...prev,
+                        shippingPrice: calculateShipping(
+                          subtotal,
+                          baseShippingPrice
+                        ),
+                      }));
                     } else {
-                      setShippingPrice(0);
+                      setKotekOrder((prev) => ({
+                        ...prev,
+                        shippingPrice: 0,
+                      }));
                     }
                   }}
                 />
@@ -250,15 +269,27 @@ export default function ShippingForm() {
 
                         // Update the shipping price based on the new value
                         if (selectedWilaya[0].label) {
-                          setShippingPrice(
-                            checked
-                              ? wilayaData?.[selectedWilaya[0].label]?.noest
-                                  ?.prices?.stopDesk || 0
-                              : wilayaData?.[selectedWilaya[0].label]?.noest
-                                  ?.prices?.home || 0
+                          const baseShippingPrice = checked
+                            ? wilayaData?.[selectedWilaya[0].label].noest.prices
+                                .stopDesk || 0
+                            : wilayaData?.[selectedWilaya[0].label].noest.prices
+                                .home || 0;
+                          console.log(
+                            "baseShippingPrice in stopDesk: ",
+                            baseShippingPrice
                           );
+                          setKotekOrder((prev) => ({
+                            ...prev,
+                            shippingPrice: calculateShipping(
+                              subtotal,
+                              baseShippingPrice
+                            ),
+                          }));
                         } else {
-                          setShippingPrice(0);
+                          setKotekOrder((prev) => ({
+                            ...prev,
+                            shippingPrice: 0,
+                          }));
                         }
                       }}
                     />

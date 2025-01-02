@@ -60,7 +60,6 @@ export class R2Client {
           Key: url.split(`${process.env.R2_PUBLIC_ENDPOINT}/`)[1],
         };
         if (params.Key) {
-          console.log("params: ", params);
           await this.client.send(new HeadObjectCommand(params));
           await this.client.send(new DeleteObjectCommand(params));
           deletedCount++;

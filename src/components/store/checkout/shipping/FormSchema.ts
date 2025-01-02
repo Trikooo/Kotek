@@ -10,8 +10,9 @@ export const shippingFormSchema = z
     phoneNumber: z
       .string()
       .min(10, {
-        message: "Phone number must be at least 10 digits.",
+        message: "Phone number must be at exactly 10 digits.",
       })
+      .max(10, { message: "Phone number must be exactly 10 digits" })
       .refine((value) => phoneRegex.test(value), {
         message: "Please enter a valid phone number.",
       }),

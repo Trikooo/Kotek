@@ -3,7 +3,6 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { fetchUserAddresses } from "./getAddressUtils";
 import axios, { AxiosError } from "axios";
-import { handleAxiosError } from "@/utils/handleAxiosError";
 
 export function useGetAddresses() {
   const { data: session, status } = useSession();
@@ -42,17 +41,19 @@ export function useAddressRequest() {
     return handleAddressRequest(
       "post",
       `/api/addresses/?userId=${userId}`,
-      address,
-      userId
+      address
     );
   };
 
-  const handleUpdateAddress = (address: Address, userId: string) => {
+  const handleUpdateAddress = (
+    address: Address,
+    userId: string,
+    addressId: string
+  ) => {
     return handleAddressRequest(
       "put",
-      `/api/addresses?userId=${userId}`,
-      address,
-      userId
+      `/api/addresses?userId=${userId}&addressId=${addressId}`,
+      address
     );
   };
 
@@ -60,9 +61,8 @@ export function useAddressRequest() {
     try {
       const response = await handleAddressRequest(
         "delete",
-        `/api/addresses/${addressId}?userId=${userId}`,
-        {},
-        userId
+        `/api/addresses/?addressId=${addressId}&userId=${userId}`,
+        {}
       );
       return response;
     } catch (error) {
@@ -77,8 +77,7 @@ export function useAddressRequest() {
 const handleAddressRequest = async (
   method: "post" | "put" | "delete",
   url: string,
-  address: Address | {},
-  userId: string
+  address: Address | {}
 ): Promise<any> => {
   try {
     const config = {
@@ -89,6 +88,7 @@ const handleAddressRequest = async (
     const response = await axios(config);
     return response.data;
   } catch (error) {
+    console.error(error);
     throw error;
   }
 };

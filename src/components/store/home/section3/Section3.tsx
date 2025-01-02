@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import DevelopmentBadge from "@/components/ui/development-badge";
 
 export default function Section3() {
   const components: {
@@ -97,21 +98,30 @@ export default function Section3() {
     <div className="flex flex-col items-center">
       <div className="flex flex-col items-center mb-6 text-center">
         <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
-          Try Out PC Builder!
+          Build Your PC!
         </h1>
         <p className="my-4 text-muted-foreground text-center">
           Configure your dream PC and see it come to life in real-time.
         </p>
       </div>
-      <Card className="flex flex-col items-center w-full md:max-w-4xl gap-y-6 p-6">
-        <CardTitle className="">PC Configuration</CardTitle>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 w-full">
-          {Object.keys(components).map((key) => (
-            <ComboboxDemo key={key} label={key} components={components[key]} />
-          ))}
-          <Button className="w-auto md:col-span-2">Configure</Button>
+      <div className="w-full flex items-center justify-center">
+        <div className="w-max absolute left-50 top-50 z-50 ">
+          <DevelopmentBadge />
         </div>
-      </Card>
+        <Card className="flex flex-col items-center w-full md:max-w-4xl gap-y-6 p-6 blur-md">
+          <CardTitle className="">PC Configuration</CardTitle>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 w-full">
+            {Object.keys(components).map((key) => (
+              <ComboboxDemo
+                key={key}
+                label={key}
+                components={components[key]}
+              />
+            ))}
+            <Button className="w-auto md:col-span-2">Configure</Button>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }
@@ -131,20 +141,18 @@ export function ComboboxDemo({ label, components }: ComboboxDemoProps) {
   const [value, setValue] = useState<string>("");
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-        >
-          {value
-            ? components.find((item) => item.value === value)?.label
-            : `Select ${label}...`}
-          <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+    <Popover>
+      <Button
+        variant="outline"
+        aria-expanded={open}
+        className="w-full justify-between hover:bg-indigo-200"
+      >
+        {value
+          ? components.find((item) => item.value === value)?.label
+          : `Select ${label}...`}
+        <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+      </Button>
+
       <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput placeholder={`Search ${label}...`} className="p-2" />
