@@ -8,7 +8,8 @@ import { r2Client } from "./r2";
 
 export async function getAllProducts(
   currentPage: number,
-  pageSize: number
+  pageSize: number,
+  store: boolean | undefined
 ): Promise<GetAllProductsResponse> {
   // Ensure page and pageSize are valid numbers
   currentPage = Math.max(1, currentPage);
@@ -16,7 +17,13 @@ export async function getAllProducts(
 
   // Calculate the offset
   const skip = (currentPage - 1) * pageSize;
-
+  const where = store
+    ? {
+        status: {
+          not: "DRAFT" as ProductStatus, // Exclude products with status "DRAFT"
+        },
+      }
+    : undefined;
   // Fetch products with pagination
   const products = await prisma.product.findMany({
     skip,
@@ -24,6 +31,8 @@ export async function getAllProducts(
     include: {
       category: true,
     },
+    where,
+    orderBy: [{ featured: "desc" }, { price: "asc" }], //order by takes an array for sorting by many criteria.
   });
 
   // Get total count of products for pagination calculations

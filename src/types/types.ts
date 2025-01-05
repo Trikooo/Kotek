@@ -235,6 +235,7 @@ export interface ProductSearchParams {
   pageSize: number;
   statuses?: ProductStatus[];
   sort?: string;
+  store?: boolean;
 }
 
 export interface BrandResponse {

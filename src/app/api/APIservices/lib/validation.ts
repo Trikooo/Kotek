@@ -216,6 +216,7 @@ export const ProductSearchParamsSchema = z
       .min(1, "Page should be greater than 1")
       .default(1),
     sort: z.enum(["featured", "price-asc", "price-desc", "newest"]).optional(),
+    store: z.boolean(),
   })
   .refine(
     (data) => {

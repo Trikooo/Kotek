@@ -25,70 +25,37 @@ export class ProductSearchService {
   }
 
   static parseSearchParams(request: NextRequest): ProductSearchParams {
-    const searchParams: ProductSearchParams = {
+    const params: Record<string, any> = {
       currentPage: 1,
       pageSize: 10,
     };
 
-    const processMultiValueParam = (key: string): string[] | undefined => {
-      const values = request.nextUrl.searchParams.getAll(key);
-      return values.length > 0 ? values : undefined;
-    };
+    const searchParams = request.nextUrl.searchParams;
 
-    const categoryIds = processMultiValueParam("categoryIds[]");
-    if (categoryIds) {
-      searchParams.categoryIds = categoryIds;
+    for (const [key, value] of searchParams.entries()) {
+      const baseKey = key.endsWith("[]") ? key.slice(0, -2) : key;
+
+      if (key.endsWith("[]")) {
+        params[baseKey] = searchParams.getAll(key);
+      } else if (
+        ["minPrice", "maxPrice", "currentPage", "pageSize"].includes(key)
+      ) {
+        params[key] = Number(value);
+      } else if (key === "store") {
+        params[key] = value === "true";
+      } else {
+        params[key] = value;
+      }
     }
 
-    const brands = processMultiValueParam("brands[]");
-    if (brands) {
-      searchParams.brands = brands;
-    }
-
-    const statuses = processMultiValueParam("statuses[]");
-    if (statuses) {
-      searchParams.statuses = statuses as ProductStatus[];
-    }
-
-    const tags = processMultiValueParam("tags[]");
-    if (tags) {
-      searchParams.tags = tags;
-    }
-
-    const minPrice = request.nextUrl.searchParams.get("minPrice");
-    if (minPrice) searchParams.minPrice = Number(minPrice);
-
-    const maxPrice = request.nextUrl.searchParams.get("maxPrice");
-    if (maxPrice) searchParams.maxPrice = Number(maxPrice);
-
-    const currentPage = request.nextUrl.searchParams.get("currentPage");
-    if (currentPage && !isNaN(Number(currentPage)) && Number(currentPage) > 0) {
-      searchParams.currentPage = Number(currentPage);
-    }
-
-    const pageSize = request.nextUrl.searchParams.get("pageSize");
-    if (pageSize) searchParams.pageSize = Number(pageSize);
-
-    const query = request.nextUrl.searchParams.get("query");
-    if (query) searchParams.query = query;
-
-    const sort = request.nextUrl.searchParams.get("sort");
-    if (sort)
-      searchParams.sort = sort as
-        | "featured"
-        | "price-asc"
-        | "price-desc"
-        | "newest";
-
-    return searchParams;
+    return params as ProductSearchParams;
   }
-
-  static hasFilters(request: NextRequest): boolean {
-    const searchParams = this.parseSearchParams(request);
+  static hasFilters(searchParams: ProductSearchParams): boolean {
     return Object.keys(searchParams).some(
       (key) =>
         key !== "currentPage" &&
         key !== "pageSize" &&
+        key !== "store" &&
         searchParams[key as keyof ProductSearchParams] !== undefined
     );
   }
@@ -107,10 +74,27 @@ export class ProductSearchService {
       currentPage = 1,
       pageSize = 10,
       sort = "featured",
+      store = true,
     } = validatedParams;
 
     const offset = (currentPage - 1) * pageSize;
     const sanitizedQuery = this.sanitizeQuery(query);
+
+    // Status filtering logic
+    const statusFilter = (() => {
+      if (store) {
+        return statuses
+          ? Prisma.sql`p.status::text IN (${Prisma.join(
+              statuses.map((status) => Prisma.sql`${status}::text`)
+            )}) AND p.status::text IN ('ACTIVE', 'INACTIVE')`
+          : Prisma.sql`p.status::text IN ('ACTIVE', 'INACTIVE')`;
+      }
+      return statuses
+        ? Prisma.sql`p.status::text IN (${Prisma.join(
+            statuses.map((status) => Prisma.sql`${status}::text`)
+          )})`
+        : Prisma.sql`TRUE`;
+    })();
 
     const orderByClause = (() => {
       switch (sort) {
@@ -121,7 +105,7 @@ export class ProductSearchService {
         case "newest":
           return Prisma.sql`similarity_score DESC, "createdAt" DESC, featured DESC`;
         default: // 'featured'
-          return Prisma.sql`featured DESC, similarity_score DESC, price ASC`;
+          return Prisma.sql`similarity_score DESC, featured DESC, price ASC`;
       }
     })();
 
@@ -170,13 +154,7 @@ export class ProductSearchService {
                 ? Prisma.sql`p.brand IN (${Prisma.join(brands)})`
                 : Prisma.sql`TRUE`
             })
-            AND (${
-              statuses
-                ? Prisma.sql`p.status::text IN (${Prisma.join(
-                    statuses.map((status) => Prisma.sql`${status}::text`)
-                  )})`
-                : Prisma.sql`TRUE`
-            })
+            AND ${statusFilter}
             AND (${
               tags
                 ? Prisma.sql`p.tags && ARRAY[${Prisma.join(tags)}]`
@@ -231,13 +209,7 @@ export class ProductSearchService {
                 ? Prisma.sql`p.brand IN (${Prisma.join(brands)})`
                 : Prisma.sql`TRUE`
             })
-            AND (${
-              statuses
-                ? Prisma.sql`p.status::text IN (${Prisma.join(
-                    statuses.map((status) => Prisma.sql`${status}::text`)
-                  )})`
-                : Prisma.sql`TRUE`
-            })
+            AND ${statusFilter}
             AND (${
               tags
                 ? Prisma.sql`p.tags && ARRAY[${Prisma.join(tags)}]`

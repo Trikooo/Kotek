@@ -25,12 +25,24 @@ export async function getUserCart(
               select: {
                 name: true,
                 imageUrls: true,
+                status: true,
               },
             },
           },
         },
       },
     });
+    if (cart?.items.some((item) => item.product.status !== "ACTIVE")) {
+      const itemsToDelete = cart.items.filter(
+        (item) => item.product.status !== "ACTIVE"
+      );
+      for (const item of itemsToDelete) {
+        await deleteItemFromCart(item.id, userId);
+      }
+      cart.items = cart.items.filter(
+        (item) => item.product.status === "ACTIVE"
+      );
+    }
     return cart;
   } catch (error: unknown) {
     if (error instanceof Error) {

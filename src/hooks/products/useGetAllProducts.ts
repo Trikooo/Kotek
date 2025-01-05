@@ -8,6 +8,7 @@ import {
   ProductSearchResponse,
 } from "@/types/types";
 import { Product } from "@prisma/client";
+import { usePathname } from "next/navigation";
 
 export function useGetAllProducts() {
   const fetchAllProducts = async (productSearchParams: ProductSearchParams) => {
@@ -48,7 +49,13 @@ export function useScrollPaginatedProducts(
       currentPage: 1,
       pageSize: 10,
     });
-
+  const currentPath = usePathname();
+  const [storeCondition, setStoreCondition] = useState(
+    !currentPath.includes("/admin")
+  );
+  useEffect(() => {
+    setStoreCondition(!currentPath.includes("/admin"));
+  }, [currentPath]);
   const fetchProducts = useCallback(
     async (newParams: ProductSearchParams) => {
       setLoading(true);
@@ -76,8 +83,21 @@ export function useScrollPaginatedProducts(
 
   // Initial fetch
   useEffect(() => {
-    fetchProducts(productSearchParams);
-  }, []);
+    let newParams: ProductSearchParams;
+    console.log("storeCondition: ", storeCondition);
+    if (storeCondition) {
+      console.log("success");
+      newParams = { ...productSearchParams, store: true, currentPage: 1 };
+      setProductSearchParams(newParams);
+    } else {
+      console.log("failure");
+      newParams = { ...productSearchParams, store: false, currentPage: 1 };
+      setProductSearchParams(newParams);
+    }
+    console.log("currentPath", currentPath);
+    console.log("productSearchParams: ", newParams);
+    fetchProducts(newParams);
+  }, [storeCondition]);
 
   // Function to load more products
   const loadMoreProducts = useCallback(() => {

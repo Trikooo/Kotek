@@ -37,7 +37,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-// Define the Role type to ensure consistency
+
 type Role = "ADMIN" | "MOD" | "USER";
 
 const ADMIN_EMAIL = "trikooplays@gmail.com";

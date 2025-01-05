@@ -17,18 +17,11 @@ export default function SearchSort() {
     const newParams = {
       ...productSearchParams,
       sort: value,
+      currentPage: 1,
     };
     setProductSearchParams(newParams);
     resetProducts(newParams);
   };
-
-  useEffect(() => {
-    // Set default sort value if not already set
-    if (!productSearchParams.sort) {
-      handleSortChange("featured");
-    }
-  }, []);
-
   return (
     <div className="flex gap-2 items-center">
       <span className="font-semibold text-sm">Sort by: </span>

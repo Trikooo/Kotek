@@ -9,6 +9,7 @@ import { ProductSearchService } from "../APIservices/controllers/search";
 import { GetAllProductsResponse, ProductSearchResponse } from "@/types/types";
 import { Prisma } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
+import { getToken } from "next-auth/jwt";
 
 export async function GET(request: NextRequest) {
   const searchService = new ProductSearchService();
@@ -18,8 +19,12 @@ export async function GET(request: NextRequest) {
     let result: ProductSearchResponse | GetAllProductsResponse;
 
     // Use the new static method to check for filters
-    const hasFilters = ProductSearchService.hasFilters(request);
-
+    const hasFilters = ProductSearchService.hasFilters(searchParams);
+    const token = await getToken({ req: request });
+    if (token?.role !== "ADMIN" && searchParams.store) {
+      searchParams.store = false;
+    }
+    console.log("searchParams: ", searchParams);
     if (hasFilters) {
       // Use searchService if filtering queries are present
       result = await searchService.searchProducts(searchParams);
@@ -27,7 +32,8 @@ export async function GET(request: NextRequest) {
       // Use getAllProducts for simple pagination
       const page = searchParams.currentPage || 1;
       const pageSize = searchParams.pageSize || 10;
-      result = await getAllProducts(page, pageSize);
+      const store = searchParams.store;
+      result = await getAllProducts(page, pageSize, store);
     }
 
     return NextResponse.json(

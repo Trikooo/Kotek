@@ -122,6 +122,7 @@ export default function FilterSideBar() {
     if (hasFiltered) {
       const newParams: ProductSearchParams = {
         ...productSearchParams,
+        currentPage: 1,
         minPrice: sliderValue[0],
         maxPrice: sliderValue[1],
         brands: selectedBrands,
