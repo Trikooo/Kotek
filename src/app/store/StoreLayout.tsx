@@ -1,11 +1,12 @@
 "use client";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { HeaderProvider } from "../../context/HeaderContext";
 import Header from "@/components/store/home/section1/Header";
 import MobileMenu from "@/components/store/home/section1/MobileMenu";
 import Footer from "@/components/store/home/footer/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { useSession } from "next-auth/react";
+import { NAME } from "@/lib/constants";
 
 export default function StoreLayout({
   children,
@@ -15,6 +16,9 @@ export default function StoreLayout({
   hideHeader?: boolean;
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // useEffect(() => {
+  //   console.log(NAME);
+  // }, []);
 
   return (
     <HeaderProvider>

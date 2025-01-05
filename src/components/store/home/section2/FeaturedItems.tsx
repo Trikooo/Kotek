@@ -7,12 +7,12 @@ import FeaturedItemsSection from "./FeaturedItemCard";
 
 export default function FeaturedItems() {
   return (
-    <div className="flex flex-col justify-center items-center mt-24">
+    <div className="flex flex-col justify-center items-center mt-12 sm:mt-24">
       <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
         Featured Items
       </h1>
 
-      <div className="relative w-full mt-14">
+      <div className="relative w-full mt-6">
         <Button
           variant="link"
           className="absolute top-0 right-0 hover:text-indigo-600 duration-0 md:text-lg"

@@ -30,3 +30,7 @@ export const EMPTY_ADDRESS: Address = {
   baseShippingPrice: 0,
   stopDesk: false,
 };
+
+export const NAME = `┏┓     ┓      •  ┓┏   •
+┏┛┏┓┏┓┏┫┏┓┏┓┓┏┓  ┗┫┏┓┏┓┏┓┏┓
+┗┛┗ ┛┗┗┻┗┻┗┛┗┻┗  ┗┛┗┻┗┗┛┗┗`;
