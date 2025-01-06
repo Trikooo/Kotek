@@ -1,4 +1,3 @@
-import { cartItemSchema } from "@/app/api/APIservices/lib/validation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,7 +12,7 @@ import { useCreateNoestOrder } from "@/hooks/orders/noest/useNoestOrders";
 import { toast } from "@/hooks/use-toast";
 import { KotekOrder, NoestOrderForm } from "@/types/types";
 import { createNoestForms } from "@/utils/formDataUtils";
-import { Order, OrderStatus } from "@prisma/client";
+import { OrderStatus } from "@prisma/client";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Check } from "lucide-react";
 import { useState } from "react";
@@ -29,6 +28,7 @@ export default function NoestModal({
   const {
     mutateAsync, // Function to trigger the mutation
     isPending, // Boolean indicating if mutation is in progress
+    error: createError,
   } = useCreateNoestOrder();
   const handleCreateNoestOrder = async () => {
     const newOrder = {
@@ -55,7 +55,8 @@ export default function NoestModal({
         setIsOpen(false);
         onOrderUpdate(response.kotek as unknown as KotekOrder);
       }
-    } catch (err) {
+    } catch (error) {
+      console.log("poopoopapa");
       toast({
         title: "Unexpected Error",
         description: "An unexpected error occurred while creating the order",

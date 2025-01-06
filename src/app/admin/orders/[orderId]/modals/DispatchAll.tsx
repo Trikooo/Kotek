@@ -28,6 +28,10 @@ export default function DispatchAllModal({
   const handleDispatchAll = async () => {
     try {
       if (order.id) {
+        // IF NO ITEM HAS A TRACKING NUMBER AND DISPATCH IS PRESSED, STATUS SHOULD BE CHANGED TO DISPATCHED.
+        if (order.items.some((item) => item.trackingId !== undefined)) {
+          order.status = "DISPATCHED";
+        }
         const updatedOrder = await validateAll(order);
         toast({
           title: "Order Dispatched",

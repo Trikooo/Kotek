@@ -35,7 +35,7 @@ export default function FeaturedItems() {
                       src={product.imageUrls[0] || "/placeholder.svg"}
                       alt={product.name}
                       layout="fill"
-                      objectFit="cover"
+                      objectFit="contain"
                     />
                   </div>
                 </CardContent>

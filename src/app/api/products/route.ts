@@ -21,7 +21,8 @@ export async function GET(request: NextRequest) {
     // Use the new static method to check for filters
     const hasFilters = ProductSearchService.hasFilters(searchParams);
     const token = await getToken({ req: request });
-    if (token?.role !== "ADMIN" && searchParams.store) {
+    if (token && token.role !== "ADMIN" && searchParams.store) {
+      console.log("hello");
       searchParams.store = false;
     }
     console.log("searchParams: ", searchParams);

@@ -1,5 +1,6 @@
 import {
   $Enums,
+  CarouselItem,
   Category,
   OrderStatus,
   Product,
@@ -262,4 +263,16 @@ export interface ExtendedNoestCreateResponse {
 export interface OrderData {
   kotek: Partial<KotekOrder>;
   noest: NoestOrderForm[];
+}
+
+// carousel api return types:
+export namespace Carousel {
+  export namespace Response {
+    export type GetAllItems = CarouselItem[];
+    export type GetActiveItems = CarouselItem[];
+    export type UpdateItem = CarouselItem;
+    export type CreateItem = CarouselItem;
+    export type DeleteItem = CarouselItem;
+    export type UpdateDisplayIndices = CarouselItem[];
+  }
 }

@@ -344,8 +344,8 @@ export async function updateKotekOrder(
       );
       // Check if all trackings are dispatched
       const allDispatched =
-        (trackingStatuses.length === 0 ||
-          trackingStatuses.every((t) => t === "DISPATCHED")) &&
+        trackingStatuses.length !== 0 &&
+        trackingStatuses.every((t) => t === "DISPATCHED") &&
         refinedOrder.status === "PROCESSING";
       // Update order status to DISPATCHED if all trackings are dispatched
       console.log("allDispatched: ", allDispatched);

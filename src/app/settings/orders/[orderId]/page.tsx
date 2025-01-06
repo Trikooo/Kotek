@@ -28,6 +28,7 @@ import { useGetKotekOrderById } from "@/hooks/orders/useKotekOrder";
 import { formatCurrency } from "@/utils/generalUtils";
 import { FaTruck, FaCopy } from "react-icons/fa";
 import ErrorComponent from "@/components/error/error";
+import OrderDetailsSkeleton from "./OrderDetailsSkeleton";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
@@ -36,7 +37,11 @@ export default function OrderDetails() {
   const { order, loading, error } = useGetKotekOrderById(orderIdString);
   const [isCopied, setIsCopied] = useState(false);
   const address = order?.address;
-
+  if(loading){
+    return (
+      <OrderDetailsSkeleton />
+    )
+  }
   if (error) {
     return (
       <SettingsLayout>

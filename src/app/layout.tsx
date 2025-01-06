@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   description:
     "kotek informatique, vente de materiel informatique, draria alger, ouedkniss, facebook instagram tiktok, informatics, geekzone, el assli, chiinformatique, lahlou",
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,26 +30,59 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={cn("min-h-screen bg-custom-gradient font-sans antialiased")}
-      >
-        <SessionProviderWrapper>
-          <QueryProvider>
-            <ProductsProvider>
-              <CategoryProvider>
-                <CartProvider>
-                  <KotekOrderProvider>
-                    <AddressProvider>{children}</AddressProvider>
-                  </KotekOrderProvider>
-                </CartProvider>
-                <SpeedInsights />
-                <SonnerToaster />
-                <RadixToaster />
-                <ReactQueryDevtools />
-              </CategoryProvider>
-            </ProductsProvider>
-          </QueryProvider>
-        </SessionProviderWrapper>
+      <body className={cn("min-h-screen font-sans antialiased relative")}>
+        {/* Background layer with gradient */}
+        <div className="fixed inset-0 bg-custom-gradient" />
+
+        {/* Grid pattern overlay with mask */}
+        <div
+          className="fixed inset-0 w-full h-full"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgb(228, 228, 231) 1px, transparent 1px),
+              linear-gradient(to bottom, rgb(228, 228, 231) 1px, transparent 1px)
+            `,
+            backgroundSize: "50px 50px",
+            opacity: 0.8,
+            maskImage: `linear-gradient(to right,
+              transparent,
+              rgba(0, 0, 0, 0.1) 10%,
+              rgba(0, 0, 0, 0.3) 20%,
+              rgba(0, 0, 0, 0.6) 45%,
+              rgba(0, 0, 0, 0.9) 60%,
+              black 75%
+            )`,
+            WebkitMaskImage: `linear-gradient(to right,
+              transparent,
+              rgba(0, 0, 0, 0.1) 15%,
+              rgba(0, 0, 0, 0.3) 50%,
+              rgba(0, 0, 0, 0.6) 55%,
+              rgba(0, 0, 0, 0.9) 60%,
+              black 75%
+            )`,
+          }}
+        />
+
+        {/* Content layer */}
+        <div className="relative">
+          <SessionProviderWrapper>
+            <QueryProvider>
+              <ProductsProvider>
+                <CategoryProvider>
+                  <CartProvider>
+                    <KotekOrderProvider>
+                      <AddressProvider>{children}</AddressProvider>
+                    </KotekOrderProvider>
+                  </CartProvider>
+                  <SpeedInsights />
+                  <SonnerToaster />
+                  <RadixToaster />
+                  <ReactQueryDevtools />
+                </CategoryProvider>
+              </ProductsProvider>
+            </QueryProvider>
+          </SessionProviderWrapper>
+        </div>
       </body>
     </html>
   );

@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { updateKotekOrder } from "../../APIservices/controllers/kotekOrders";
 
-import { 
+import {
   createSingleNoestOrder,
   deleteNoestOrder,
 } from "../../APIservices/controllers/noest";

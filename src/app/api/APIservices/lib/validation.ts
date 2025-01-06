@@ -312,3 +312,35 @@ export const feedbackSchema = z.object({
   }),
   message: z.string(),
 });
+
+// File validation schema
+const fileSchema = z
+  .instanceof(File)
+  .refine((file) => file.size <= 5 * 1024 * 1024, {
+    message: "File size must be 5MB or less",
+  })
+  .refine(
+    (file) => ["image/jpeg", "image/png", "image/gif"].includes(file.type),
+    {
+      message: "File must be JPEG, PNG, or GIF",
+    }
+  );
+
+export const updateCarouselItemSchema = z.object({
+  id: z.string().uuid(), // id should be a valid UUID
+  image: fileSchema.optional(), // image is now a file object with mimetype and size validation
+  link: z.string().url(), // link should be a valid URL
+  title: z.string().optional(), // title is optional
+  displayIndex: z.number().int().min(0), // displayIndex should be an integer greater than or equal to 0
+  isActive: z.boolean().default(true), // isActive should be a boolean, defaulting to true
+  imageUrl: z.string().url(),
+});
+
+export const createCarouselItemSchema = z.object({
+  image: fileSchema,
+  link: z.string().url(),
+  title: z.string(),
+  displayIndex: z.number().int().min(0),
+  isActive: z.boolean().default(true),
+  imageUrl: z.string().url(),
+});

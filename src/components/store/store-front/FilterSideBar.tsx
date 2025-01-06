@@ -127,7 +127,7 @@ export default function FilterSideBar() {
         maxPrice: sliderValue[1],
         brands: selectedBrands,
         categoryIds: selectedCategories,
-        statuses: inStock ? ["ACTIVE"] : ["ACTIVE", "INACTIVE"],
+        statuses: inStock ? ["ACTIVE"] : undefined,
       };
       setProductSearchParams(newParams);
       debouncedSearch(newParams);
