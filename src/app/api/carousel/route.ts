@@ -5,7 +5,7 @@ import {
   createCarouselItem,
   getActiveCarouselItems,
   getAllCarouselItems,
-  updateCarouselItemsOrder,
+  updateCarouselItemsDisplayIndices,
 } from "../APIservices/controllers/carousel";
 
 export async function GET(request: NextRequest) {
@@ -53,9 +53,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newCarouselItem, { status: 201 });
   } catch (error) {
-    console.error("POST Carousel Item Error:", error);
-
     if (error instanceof ZodError) {
+      console.log("POST CarouselItem ZodError: ", {
+        message: "Validation error in CarouselItemData",
+        errors: error.errors.map((err) => ({
+          path: err.path.join("."),
+          message: err.message,
+        })),
+      });
       return NextResponse.json(
         {
           message: "Validation error in CarouselItemData",
@@ -67,7 +72,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
+    console.error("POST Carousel Item Error:", error);
     return NextResponse.json(
       {
         message: "Failed to create CarouselItem",
@@ -85,7 +90,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
     }
     const data = await request.json();
-    const updatedCarouselItems = await updateCarouselItemsOrder(data);
+    const updatedCarouselItems = await updateCarouselItemsDisplayIndices(data);
     return NextResponse.json(updatedCarouselItems, { status: 200 });
   } catch (error) {
     console.error("PUT error updating carouselItems's displayIndices", error);

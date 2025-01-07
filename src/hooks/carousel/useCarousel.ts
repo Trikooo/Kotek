@@ -16,8 +16,8 @@ export const useGetAllCarouselItems = () => {
   return useQuery<Carousel.Response.GetAllItems>({
     queryKey: CAROUSEL_KEYS.list("all"),
     queryFn: async () => {
-      const { data } = await axios.get("/api/carousel?getAll=true");
-      return data;
+      const response = await axios.get("/api/carousel?getInactive=true");
+      return response.data;
     },
   });
 };
@@ -64,7 +64,7 @@ export const useUpdateCarouselItem = () => {
     { id: string; formData: FormData }
   >({
     mutationFn: async ({ id, formData }) => {
-      const { data } = await axios.patch(`/api/carousel/${id}`, formData, {
+      const { data } = await axios.put(`/api/carousel/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -86,9 +86,17 @@ export const useUpdateCarouselItem = () => {
 export const useDeleteCarouselItem = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Carousel.Response.DeleteItem, Error, string>({
-    mutationFn: async (id: string) => {
-      const { data } = await axios.delete(`/api/carousel/${id}`);
+  return useMutation<
+    Carousel.Response.DeleteItem,
+    Error,
+    { id: string; items: { id: string; displayIndex: number }[] }
+  >({
+    mutationFn: async ({ id, items }) => {
+      const { data } = await axios.request({
+        method: "DELETE",
+        url: `/api/carousel/${id}`,
+        data: items, // Send items in the body
+      });
       return data;
     },
     onSuccess: () => {
@@ -106,10 +114,10 @@ export const useUpdateDisplayIndices = () => {
   return useMutation<
     Carousel.Response.UpdateDisplayIndices,
     Error,
-    { items: { id: string; displayIndex: number }[] }
+    { id: string; displayIndex: number }[]
   >({
-    mutationFn: async ({ items }) => {
-      const { data } = await axios.patch("/api/carousel", { items });
+    mutationFn: async (items) => {
+      const { data } = await axios.put("/api/carousel", items);
       return data;
     },
     onSuccess: () => {

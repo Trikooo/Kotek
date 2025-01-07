@@ -1,14 +1,11 @@
 "use client";
 import AdminLayout from "../AdminLayout";
-import "../../globals.css";
-import { useKotekOrder } from "@/context/KotekOrderContext";
-import { useEffect } from "react";
-import CarouselSettings from "./components/carouselPage";
+import CarouselSettings from "./components/CarouselPage";
 
 export default function Settings() {
   return (
     <AdminLayout>
-     <CarouselSettings />
+      <CarouselSettings />
     </AdminLayout>
   );
 }

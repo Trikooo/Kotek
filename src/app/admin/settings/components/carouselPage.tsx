@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -13,135 +13,30 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-  useSortable,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { Card } from "@/components/ui/card";
+import { SortableItem } from "./SortableItem";
+import CreateCarouselItem from "./CreateCarouselItem";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Pencil, Trash2, GripVertical, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
+  useGetAllCarouselItems,
+  useUpdateDisplayIndices,
+} from "@/hooks/carousel/useCarousel";
+import CarouselPageSkeleton from "./CarouselPageSkeleton";
+import { CarouselItem } from "@prisma/client";
+import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
-const dummyItems = [
-  { id: "1", image: "/api/placeholder/100/100", title: "Slide 1" },
-  { id: "2", image: "/api/placeholder/100/100", title: "Slide 2" },
-  { id: "3", image: "/api/placeholder/100/100", title: "Slide 3" },
-];
+export default function CarouselSettings() {
+  const { data: carouselItems, isLoading } = useGetAllCarouselItems();
+  const { mutateAsync, isPending } = useUpdateDisplayIndices();
+  const [items, setItems] = useState<CarouselItem[]>([]);
+  const [changeMade, setChangeMade] = useState(false);
 
-const SortableItem = ({
-  id,
-  title,
-  image,
-}: {
-  id: string;
-  title: string;
-  image: string;
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn("mb-4 w-full", isDragging && "opacity-50")}
-    >
-      <Card className="p-4 w-full">
-        <div className="flex items-center gap-4">
-          <div {...attributes} {...listeners}>
-            <GripVertical className="h-5 w-5 cursor-grab text-gray-500" />
-          </div>
-
-          <Image
-            src={image}
-            alt={title}
-            className="h-12 w-12 object-cover rounded"
-            width={100}
-            height={100}
-          />
-
-          <span className="flex-1 font-medium">{title}</span>
-
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsEditDialogOpen(true)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsDeleteDialogOpen(true)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </Card>
-
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Carousel Item</DialogTitle>
-          </DialogHeader>
-          {/* Add your edit form here */}
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Carousel Item</DialogTitle>
-          </DialogHeader>
-          <p>Are you sure you want to delete this carousel item?</p>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setIsDeleteDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                setIsDeleteDialogOpen(false);
-              }}
-            >
-              Delete
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-};
-
-const CarouselSettings = () => {
-  const [items, setItems] = useState(dummyItems);
+  useEffect(() => {
+    if (carouselItems) {
+      setItems(carouselItems);
+    }
+  }, [carouselItems]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -149,57 +44,98 @@ const CarouselSettings = () => {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
+  useEffect(() => {
+    if (JSON.stringify(items) !== JSON.stringify(carouselItems)) {
+      setChangeMade(true);
+    } else {
+      setChangeMade(false);
+    }
+  }, [items, carouselItems]);
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+      setItems((prevItems) => {
+        const oldIndex = prevItems.findIndex((item) => item.id === active.id);
+        const newIndex = prevItems.findIndex((item) => item.id === over.id);
+        return arrayMove(prevItems, oldIndex, newIndex);
       });
     }
   };
+
+  const handleUpdateIndices = async () => {
+    try {
+      const data = items.map((item, index) => ({
+        id: item.id,
+        displayIndex: index + 1,
+      }));
+      await mutateAsync(data);
+      toast({
+        title: "Updated order successfully",
+      });
+    } catch (error) {
+      console.error("error updating carousel order", error);
+      toast({
+        title: "An error occurred while updating carousel order",
+        variant: "destructive",
+      });
+      if (carouselItems) setItems(carouselItems);
+    }
+  };
+
+  if (isLoading) {
+    return <CarouselPageSkeleton />;
+  }
 
   return (
     <div className="w-full min-h-screen">
       <div className="w-full px-8 py-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Carousel Settings</h1>
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Item
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Carousel Item</DialogTitle>
-              </DialogHeader>
-              {/* Add your create form here */}
-            </DialogContent>
-          </Dialog>
+          <div className="flex justify-between items-center gap-4">
+            <CreateCarouselItem />
+            <Button
+              disabled={!changeMade || isPending}
+              onClick={handleUpdateIndices}
+            >
+              {isPending ? (
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="animate-spin w-4 h-4" strokeWidth={1.5} />
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+          </div>
         </div>
 
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={items} strategy={verticalListSortingStrategy}>
-            <div className="w-full">
-              {items.map((item) => (
-                <SortableItem key={item.id} {...item} />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        {items.length > 0 ? (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={items}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="w-full">
+                {items.map((item) => (
+                  <SortableItem item={item} key={item.id} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        ) : (
+          <div className="w-full h-[calc(100vh-200px)] flex items-center justify-center">
+            <p className="text-gray-500 text-xl">
+              The carousel doesn&apos;t have any items yet, start by adding a
+              new item.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default CarouselSettings;
+}

@@ -1,15 +1,8 @@
 import CarouselDemo from "@/components/dynamic-ui/Carousel";
-
-const images = [
-  "/carousel/image.png",
-  "/carousel/image1.png",
-  "/carousel/image2.png",
-];
+import { useGetActiveCarouselItems, useGetAllCarouselItems } from "@/hooks/carousel/useCarousel";
 
 export default function Hero() {
-  return (
+  const { data: carouselItems, isLoading } = useGetActiveCarouselItems();
 
-      <CarouselDemo images={images} />
-
-  );
+  return <CarouselDemo carouselItems={carouselItems} isLoading={isLoading} />;
 }

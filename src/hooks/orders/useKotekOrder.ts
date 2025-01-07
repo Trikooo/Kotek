@@ -68,7 +68,6 @@ export function useGetKotekOrderById(orderId: string) {
 
   useEffect(() => {
     if (orderId) {
-      console.log("hi");
       fetchOrder(orderId);
     }
   }, []);

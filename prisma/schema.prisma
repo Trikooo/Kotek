@@ -352,7 +352,7 @@ model CarouselItem {
   id           String   @id @default(uuid()) @db.Uuid
   imageUrl     String
   link         String
-  title        String? // Optional title/heading for the slide
+  title        String // alt and title for the slide.
   displayIndex Int      @unique // To control the sequence of slides
   isActive     Boolean  @default(true) // To enable/disable slides without deletion
   createdAt    DateTime @default(now())

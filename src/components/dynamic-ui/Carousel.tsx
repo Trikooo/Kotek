@@ -10,14 +10,17 @@ import {
 } from "@/components/ui/carousel";
 import { useHeaderContext } from "@/context/HeaderContext";
 import { Card } from "../ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CarouselItem as CarouselItemType } from "@prisma/client";
+import Link from "next/link";
 
-// Define the prop types for CarouselDemo
 interface CarouselDemoProps {
-  images: string[]; // Array of image URLs
+  carouselItems: CarouselItemType[] | undefined;
+  isLoading: boolean;
 }
 
-export default function CarouselDemo({ images }: CarouselDemoProps) {
-  const [isAutoplay, setIsAutoplay] = React.useState(true); // State to manage autoplay
+export default function CarouselDemo({ carouselItems }: CarouselDemoProps) {
+  const [isAutoplay, setIsAutoplay] = React.useState(true);
   const { searchFieldVisible } = useHeaderContext();
   const autoplayPlugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: false })
@@ -30,9 +33,9 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
       setIsAutoplay(false);
     }
     if (isAutoplay) {
-      autoplayPlugin.current.stop(); // Stop autoplay
+      autoplayPlugin.current.stop();
     } else {
-      autoplayPlugin.current.play(); // Resume autoplay
+      autoplayPlugin.current.play();
     }
   };
 
@@ -43,7 +46,6 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
   return (
     <Carousel
       plugins={[autoplayPlugin.current]}
-      className="w-full" // Keep width at full
       onMouseLeave={autoplayPlugin.current.reset}
       onClick={autoplayPlugin.current.stop}
       opts={{
@@ -52,20 +54,32 @@ export default function CarouselDemo({ images }: CarouselDemoProps) {
       buttonHover={true}
     >
       <CarouselContent>
-        {images.map((image, index) => (
-          <CarouselItem key={index} className="w-full">
-            <Card className="relative w-full pb-[50%] overflow-hidden">
-              {/* Aspect ratio container */}
-              <Image
-                src={image}
-                alt={`Slide ${index + 1}`}
-                className="absolute top-0 left-0 w-full h-full object-cover overflow-hidden"
-                width={1080}
-                height={540}
-              />
-            </Card>
-          </CarouselItem>
-        ))}
+        {carouselItems
+          ? carouselItems.map((item, index) => (
+              <CarouselItem key={index}>
+                <Link href={item.link}>
+                  <Card className="relative overflow-hidden">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      className="w-full h-min object-contain overflow-hidden"
+                      width={1080}
+                      height={540}
+                      priority
+                      placeholder="blur"
+                      blurDataURL={item.imageUrl}
+                    />
+                  </Card>
+                </Link>
+              </CarouselItem>
+            ))
+          : Array.from({ length: 3 }).map((_, index) => (
+              <CarouselItem key={index} className="w-full">
+                <Card className="relative w-full pb-[40%] overflow-hidden">
+                  <Skeleton className="absolute top-0 left-0 w-full h-full" />
+                </Card>
+              </CarouselItem>
+            ))}
       </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />

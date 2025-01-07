@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { KotekOrder, PaginationMetadata } from "@/types/types";
 import { AxiosError } from "axios";
+import { useSession } from "next-auth/react";
 
 export function useScrollPaginatedKotekOrders(
   fetchFunction: (
@@ -14,6 +15,8 @@ export function useScrollPaginatedKotekOrders(
   initialLimit: number = 10,
   allowedPathnames?: string[] // New optional parameter
 ) {
+  const { data: session } = useSession();
+  const userId = session?.user?.role;
   const pathname = usePathname();
   const [orders, setOrders] = useState<KotekOrder[]>([]);
   const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
@@ -56,8 +59,8 @@ export function useScrollPaginatedKotekOrders(
 
   // Initial fetch
   useEffect(() => {
-    if (orders.length === 0 && isPathAllowed) fetchOrders(1);
-  }, [fetchOrders, orders.length, isPathAllowed]);
+    if (isPathAllowed && userId) fetchOrders(1);
+  }, [isPathAllowed, userId]);
 
   // Function to load more orders
   const loadMoreOrders = useCallback(() => {

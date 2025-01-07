@@ -327,11 +327,10 @@ const fileSchema = z
   );
 
 export const updateCarouselItemSchema = z.object({
-  id: z.string().uuid(), // id should be a valid UUID
-  image: fileSchema.optional(), // image is now a file object with mimetype and size validation
-  link: z.string().url(), // link should be a valid URL
-  title: z.string().optional(), // title is optional
-  displayIndex: z.number().int().min(0), // displayIndex should be an integer greater than or equal to 0
+  image: fileSchema.optional(),
+  link: z.string().url().optional(),
+  title: z.string().optional(),
+  displayIndex: z.number().int().min(0),
   isActive: z.boolean().default(true), // isActive should be a boolean, defaulting to true
   imageUrl: z.string().url(),
 });
@@ -340,7 +339,5 @@ export const createCarouselItemSchema = z.object({
   image: fileSchema,
   link: z.string().url(),
   title: z.string(),
-  displayIndex: z.number().int().min(0),
   isActive: z.boolean().default(true),
-  imageUrl: z.string().url(),
 });

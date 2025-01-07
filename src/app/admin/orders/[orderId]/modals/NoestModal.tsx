@@ -56,7 +56,6 @@ export default function NoestModal({
         onOrderUpdate(response.kotek as unknown as KotekOrder);
       }
     } catch (error) {
-      console.log("poopoopapa");
       toast({
         title: "Unexpected Error",
         description: "An unexpected error occurred while creating the order",

@@ -5,12 +5,11 @@ import {
   deleteCarouselItem,
   updateCarouselItem,
 } from "../../APIservices/controllers/carousel";
-import { CarouselItem } from "@prisma/client";
 
 // PUT method to update an existing carousel item
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { carouselItemId: string } }
 ) {
   try {
     const token = await getToken({ req: request });
@@ -19,11 +18,12 @@ export async function PUT(
     }
 
     const formData = await request.formData();
-    const { id } = params;
+    const { carouselItemId } = params;
 
-    if (!id) {
+    if (!carouselItemId) {
+      console.error("carouselItemId is required");
       return NextResponse.json(
-        { message: "Carousel item ID is required" },
+        { message: "carouselItemId is required" },
         { status: 400 }
       );
     }
@@ -36,12 +36,23 @@ export async function PUT(
     // Convert remaining form data to plain object
     const carouselItemData = Object.fromEntries(formData.entries());
     if (imageFile) carouselItemData.image = imageFile;
-    const updatedCarouselItem = await updateCarouselItem(id, carouselItemData);
+    const updatedCarouselItem = await updateCarouselItem(
+      carouselItemId,
+      carouselItemData
+    );
     return NextResponse.json(updatedCarouselItem, { status: 200 });
   } catch (error) {
-    console.error("PUT Carousel Item Error:", error);
-
     if (error instanceof ZodError) {
+      console.error(
+        {
+          message: "Validation error in CarouselItemData",
+          errors: error.errors.map((err) => ({
+            path: err.path.join("."),
+            message: err.message,
+          })),
+        },
+        { status: 400 }
+      );
       return NextResponse.json(
         {
           message: "Validation error in CarouselItemData",
@@ -53,6 +64,7 @@ export async function PUT(
         { status: 400 }
       );
     }
+    console.error("PUT Carousel Item Error:", error);
 
     return NextResponse.json(
       {
@@ -67,7 +79,7 @@ export async function PUT(
 // DELETE method to remove a carousel item
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { carouselItemId: string } }
 ) {
   try {
     const token = await getToken({ req: request });
@@ -75,16 +87,17 @@ export async function DELETE(
       return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
     }
 
-    const { id } = params;
-
-    if (!id) {
+    const { carouselItemId } = params;
+    const newDisplayIndices = await request.json();
+    if (!carouselItemId) {
+      console.error("Carousel item ID is required");
       return NextResponse.json(
         { message: "Carousel item ID is required" },
         { status: 400 }
       );
     }
 
-    await deleteCarouselItem(id);
+    await deleteCarouselItem(carouselItemId, newDisplayIndices);
     return NextResponse.json(
       { message: "Carousel item deleted successfully" },
       { status: 200 }

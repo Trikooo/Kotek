@@ -31,6 +31,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Menu items remain the same
 const accountItems = [
@@ -65,7 +66,7 @@ const supportItems = [
 ];
 
 export default function SettingsSidebar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   return (
     <TooltipProvider>
@@ -75,15 +76,22 @@ export default function SettingsSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton className="py-7 hover:bg-transparent pointer-events-none">
                 <div className="flex items-center gap-3 w-full">
-                  <Avatar className="h-5 w-5 shrink-0 ">
-                    <AvatarImage
-                      src={session?.user?.image ?? ""}
-                      alt={session?.user?.name ?? "User avatar"}
-                    />
-                    <AvatarFallback>
-                      <UserCircle2 className="h-5 w-5" strokeWidth={1.5} />
-                    </AvatarFallback>
+                  <Avatar className="h-5 w-5 shrink-0">
+                    {status === "loading" ? (
+                      <Skeleton className="h-5 w-5 rounded-full" />
+                    ) : (
+                      <>
+                        <AvatarImage
+                          src={session?.user?.image ?? ""}
+                          alt={session?.user?.name ?? "User avatar"}
+                        />
+                        <AvatarFallback className="bg-gray-500 text-white uppercase flex items-center justify-center text-xs">
+                          {session?.user?.name?.charAt(0)}
+                        </AvatarFallback>
+                      </>
+                    )}
                   </Avatar>
+
                   <div className="flex flex-col">
                     <span className="font-medium">
                       {session?.user?.name ?? "Welcome"}
