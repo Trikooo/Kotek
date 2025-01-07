@@ -39,6 +39,7 @@ export default function ExistingAddresses({
     if (addresses.length > 0 && !selectedAddress) {
       handleSelectAddress(addresses[0]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addresses, selectedAddress, setSelectedAddress]);
   const handleSelectAddress = (address: Address) => {
     setSelectedAddress(address);

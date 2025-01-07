@@ -123,9 +123,7 @@ export function EditAddress({ order, onAddressUpdate }: EditAddressModalProps) {
       ? [{ value: address.stationCode, label: address.stationName }]
       : []
   );
-  useEffect(() => {
-
-  }, [selectedStopDesk]);
+  useEffect(() => {}, [selectedStopDesk]);
   const [communeOptions, setCommuneOptions] = useState<Option[]>([]);
 
   useEffect(() => {
@@ -144,6 +142,7 @@ export function EditAddress({ order, onAddressUpdate }: EditAddressModalProps) {
       setWilayaHasStopDesk(false);
       setSelectedStopDesk([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wilayaData, selectedWilaya]);
 
   useEffect(() => {

@@ -37,7 +37,7 @@ export default function ContactPage() {
               <CardContent className="p-6">
                 <MessageCircle className="h-6 w-6 mb-4" strokeWidth={1.5} />
                 <h3 className="font-semibold text-lg mb-2">Email us</h3>
-                <p className="text-gray-600 mb-4">We're here to help.</p>
+                <p className="text-gray-600 mb-4">We&apos;re here to help.</p>
                 <Button variant="link" className="p-0 hover:text-indigo-600">
                   <Link href="mailto:kotek.informatique@gmail.com">
                     kotek.informatique@gmail.com

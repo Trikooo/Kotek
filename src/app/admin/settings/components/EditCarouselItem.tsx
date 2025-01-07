@@ -92,6 +92,7 @@ export default function EditCarouselItem({ item }: EditCarouselItemProps) {
       enabled: item.isActive ?? true,
     });
     setImagePreview(item.imageUrl);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item]);
 
   const onSubmit = async (data: CarouselItemFormValues) => {
