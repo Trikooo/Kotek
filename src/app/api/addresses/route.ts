@@ -103,13 +103,8 @@ export async function GET(request: NextRequest) {
     }
 
     const addresses = await getAllAddresses(userId);
-    if (addresses?.length > 0) {
-      return NextResponse.json({ addresses }, { status: 200 });
-    }
-    return NextResponse.json(
-      { message: "No addresses found for this user" },
-      { status: 404 }
-    );
+
+    return NextResponse.json({ addresses }, { status: 200 });
   } catch (error: unknown) {
     const errorResponse = formatErrorResponse(error);
     return NextResponse.json(errorResponse, { status: errorResponse.status });

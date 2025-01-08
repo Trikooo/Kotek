@@ -201,7 +201,7 @@ model Order {
 
   // Relations
   userId    String?     @db.Uuid
-  user      User?       @relation(fields: [userId], references: [id])
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Restrict)
   items     OrderItem[] @relation("OrderToOrderItems")
   addressId String?     @db.Uuid
   address   Address?    @relation(fields: [addressId], references: [id], onDelete: Restrict)
@@ -259,7 +259,7 @@ model Cart {
 
   // Relations
   userId String     @unique @db.Uuid
-  user   User       @relation(fields: [userId], references: [id])
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items  CartItem[]
 
   @@index([userId])
@@ -305,7 +305,7 @@ model Address {
 
   // Relations
   userId String  @db.Uuid
-  user   User    @relation(fields: [userId], references: [id])
+  user   User    @relation(fields: [userId], references: [id], onDelete: Restrict)
   Order  Order[]
 
   // Archived flag for soft deletion
