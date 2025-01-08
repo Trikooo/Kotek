@@ -1,13 +1,14 @@
 "use client";
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { Cpu, Search } from "lucide-react";
 import { useProductsContext } from "@/context/ProductsContext";
-import StoreCardList from "./StoreCard";
+import StoreCardList from "./StoreCardList";
 import { Input } from "@/components/ui/input";
 import { useHeaderContext } from "@/context/HeaderContext";
 import useDebounce from "@/hooks/useDebounce";
 import { ProductSearchParams } from "@/types/types";
 import SearchSort from "./SearchOptions";
+import { CardStyleToggle } from "./CardStyleToggle";
 
 export default function StoreMain() {
   const {
@@ -73,11 +74,15 @@ export default function StoreMain() {
       }
     };
   }, [handleObserver]);
-
+  const [style, setStyle] = useState<"grid" | "list">("grid");
   return (
     <div>
-      <div>
+      <div className="flex items-center justify-between">
         <SearchSort />
+        <CardStyleToggle
+          onToggle={(style) => setStyle(style)}
+          initialStyle={style}
+        />
       </div>
       <div className="relative mt-5">
         <Input
@@ -102,6 +107,7 @@ export default function StoreMain() {
         ) : (
           <>
             <StoreCardList
+              style={style}
               products={products}
               loading={loading}
               error={error ? true : false}

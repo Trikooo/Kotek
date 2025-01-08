@@ -1,4 +1,4 @@
-"use client"; // Add this at the top of the file
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -8,47 +8,52 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CircleUserRound } from "lucide-react";
 import React from "react";
-import Image from "next/image";
 
 interface DropdownMenuItem {
   label: string;
   onClick?: () => void;
-  icon?: React.ReactNode; // Optional icon prop
+  icon?: React.ReactNode;
 }
 
 interface DropdownMenuProps {
   label: string;
-  items: DropdownMenuItem[]; // Updated to use the new interface
-  image?: string; // Optional image prop
+  items: DropdownMenuItem[];
+  image?: string;
+  username?: string | null;
+  isLoggedIn: boolean;
 }
 
 export default function DynamicDropdownMenu({
   label,
   items,
-  image, // Destructure the image prop
+  image,
+  username,
+  isLoggedIn,
 }: DropdownMenuProps) {
+  const getFallbackLetter = (username: string) => {
+    return username ? username[0].toUpperCase() : "";
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center">
-          {image ? (
-            <Image
-              src={image}
-              alt="User avatar"
-              className="h-5 w-5 rounded-full cursor-pointer"
-              width={50}
-              height={50}
-            />
-          ) : (
-            <CircleUserRound
-              className="h-5 w-5 cursor-pointer"
-              strokeWidth={1.5}
-            />
-          )}
-          <span className="sr-only">Toggle menu</span>
-        </div>
+        <Button variant="ghost" className="relative h-5 w-5 rounded-full p-0">
+          <Avatar className="h-5 w-5">
+            {isLoggedIn ? (
+              <>
+                <AvatarImage src={image} alt={username || "user image"} />
+                <AvatarFallback className="bg-gray-200 text-gray-600">
+                  {getFallbackLetter(username || "")}
+                </AvatarFallback>
+              </>
+            ) : (
+              <CircleUserRound className="h-5 w-5" strokeWidth={1.5} />
+            )}
+          </Avatar>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>{label}</DropdownMenuLabel>
@@ -60,10 +65,9 @@ export default function DynamicDropdownMenu({
           >
             {item.icon && (
               <span className="mr-3">
-                {/* Apply w-4 h-4 and strokeWidth to the icon */}
                 {React.cloneElement(item.icon as React.ReactElement<any>, {
-                  className: "w-4 h-4", // Set width and height
-                  strokeWidth: 1.5, // Set stroke width
+                  className: "w-4 h-4",
+                  strokeWidth: 1.5,
                 })}
               </span>
             )}

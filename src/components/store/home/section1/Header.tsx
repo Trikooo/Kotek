@@ -147,13 +147,14 @@ const Header = ({ setMobileMenuOpen, hide = true }: HeaderProps) => {
         >
           <div className="flex lg:flex-1">
             <a href="/" className="-m-1.5 p-1.5">
-              <span className="sr-only">KOTEK</span>
+              <span className="sr-only">Kotek</span>
               <Image
                 alt="logo"
                 src="/kotek.png"
                 className="h-6 w-auto"
-                width={200}
+                width={100}
                 height={100}
+                style={{ objectFit: "contain" }}
               />
             </a>
           </div>
@@ -298,6 +299,8 @@ function AccountDropDown() {
       label="Account"
       items={itemsToDisplay}
       image={userImage || undefined} // Pass the image if available
+      isLoggedIn={status === "authenticated" ? true : false}
+      username={session?.user?.name}
     />
   );
 }

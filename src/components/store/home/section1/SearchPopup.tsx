@@ -3,7 +3,7 @@ import { Search, Cpu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import useDebounce from "@/hooks/useDebounce";
 import { useProductsContext } from "@/context/ProductsContext";
-import StoreCardList from "../../store-front/StoreCard";
+import StoreCardList from "../../store-front/StoreCardList";
 import { ProductSearchParams } from "@/types/types";
 
 interface SearchPopupProps {
