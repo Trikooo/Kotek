@@ -90,6 +90,7 @@ export const AddressProvider: React.FC<{ children: ReactNode }> = ({
       }
     }
     setSelectedAddressLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, addresses, status, subtotal]);
 
   // Save address changes

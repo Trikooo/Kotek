@@ -64,7 +64,6 @@ export default function OrderSummary({
       subtotalAmount: subtotal,
       totalAmount,
     }));
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart?.items, kotekOrder.shippingPrice, setKotekOrder]);
 

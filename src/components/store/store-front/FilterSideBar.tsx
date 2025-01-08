@@ -132,6 +132,7 @@ export default function FilterSideBar() {
       setProductSearchParams(newParams);
       debouncedSearch(newParams);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sliderValue, selectedBrands, selectedCategories, inStock, hasFiltered]);
 
   const clearFilters = () => {

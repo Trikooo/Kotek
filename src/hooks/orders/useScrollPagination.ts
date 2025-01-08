@@ -60,6 +60,7 @@ export function useScrollPaginatedKotekOrders(
   // Initial fetch
   useEffect(() => {
     if (isPathAllowed && userId) fetchOrders(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPathAllowed, userId]);
 
   // Function to load more orders
