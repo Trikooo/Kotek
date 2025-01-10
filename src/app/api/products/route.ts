@@ -19,12 +19,13 @@ export async function GET(request: NextRequest) {
     let result: ProductSearchResponse | GetAllProductsResponse;
 
     // Use the new static method to check for filters
-    const hasFilters = ProductSearchService.hasFilters(searchParams);
+    // const hasFilters = ProductSearchService.hasFilters(searchParams);
+    const hasFilters = true
     const token = await getToken({ req: request });
     if (!token || (token.role !== "ADMIN" && !searchParams.store)) {
       searchParams.store = true;
     }
-        if (hasFilters) {
+    if (hasFilters) {
       // Use searchService if filtering queries are present
       result = await searchService.searchProducts(searchParams);
     } else {

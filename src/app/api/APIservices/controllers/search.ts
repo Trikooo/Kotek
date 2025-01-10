@@ -99,13 +99,33 @@ export class ProductSearchService {
     const orderByClause = (() => {
       switch (sort) {
         case "price-asc":
-          return Prisma.sql`similarity_score DESC, price ASC, featured DESC`;
+          return Prisma.sql`
+            CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END DESC,
+            similarity_score DESC,
+            price ASC,
+            featured DESC
+          `;
         case "price-desc":
-          return Prisma.sql`similarity_score DESC, price DESC, featured DESC`;
+          return Prisma.sql`
+            CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END DESC,
+            similarity_score DESC,
+            price DESC,
+            featured DESC
+          `;
         case "newest":
-          return Prisma.sql`similarity_score DESC, "createdAt" DESC, featured DESC`;
+          return Prisma.sql`
+            CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END DESC,
+            similarity_score DESC,
+            "createdAt" DESC,
+            featured DESC
+          `;
         default: // 'featured'
-          return Prisma.sql`similarity_score DESC, featured DESC, price ASC`;
+          return Prisma.sql`
+            CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END DESC,
+            similarity_score DESC,
+            featured DESC,
+            price ASC
+          `;
       }
     })();
 

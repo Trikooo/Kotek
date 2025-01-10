@@ -31,7 +31,7 @@ const MobileMenu = ({
 
   const navigation = [
     { name: "Store", href: "/store", icon: Store },
-    { name: "Categories", href: "/categories", icon: LayoutGrid },
+    { name: "Categories", href: "/#categories", icon: LayoutGrid },
     { name: "Contact", href: "/contact", icon: PhoneCall },
   ];
 

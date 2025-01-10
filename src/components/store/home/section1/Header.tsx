@@ -66,7 +66,7 @@ const SearchField = ({ onClick }: { onClick: () => void }) => {
 
 const navigation = [
   { name: "Store", href: "/store" },
-  { name: "Categories", href: "#categories" },
+  { name: "Categories", href: "/#categories" },
   { name: "Contact", href: "/contact" },
 ];
 

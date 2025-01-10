@@ -85,7 +85,7 @@ export default function SettingsSidebar() {
                           src={session?.user?.image ?? ""}
                           alt={session?.user?.name ?? "User avatar"}
                         />
-                        <AvatarFallback className="bg-gray-500 text-white uppercase flex items-center justify-center text-xs">
+                        <AvatarFallback className="bg-black text-white uppercase flex items-center justify-center text-xs">
                           {session?.user?.name?.charAt(0)}
                         </AvatarFallback>
                       </>
