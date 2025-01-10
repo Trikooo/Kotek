@@ -1,6 +1,6 @@
 import { Dialog, DialogPanel } from "@headlessui/react";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 import {
@@ -17,6 +17,7 @@ import {
   LayoutGrid,
   Building2,
   PhoneCall,
+  Box,
 } from "lucide-react";
 
 const MobileMenu = ({
@@ -31,16 +32,26 @@ const MobileMenu = ({
 
   const navigation = [
     { name: "Store", href: "/store", icon: Store },
-    { name: "Categories", href: "/#categories", icon: LayoutGrid },
+    {
+      name: "Categories",
+      href: "/#categories",
+      icon: LayoutGrid,
+      onClick: () => setMobileMenuOpen(false),
+    },
     { name: "Contact", href: "/contact", icon: PhoneCall },
   ];
 
   const authItems = [
     { name: "My Cart", href: "/cart", icon: ShoppingCart },
-    { name: "Profile", href: "/profile", icon: User },
-    { name: "My Orders", href: "/orders", icon: ShoppingCart },
-    { name: "Settings", href: "/settings", icon: Settings },
-    { name: "Logout", href: "/api/auth/signout", icon: LogOut },
+    { name: "Profile", href: "/settings", icon: User },
+    { name: "My Orders", href: "/settings/orders", icon: Box },
+    { name: "Settings", href: "/settings/orders", icon: Settings },
+    {
+      name: "Logout",
+      href: "#",
+      onClick: () => signOut(),
+      icon: LogOut,
+    },
   ];
 
   if (session?.user?.role === "ADMIN") {
@@ -115,6 +126,7 @@ const MobileMenu = ({
                   key={item.name}
                   href={item.href}
                   className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  onClick={item.onClick}
                 >
                   <item.icon className="mr-4 h-4 w-4" strokeWidth={1.5} />
                   {item.name}
@@ -128,6 +140,7 @@ const MobileMenu = ({
                     <Link
                       key={item.name}
                       href={item.href}
+                      onClick={item.onClick}
                       className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       <item.icon className="mr-4 h-4 w-4" strokeWidth={1.5} />
@@ -150,7 +163,7 @@ const MobileMenu = ({
                       href={item.href}
                       className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                     >
-                      <item.icon className="mr-4 h-6 w-6" strokeWidth={1.5} />
+                      <item.icon className="mr-4 h-4 w-4" strokeWidth={1.5} />
                       {item.name}
                     </Link>
                   ))}
