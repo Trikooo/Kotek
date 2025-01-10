@@ -39,7 +39,7 @@ declare module "next-auth/jwt" {
 
 type Role = "ADMIN" | "MOD" | "USER";
 
-const ADMIN_EMAIL = "trikooplays@gmail.com";
+const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(",") || [];
 
 const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -104,7 +104,7 @@ const authOptions: NextAuthOptions = {
   },
   events: {
     createUser: async ({ user }: { user: User }) => {
-      if (user.email === ADMIN_EMAIL) {
+      if (user.email && ADMIN_EMAILS.includes(user.email)) {
         await prisma.user.update({
           where: { id: user.id },
           data: { role: "ADMIN" as Role },
