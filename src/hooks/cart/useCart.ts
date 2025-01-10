@@ -15,7 +15,7 @@ export function useGetCart() {
     items: [],
   });
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
     async function loadCart() {
@@ -36,7 +36,7 @@ export function useGetCart() {
           setCart(userCart);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load cart");
+        setError(err);
       } finally {
         setLoading(false);
       }

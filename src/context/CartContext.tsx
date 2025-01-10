@@ -8,7 +8,7 @@ interface CartContextType {
   setCart: React.Dispatch<React.SetStateAction<FetchCart | null>>;
   subtotal: number;
   loading: boolean;
-  error: string | null;
+  error: unknown;
 }
 
 const CartContext = createContext<CartContextType>({

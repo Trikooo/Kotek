@@ -41,15 +41,10 @@ export const loadGuestCartItems = (): CartItem[] => {
 
 // Retrieve cart from the database itself:
 export const fetchUserCart = async (userId: string) => {
-  //Fetch cart from server:
-  const response = await fetch(`/api/cart?userId=${userId}`, { method: "GET" });
-  if (!response.ok)
-    throw new Error(`Failed to fetch cart: ${response.statusText}`);
-
-  const data = await response.json();
+  const { data } = await axios.get(`/api/cart?userId=${userId}`);
   const userCart = data.cart;
   const guestCartItems = loadGuestCartItems();
-  //now merge the guestCart upon user login (only if there is something valid in localStorage):
+
   if (guestCartItems.length > 0) {
     const mergedItems: CartItem[] = [...userCart.items];
     guestCartItems.forEach((guestItem) => {
@@ -57,18 +52,22 @@ export const fetchUserCart = async (userId: string) => {
         (item: CartItem) => item.productId === guestItem.productId
       );
       if (existingItem) {
-        existingItem.quantity += guestItem.quantity; // Add quantity if the item exists.
+        existingItem.quantity += guestItem.quantity;
       } else {
-        mergedItems.push(guestItem); // Add the new item if not already present in the cart.
+        mergedItems.push(guestItem);
       }
     });
-    const updatedData = await updateCartFirstTime(userId, mergedItems); // update the cart
+
+    const { data: updatedData } = await axios.post("/api/cart/update", {
+      userId,
+      items: mergedItems,
+    });
     localStorage.removeItem("guestCart");
 
     return updatedData.cart;
-  } else {
-    return userCart;
   }
+
+  return userCart;
 };
 
 const updateCartFirstTime = (

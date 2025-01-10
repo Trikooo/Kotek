@@ -10,6 +10,7 @@ import { AlertCircle, ArrowRight, BaggageClaim } from "lucide-react";
 import CartItemsCardSkeleton, { OrderSummarySkeleton } from "./CartSkeleton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AxiosError } from "axios";
 
 export default function CartPage() {
   const { cart, setCart, loading, error } = useCart();
@@ -21,7 +22,6 @@ export default function CartPage() {
     null
   );
   const initialCartRef = useRef<FetchCart | null>(null);
-
   useEffect(() => {
     if (cart && !initialCartRef.current && cart.items.length > 0) {
       initialCartRef.current = cart;
@@ -143,7 +143,8 @@ export default function CartPage() {
           <CartItemsCardSkeleton className="flex-1" />
           <OrderSummarySkeleton className="lg:w-5/12 max-h-min" />
         </div>
-      ) : error && !error.includes("Not Found") ? (
+      ) : error &&
+        !(error instanceof AxiosError && error.response?.status === 404) ? (
         <div className="mt-24 w-full flex flex-col gap-4 items-center justify-center text-red-500">
           <AlertCircle className="w-8 h-8" strokeWidth={1.5} />
           An Error has occurred, please try again
@@ -151,7 +152,9 @@ export default function CartPage() {
             Reload Page
           </Button>
         </div>
-      ) : !cart || cart.items.length < 1 || error?.includes("Not Found") ? (
+      ) : !cart ||
+        cart.items.length < 1 ||
+        (error instanceof AxiosError && error.response?.status === 404) ? (
         <div className="mt-24 flex flex-col items-center p-6 text-center">
           <div className="rounded-full flex items-center justify-center mb-6">
             <BaggageClaim
