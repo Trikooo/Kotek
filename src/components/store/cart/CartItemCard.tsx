@@ -28,8 +28,7 @@ export default function CartItemsCard({
 }: CartItemsCardProps) {
   // Debug log to track cart items
   useEffect(() => {
-    console.log("Cart Items:", cartItems);
-  }, [cartItems]);
+      }, [cartItems]);
 
   if (!cartItems || cartItems.length === 0) {
     return (

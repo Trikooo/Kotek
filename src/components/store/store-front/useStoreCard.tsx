@@ -1,3 +1,4 @@
+import { ToastAction } from "@/components/ui/toast";
 import { useCart } from "@/context/CartContext";
 import { useCreateOrUpdateCart } from "@/hooks/cart/useCart";
 import { useToast } from "@/hooks/use-toast";
@@ -5,6 +6,7 @@ import { Cart, FetchCart } from "@/types/types";
 import { Product } from "@prisma/client";
 import { AlertCircle, CircleCheck } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -44,7 +46,8 @@ export const useStoreCard = (product: Product) => {
       };
 
       try {
-        await handleCreateOrUpdate(cartData);
+        const newCartData = await handleCreateOrUpdate(cartData);
+        setCart(newCartData.cart);
         toast({
           title: (
             <>
@@ -53,6 +56,11 @@ export const useStoreCard = (product: Product) => {
             </>
           ),
           description: "Item has been added to cart.",
+          action: (
+            <Link href="/cart">
+              <ToastAction altText={"View cart"}>View Cart</ToastAction>
+            </Link>
+          ),
         });
       } catch (error) {
         toast({
@@ -66,16 +74,6 @@ export const useStoreCard = (product: Product) => {
           description: "Couldn't add item to cart, please try again.",
         });
       }
-
-      setCart(
-        (prevCart) =>
-          ({
-            ...prevCart,
-            id: prevCart?.id ?? null,
-            userId: prevCart?.userId ?? null,
-            items: [...(prevCart?.items || []), ...cartData.items],
-          } as FetchCart)
-      );
     } else {
       if (typeof window !== "undefined" && window.localStorage) {
         const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
@@ -101,6 +99,11 @@ export const useStoreCard = (product: Product) => {
             </>
           ),
           description: "Item has been added to cart.",
+          action: (
+            <Link href="/cart">
+              <ToastAction altText={"View cart"}>View Cart</ToastAction>
+            </Link>
+          ),
         });
 
         setCart(

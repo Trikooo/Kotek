@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Check, ChevronDown } from "lucide-react";
+import { PiCircuitryThin } from "react-icons/pi";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import DevelopmentBadge from "@/components/ui/development-badge";
 
 export default function Section3() {
@@ -104,8 +105,9 @@ export default function Section3() {
           Configure your dream PC and see it come to life in real-time.
         </p>
       </div>
+      
       <div className="w-full flex items-center justify-center">
-        <div className="w-max absolute left-50 top-50 z-50 ">
+        <div className="w-max absolute left-50 top-50 z-20 ">
           <DevelopmentBadge />
         </div>
         <Card className="flex flex-col items-center w-full md:max-w-4xl gap-y-6 p-6 blur-md">

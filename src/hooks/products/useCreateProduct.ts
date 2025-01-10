@@ -104,8 +104,7 @@ export function useCreateProduct() {
     }));
   };
   useEffect(() => {
-    console.log(newProduct.featured);
-  }, [newProduct.featured]);
+      }, [newProduct.featured]);
 
   return {
     newProduct,

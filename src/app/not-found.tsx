@@ -1,6 +1,5 @@
 "use client";
 import { usePathname } from "next/navigation"; // Correct hook for pathname
-import Background from "@/components/store/home/section1/Background";
 import StoreLayout from "./store/StoreLayout";
 
 export default function NotFound() {
@@ -13,7 +12,6 @@ export default function NotFound() {
       {!isAdminRoute ? (
         <StoreLayout>
           <div className="flex justify-center items-center h-[95vh] overflow-hidden">
-            <Background heightPercentage={125} />
             <h2 className="text-2xl font-semibold mr-5 pr-5 py-2 border-r border-primary">
               404
             </h2>
@@ -22,7 +20,6 @@ export default function NotFound() {
         </StoreLayout>
       ) : (
         <div className="flex justify-center items-center h-[95vh] overflow-hidden">
-          <Background />
           <h2 className="text-2xl font-semibold mr-5 pr-5 py-2 border-r border-primary">
             404
           </h2>

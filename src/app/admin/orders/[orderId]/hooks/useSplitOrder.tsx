@@ -76,8 +76,7 @@ export function useSplitOrderModal(
         ),
       ],
     };
-    console.log("newOrder right before submitting: ", newOrder);
-    const noestOrderForm = createNoestForms(newOrder);
+        const noestOrderForm =  createNoestForms(newOrder);
     const data = {
       noest: noestOrderForm,
       kotek: newOrder,

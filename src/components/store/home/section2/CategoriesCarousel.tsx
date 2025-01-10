@@ -11,15 +11,15 @@ import Autoplay from "embla-carousel-autoplay";
 import { useHeaderContext } from "@/context/HeaderContext";
 import { useCategoryContext } from "@/context/CategoriesContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 const CategorySkeleton = () => (
   <CarouselItem className="basis-2/3 md:basis-1/3 lg:basis-1/4 py-1">
-    <Card className="transition-all duration-100 overflow-hidden" >
+    <Card className="transition-all duration-100 overflow-hidden">
       <CardContent className="p-0">
         <div className="relative w-full aspect-square">
           <Skeleton className="w-full h-full" />
-          <div className="absolute bottom-0 left-0 right-0 bg-indigo-600/70 p-4">
-          </div>
+          <div className="absolute bottom-0 left-0 right-0 bg-indigo-600/70 p-4"></div>
         </div>
       </CardContent>
     </Card>
@@ -88,24 +88,27 @@ export default function CategoriesCarousel() {
                 key={category.id}
                 className="basis-2/3 md:basis-1/3 lg:basis-1/4 py-1"
               >
-                <Card className="transition-all duration-100 hover:shadow-md overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="relative w-full aspect-square">
-                      <Image
-                        src={category.imageUrl}
-                        fill
-                        alt={category.name}
-                        className="object-cover"
-                        sizes="(max-width: 768px) 66vw, (max-width: 1024px) 33vw, 25vw"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-indigo-600/70 p-2">
-                        <p className="font-medium text-sm text-center text-white">
-                          {category.name}
-                        </p>
+                <Link href={`/store?categoryId=${category.id}`}>
+                  <Card className="transition-all duration-100 hover:shadow-md overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="relative w-full aspect-square">
+                        <Image
+                          src={category.imageUrl}
+                          fill
+                          alt={category.name}
+                          className="object-contain hover:scale-105 transition-all duration-300"
+                          sizes="(max-width: 768px) 66vw, (max-width: 1024px) 33vw, 25vw"
+                          loading="lazy"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-indigo-600/70 p-2">
+                          <p className="font-medium text-sm text-center text-white">
+                            {category.name}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Link>
               </CarouselItem>
             ))}
       </CarouselContent>

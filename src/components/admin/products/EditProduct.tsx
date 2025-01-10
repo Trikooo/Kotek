@@ -93,9 +93,7 @@ export default function EditProduct({ product }: EditProductProps) {
     const imagesToDelete = product.imageUrls.filter(
       (image) => !imageUrls.includes(image)
     );
-    console.log(imagesToDelete);
-    console.log("images to save: ", images);
-    await updateProduct(
+            await updateProduct(
       {
         ...data,
         images: images,

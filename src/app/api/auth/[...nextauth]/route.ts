@@ -37,7 +37,6 @@ declare module "next-auth/jwt" {
   }
 }
 
-
 type Role = "ADMIN" | "MOD" | "USER";
 
 const ADMIN_EMAIL = "trikooplays@gmail.com";
@@ -131,7 +130,6 @@ const authOptions: NextAuthOptions = {
       if (user && user.email) {
         // First time jwt callback is run, user object is available
         token.id = user.id;
-
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email },
           select: { role: true, accounts: true },
@@ -145,6 +143,7 @@ const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.role = token.role;
       }
+
       return session;
     },
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {

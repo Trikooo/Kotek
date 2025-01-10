@@ -16,7 +16,7 @@ const weekProps = {
   title: "-12% from last week",
   description: "This Week",
   value: "5 5600 DZD",
-  progressValue: -12,
+  progressValue: 0,
   ariaLabel: "12% decrease",
 };
 

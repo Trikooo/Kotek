@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Filter, Loader2, AlertCircle } from "lucide-react";
+import { Filter, Loader2, AlertCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -25,6 +26,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { ProductSearchParams } from "@/types/types";
 
 export default function FilterSideBar() {
+  const searchParams = useSearchParams();
   const { brands, loading: brandsLoading, error: brandsError } = useBrands();
   const { hasFiltered, setHasFiltered } = useProductsContext();
   const { productSearchParams, setProductSearchParams, resetProducts } =
@@ -52,6 +54,22 @@ export default function FilterSideBar() {
     loading: categoryNamesLoading,
     error: categoryNamesError,
   } = useGetAllCategoryNames();
+
+  // Handle categoryId from URL
+  useEffect(() => {
+    const categoryId = searchParams.get("categoryId");
+    if (categoryId && !selectedCategories.includes(categoryId)) {
+      setSelectedCategories([categoryId]);
+      const newParams: ProductSearchParams = {
+        ...productSearchParams,
+        currentPage: 1,
+        categoryIds: [categoryId],
+      };
+      setProductSearchParams(newParams);
+      resetProducts(newParams);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleInputChange = (index: number, value: string) => {
     const newInputValues = [...inputValues] as [string, string];

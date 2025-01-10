@@ -99,7 +99,7 @@ export type CartItem = {
 
 export type CartUpdateResponse = {
   message: string;
-  updatedCart?: Cart;
+  cart?: Cart;
   error?: string;
 };
 

@@ -39,11 +39,11 @@ const StoreCardCompact = ({ product }: StoreCardProps) => {
           src={product.imageUrls[0]}
           fill // Changed from width/height/layout to fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority
           alt={product.name}
-          className={`rounded-t-md object-cover transition-opacity duration-300 ${
+          className={`rounded-md object-contain transition-opacity duration-300 ${
             hasMultipleImages && isHovered ? "opacity-0" : "opacity-100"
           }`}
+          loading="lazy"
         />
         {hasMultipleImages && product.imageUrls[1] && (
           <Image
@@ -51,20 +51,21 @@ const StoreCardCompact = ({ product }: StoreCardProps) => {
             fill // Changed from width/height/layout to fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             alt={product.name}
-            className={`rounded-t-md object-cover absolute top-0 left-0 transition-opacity duration-300 ${
+            className={`rounded-md object-contain absolute top-0 left-0 transition-opacity duration-300 ${
               isHovered ? "opacity-100" : "opacity-0"
             }`}
+            loading="lazy"
           />
         )}
       </div>
       <div className="p-4 flex flex-col flex-grow">
-        <Link
-          className="text-lg font-semibold mb-2 hover:text-primary hover:underline"
-          href={`/store/${product.id}`}
+        <Button
+          variant="link"
+          className="text-lg font-semibold mb-2 hover:text-indigo-600 duration-0 w-min p-0"
         >
-          {product.name}
-        </Link>
-        <div className="flex items-center justify-between mb-2">
+          <Link href={`/store/${product.id}`}>{product.name}</Link>
+        </Button>
+        <div className="flex items-center justify-start gap-2 mb-2">
           <span className="text-lg font-semibold">
             {formatCurrency(product.price)}
           </span>

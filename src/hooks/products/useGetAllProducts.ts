@@ -18,7 +18,6 @@ export function useGetAllProducts() {
       >("/api/products", {
         params: productSearchParams,
       });
-      console.log("request made.");
 
       return response.data;
     } catch (error) {
@@ -65,8 +64,7 @@ export function useScrollPaginatedProducts(
           newParams
         );
         setProducts((prevProducts) => {
-          console.log("currentPage", productSearchParams.currentPage);
-          return pagination.currentPage === 1
+                    return pagination.currentPage === 1
             ? newProducts
             : [...prevProducts, ...newProducts];
         });
@@ -84,19 +82,14 @@ export function useScrollPaginatedProducts(
   // Initial fetch
   useEffect(() => {
     let newParams: ProductSearchParams;
-    console.log("storeCondition: ", storeCondition);
-    if (storeCondition) {
-      console.log("success");
-      newParams = { ...productSearchParams, store: true, currentPage: 1 };
+        if (storeCondition) {
+            newParams = { ...productSearchParams, store: true, currentPage: 1 };
       setProductSearchParams(newParams);
     } else {
-      console.log("failure");
-      newParams = { ...productSearchParams, store: false, currentPage: 1 };
+            newParams = { ...productSearchParams, store: false, currentPage: 1 };
       setProductSearchParams(newParams);
     }
-    console.log("currentPath", currentPath);
-    console.log("productSearchParams: ", newParams);
-    fetchProducts(newParams);
+            fetchProducts(newParams);
   }, [storeCondition]);
 
   // Function to load more products

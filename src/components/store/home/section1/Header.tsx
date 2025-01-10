@@ -180,7 +180,7 @@ const Header = ({ setMobileMenuOpen, hide = true }: HeaderProps) => {
             <div className="hidden lg:flex justify-center">
               <AnnouncementBanner
                 message="Discover our newest arrivals."
-                link="#"
+                link="/store?sort=newest"
                 linkText="Go Now"
               />
             </div>

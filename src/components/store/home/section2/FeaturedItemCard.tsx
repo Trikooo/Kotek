@@ -6,6 +6,8 @@ import { formatCurrency } from "@/utils/generalUtils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorComponent from "@/components/error/error";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function FeaturedItems() {
   const { products, loading, error } = useProductsContext();
@@ -14,7 +16,7 @@ export default function FeaturedItems() {
   if (error) return <ErrorComponent />;
 
   return (
-    <section className="py-12">
+    <section className="py-12 w-full">
       <style jsx>{`
         .hide-scrollbar {
           -ms-overflow-style: none;
@@ -25,27 +27,34 @@ export default function FeaturedItems() {
         }
       `}</style>
       <div>
-        <div className="flex overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 gap-8 hide-scrollbar">
+        <div className="flex overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 gap-8 hide-scrollbar p-1">
           {products.slice(0, 4).map((product) => (
             <div key={product.id} className="flex-shrink-0 w-64 md:w-auto">
-              <Card className="overflow-hidden">
+              <Card className="overflow-hidden hover:shadow-md">
                 <CardContent className="p-0">
                   <div className="relative aspect-square">
-                    <Image
-                      src={product.imageUrls[0] || "/placeholder.svg"}
-                      alt={product.name}
-                      layout="fill"
-                      objectFit="contain"
-                    />
+                    <Link href={`/store/${product.id}`}>
+                      <Image
+                        src={product.imageUrls[0] || "/placeholder.svg"}
+                        alt={product.name}
+                        layout="fill"
+                        objectFit="contain"
+                        className="hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
-              <h3 className="mt-2 text-lg font-semibold text-gray-800 truncate">
-                {product.name}
-              </h3>
-              <p className="text-sm text-gray-600">
-                {formatCurrency(product.price)}
-              </p>
+              <Link href={`/store/${product.id}`}>
+                <Button
+                  variant="link"
+                  className="mt-2 text-lg font-semibold truncate p-0 hover:text-indigo-600 duration-0"
+                >
+                  {product.name}
+                </Button>
+              </Link>
+              <p className="text-sm ">{formatCurrency(product.price)}</p>
             </div>
           ))}
         </div>

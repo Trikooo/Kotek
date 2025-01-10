@@ -29,8 +29,7 @@ export default function DeleteAddressDialog({
     try {
       if (userId) {
         const address = await handleDeleteAddress(addressId, userId);
-        console.log(address);
-        toast({
+                toast({
           title: "Successfully deleted address",
         });
       }

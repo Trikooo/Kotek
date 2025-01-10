@@ -1,3 +1,4 @@
+import getWilayaData from "@/services/wilayaDataService";
 import { v4 as uuidv4 } from "uuid";
 
 export function formatCurrency(
@@ -48,8 +49,7 @@ export const calculateShipping = (
   // For everything else, calculate number of parcels needed
   const fullParcels = Math.floor(subtotal / MAX_SINGLE_PARCEL);
   const remainder = subtotal % MAX_SINGLE_PARCEL;
-  console.log("remainder: ", remainder);
-  let multiplier = fullParcels * 2; // Each full parcel (150k) costs double
+    let multiplier = fullParcels * 2; // Each full parcel (150k) costs double
 
   // Handle the remainder
   if (remainder > 0) {
@@ -76,3 +76,28 @@ export const humanReadableDate = (isoString: string): string => {
     hour12: false,
   });
 };
+
+export async function getNoestWilayaValue(
+  wilayaValue: string,
+  wilayaLabel: string
+): Promise<number | undefined> {
+  try {
+    const parsedValue = parseInt(wilayaValue, 10);
+    if (parsedValue <= 48) {
+      return parsedValue;
+    }
+
+    const wilayaData = await getWilayaData();
+    if (wilayaData) {
+      const noestWilayaValue = wilayaData[wilayaLabel]?.legacyData?.previousId;
+      if (noestWilayaValue) {
+        return parseInt(noestWilayaValue, 10);
+      }
+    }
+  } catch (error) {
+    console.error("Error in getNoestWilayaValue:", error);
+    throw error
+  }
+
+  return undefined;
+}

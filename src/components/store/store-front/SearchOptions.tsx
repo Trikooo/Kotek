@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import {
   Select,
   SelectTrigger,
@@ -13,7 +14,41 @@ export default function SearchSort() {
   const { productSearchParams, setProductSearchParams, resetProducts } =
     useProductsContext();
 
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const sortParam = searchParams.get("sort");
+
+    if (sortParam && sortParam !== productSearchParams.sort) {
+      const validSortOptions = [
+        "featured",
+        "price-asc",
+        "price-desc",
+        "newest",
+      ];
+      if (validSortOptions.includes(sortParam)) {
+        const newParams = {
+          ...productSearchParams,
+          sort: sortParam,
+          currentPage: 1,
+        };
+        setProductSearchParams(newParams);
+        resetProducts(newParams);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]); // React to searchParams changes
+
   const handleSortChange = (value: string) => {
+    // Create new URLSearchParams object
+    const params = new URLSearchParams(searchParams);
+    params.set("sort", value);
+
+    // Update URL using Next.js router
+    router.push(`${pathname}?${params.toString()}`);
+
     const newParams = {
       ...productSearchParams,
       sort: value,
@@ -22,6 +57,7 @@ export default function SearchSort() {
     setProductSearchParams(newParams);
     resetProducts(newParams);
   };
+
   return (
     <div className="flex gap-2 items-center">
       <span className="font-semibold text-sm">Sort by: </span>

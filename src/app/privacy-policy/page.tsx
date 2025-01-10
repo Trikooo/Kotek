@@ -1,6 +1,5 @@
 import React from "react";
 import StoreLayout from "../store/StoreLayout";
-import Background from "@/components/store/home/section1/Background";
 
 export default function PrivacyPolicy() {
   return (

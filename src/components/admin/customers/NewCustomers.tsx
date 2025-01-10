@@ -67,8 +67,7 @@ export default function NewCustomers({ className = "" }: NewCustomersProps) {
       currentPage={0}
       totalPages={0}
       setPage={() => {
-        console.log("");
-      }}
+              }}
     />
   );
 }

@@ -83,7 +83,8 @@ export default function ProductInformation({
       };
 
       try {
-        await handleCreateOrUpdate(cartData);
+        const newCartData = await handleCreateOrUpdate(cartData);
+        setCart(newCartData.cart);
         toast({
           title: (
             <>
@@ -94,7 +95,7 @@ export default function ProductInformation({
           description: "Item has been added to cart.",
           action: (
             <Link href="/cart">
-              <ToastAction altText={"View cart"}>View Cart</ToastAction>
+              <ToastAction altText={"View Cart"}>View Cart</ToastAction>
             </Link>
           ),
         });
@@ -110,16 +111,6 @@ export default function ProductInformation({
           description: "Couldn't add item to cart, please try again.",
         });
       }
-
-      setCart(
-        (prevCart) =>
-          ({
-            ...prevCart,
-            id: prevCart?.id ?? null,
-            userId: prevCart?.userId ?? null,
-            items: [...(prevCart?.items || []), ...cartData.items],
-          } as FetchCart)
-      );
     } else {
       if (typeof window !== "undefined" && window.localStorage && product) {
         const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
@@ -145,6 +136,11 @@ export default function ProductInformation({
             </>
           ),
           description: "Item has been added to cart.",
+          action: (
+            <Link href="/cart">
+              <ToastAction altText={"View cart"}>View Cart</ToastAction>
+            </Link>
+          ),
         });
 
         setCart(
@@ -229,11 +225,12 @@ export default function ProductInformation({
               <p className="text-2xl font-bold">
                 {formatCurrency(product.price)}
               </p>
-              {product.originalPrice && (
-                <span className="text-xs md:text-sm line-through text-muted-foreground">
-                  {product.originalPrice} DA
-                </span>
-              )}
+              {product.originalPrice &&
+                product.originalPrice > product.price && (
+                  <span className="text-xs md:text-sm line-through text-muted-foreground">
+                    {product.originalPrice} DA
+                  </span>
+                )}
             </div>
             <div className="flex items-center gap-2">
               <p className="font-semibold mb-1">Quantity</p>

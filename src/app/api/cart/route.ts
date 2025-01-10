@@ -159,11 +159,10 @@ export async function PUT(request: NextRequest) {
   try {
     const { userId, items } = validation.data;
     const updatedCart = await updateUserCart(userId, items);
-
     return NextResponse.json(
       {
         message: "Cart updated successfully",
-        updatedCart: updatedCart,
+        cart: updatedCart,
       },
       {
         status: 200,
@@ -181,7 +180,6 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-
 
 export async function DELETE(request: NextRequest) {
   try {

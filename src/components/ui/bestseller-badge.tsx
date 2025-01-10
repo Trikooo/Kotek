@@ -6,7 +6,7 @@ export default function AnimatedBestSellerBadge() {
     <motion.div
       className="relative inline-block text-sm"
       whileHover={{ scale: 1.1 }}
-      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+      transition={{ type: "inertia", stiffness: 400, damping: 10 }}
     >
       <motion.div
         className="px-2 py-1 font-bold text-white text-md rounded-full overflow-hidden"

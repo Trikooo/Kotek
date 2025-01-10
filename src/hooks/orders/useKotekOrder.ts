@@ -54,7 +54,6 @@ export function useGetKotekOrderById(orderId: string) {
       if (response.status !== 200) {
         throw new Error("Failed to fetch Kotek order");
       }
-      console.log(response);
       setOrder(response.data);
       return response.data;
     } catch (err) {
@@ -70,6 +69,7 @@ export function useGetKotekOrderById(orderId: string) {
     if (orderId) {
       fetchOrder(orderId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

@@ -18,27 +18,43 @@ import { DeleteProduct } from "./DeleteProduct";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import useDebounce from "@/hooks/useDebounce";
+import { ProductSearchParams } from "@/types/types";
 
 export default function AllProducts() {
-  const { products, loading, error, loadMoreProducts, pagination } =
-    useProductsContext();
+  const {
+    products,
+    loading,
+    error,
+    loadMoreProducts,
+    pagination,
+    productSearchParams,
+    setProductSearchParams,
+    resetProducts,
+  } = useProductsContext();
+
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(
     new Set()
   );
   const [sortOption, setSortOption] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const matchesStatus =
-        selectedStatuses.size === 0 ||
-        selectedStatuses.has(product.status.toLowerCase());
-      return matchesSearch && matchesStatus;
-    });
-  }, [products, searchTerm, selectedStatuses]);
+  // Debounced search function
+  const debouncedSearch = useDebounce((searchQuery: string) => {
+    const newParams: ProductSearchParams = {
+      ...productSearchParams,
+      query: searchQuery,
+      currentPage: 1,
+    };
+    setProductSearchParams(newParams);
+    resetProducts(newParams);
+  }, 500);
+
+  // Handle search input change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    debouncedSearch(value);
+  };
 
   const columns: Column[] = [
     { header: "Image", important: true },
@@ -48,7 +64,7 @@ export default function AllProducts() {
     { header: "Actions", important: true },
   ];
 
-  const rows: Row[] = filteredProducts.map((product) => ({
+  const rows: Row[] = products.map((product) => ({
     id: product.id,
     image: (
       <Tooltip>
@@ -94,11 +110,10 @@ export default function AllProducts() {
     ),
   }));
 
-  // Ref for the scrollable container and load more trigger
+  // Intersection Observer setup for infinite scrolling
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
 
-  // Intersection Observer to trigger load more
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const target = entries[0];
@@ -109,12 +124,11 @@ export default function AllProducts() {
     [loadMoreProducts, pagination, loading]
   );
 
-  // Set up Intersection Observer
   useEffect(() => {
     const options: IntersectionObserverInit = {
-      root: null, // viewport
-      rootMargin: "0px 0px 100px 0px", // 100px from bottom
-      threshold: 0, // trigger as soon as any part is visible
+      root: null,
+      rootMargin: "0px 0px 100px 0px",
+      threshold: 0,
     };
 
     if (loadMoreTriggerRef.current) {
@@ -147,22 +161,28 @@ export default function AllProducts() {
         </Link>
       </div>
       <DataTable
-        title={<ProductsTitle setSearchTerm={setSearchTerm} />}
+        title={
+          <ProductsTitle
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
+          />
+        }
         columns={columns}
         rows={rows}
         isLoading={loading}
         error={error}
       />
-      {/* Load more trigger at the end of the table */}
       <div ref={loadMoreTriggerRef} style={{ height: "1px" }} />
     </>
   );
 }
 
 const ProductsTitle = ({
-  setSearchTerm,
+  searchTerm,
+  onSearchChange,
 }: {
-  setSearchTerm: (term: string) => void;
+  searchTerm: string;
+  onSearchChange: (term: string) => void;
 }) => {
   return (
     <div className="flex items-center justify-between">
@@ -176,7 +196,8 @@ const ProductsTitle = ({
           type="search"
           placeholder="Search..."
           className="w-full rounded-lg bg-background pl-8 font-normal"
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
     </div>

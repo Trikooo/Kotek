@@ -3,13 +3,13 @@ import StoreLayout from "../store/StoreLayout";
 import Link from "next/link";
 import { FaFacebook, FaTiktok, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import Ouedkniss from "@/components/icons/Ouedkniss";
-import Background from "@/components/store/home/section1/Background";
+
 
 export default function LinksPage() {
   return (
     <StoreLayout>
       <div className="flex flex-col items-center justify-center h-[60vh]">
-        <Background />
+
         <div className="max-w-md w-full space-y-6 px-4 mt-10">
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold">Connect with us</h1>

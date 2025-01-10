@@ -69,8 +69,7 @@ export default function CreateCarouselItem() {
 
   const onSubmit = async (data: CarouselItemFormValues) => {
     try {
-      console.log("typeof data.imageFile", data.imageFile[0]);
-      const formData = new FormData();
+            const formData = new FormData();
       formData.append("title", data.title);
       formData.append("link", data.link);
       formData.append("image", data.imageFile[0]);

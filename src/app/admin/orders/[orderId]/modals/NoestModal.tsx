@@ -41,8 +41,7 @@ export default function NoestModal({
     };
 
     const noestForm = createNoestForms(newOrder);
-
-    const data = { noest: noestForm, kotek: newOrder };
+        const data = { noest: noestForm, kotek: newOrder };
     try {
       if (order.id) {
         // const response = await createNoestOrder(noestOrderData, order.id);

@@ -1,4 +1,5 @@
 import { Stars } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 import { IoSparklesSharp } from "react-icons/io5";
 
@@ -18,10 +19,10 @@ const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
       <IoSparklesSharp className="text-indigo-600 w-5 h-5"/>
 
       {message}
-      <a href={link} className="font-semibold text-indigo-600">
+      <Link href={link} className="font-semibold text-indigo-600">
         <span aria-hidden="true" className="absolute inset-0" />
         {linkText} <span aria-hidden="true">&rarr;</span>
-      </a>
+      </Link>
     </div>
   );
 };

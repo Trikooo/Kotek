@@ -24,8 +24,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      console.log("acceptedFiles: ", acceptedFiles);
-      const isDuplicateFile = (file: File): boolean => {
+            const isDuplicateFile = (file: File): boolean => {
         return images.some((existingImage) => {
           if (existingImage instanceof File) {
             return (
@@ -38,8 +37,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       };
       const newFiles = acceptedFiles.filter((file) => !isDuplicateFile(file));
       if (newFiles.length > 0) {
-        console.log("newFiles: ", newFiles);
-        onImagesChange([...images, ...newFiles]);
+                onImagesChange([...images, ...newFiles]);
       }
     },
     [images, onImagesChange]

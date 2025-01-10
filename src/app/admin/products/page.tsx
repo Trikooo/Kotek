@@ -1,31 +1,68 @@
-import Stock from "@/components/admin/products/Stock";
-import AdminLayout from "../AdminLayout";
-import ViewProducts from "@/components/admin/products/ViewProducts";
-import LowestStock from "@/components/admin/products/LowestStock";
-import { useKotekOrder } from "@/context/KotekOrderContext";
+"use client";
 
-const ProductProps = {
-  title: "🔻 12% from last week",
-  description: "Number of products in stock",
-  value: "843",
-  progressValue: -12,
-  ariaLabel: "12% decrease",
-};
-export default function Products() {
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Package, Layers } from "lucide-react";
+import { useRouter } from "next/navigation";
+import AdminLayout from "../AdminLayout";
+import Link from "next/link";
+
+export default function ProductPage() {
+  const router = useRouter();
+
   return (
     <AdminLayout>
-      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
-        <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
-          <div className="grid gap-4  md:gap-8 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-            <ViewProducts className="sm:col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-2" />
-            <Stock
-              className="sm:col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-2"
-              {...ProductProps}
-            />
-          </div>
-          <LowestStock />
+      <div className="container mx-auto py-10">
+        <h1 className="text-4xl font-bold mb-8">Product Management</h1>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-6 w-6" />
+                Manage Products
+              </CardTitle>
+              <CardDescription>
+                View, edit, and add new products to your inventory
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">
+                Access your product catalog and make changes as needed.
+              </p>
+              <Link href="/admin/products/manage">
+                <Button className="w-full">Go to Products</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="h-6 w-6" />
+                Handle Categories
+              </CardTitle>
+              <CardDescription>
+                Organize and manage your product categories
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">
+                Create, edit, or delete categories to keep your products
+                organized.
+              </p>
+              <Link href="/admin/dashboard/categories">
+                <Button className="w-full ">Go to Categories</Button>
+              </Link>
+            </CardContent>
+          </Card>
         </div>
-      </main>
+      </div>
     </AdminLayout>
   );
 }

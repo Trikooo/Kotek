@@ -2435,6 +2435,10 @@
         "home": 1000,
         "stopDesk": 600
       }
+    },
+    "legacyData": {
+      "previousWilaya": "Biskra",
+      "previousId": "7"
     }
   },
   "Beni Abbes": {
@@ -2481,6 +2485,10 @@
         "home": 1800,
         "stopDesk": 1200
       }
+    },
+    "legacyData": {
+      "previousWilaya": "Tamanrasset",
+      "previousId": "11"
     }
   },
   "In Guezzam": {
@@ -2492,6 +2500,10 @@
         "home": 0,
         "stopDesk": 0
       }
+    },
+    "legacyData": {
+      "previousWilaya": "Tamanrasset",
+      "previousId": "11"
     }
   },
   "Touggourt": {

@@ -74,13 +74,14 @@ export async function createUserCart(
     const newCart = await prisma.cart.create({
       data: {
         userId: userId,
-        // Omit items or provide an array with the correct structure if needed
         items: {
-          create: items, // You can also omit this if you don't need to initialize items
+          create: items,
         },
       },
+      include: {
+        items: true, // Include the related items in the response
+      },
     });
-
     return newCart; // Return the newly created cart
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -114,31 +115,22 @@ export async function updateUserCart(
   if (!cart) {
     throw new Error("Cart not found for user");
   }
-  return prisma.$transaction(async (tx) => {
-    // updatedItems is an array like:
-    // [
-    //   { productId: 1, quantity: 2, price: 10.99 },
-    //   { productId: 2, quantity: 1, price: 15.99 }
-    // ]
 
-    // For each item, we create a prisma upsert operation
+  await prisma.$transaction(async (tx) => {
     const upsertPromises = newItems.map((item) => {
       return tx.cartItem.upsert({
-        // First, look for an existing cart item with this cartId and productId
         where: {
           cartId_productId: {
             cartId: cart.id,
             productId: item.productId,
           },
         },
-        // If not found, create new cart item with these values
         create: {
           cartId: cart.id,
           productId: item.productId,
           quantity: item.quantity,
           price: item.price,
         },
-        // If found, update the existing item with these values
         update: {
           quantity: item.quantity,
           price: item.price,
@@ -146,12 +138,12 @@ export async function updateUserCart(
       });
     });
 
-    // Wait for all upsert operations to complete
     await Promise.all(upsertPromises);
-
-    // Finally, get the cart with all its items and return it
-    return await getUserCart(cart.userId);
   });
+
+  // Fetch the updated cart after the transaction is complete
+  const newCart = await getUserCart(cart.userId);
+  return newCart;
 }
 
 export async function validateCartData(request: NextRequest) {

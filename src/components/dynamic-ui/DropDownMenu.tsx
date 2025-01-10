@@ -45,7 +45,7 @@ export default function DynamicDropdownMenu({
             {isLoggedIn ? (
               <>
                 <AvatarImage src={image} alt={username || "user image"} />
-                <AvatarFallback className="bg-gray-200 text-gray-600">
+                <AvatarFallback className="bg-black text-white text-xs">
                   {getFallbackLetter(username || "")}
                 </AvatarFallback>
               </>

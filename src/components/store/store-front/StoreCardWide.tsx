@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import DisplayBadge from "@/components/ui/display-badge";
-import { ToastAction } from "@/components/ui/toast";
 import { formatCurrency } from "@/utils/generalUtils";
 
 import { Product } from "@prisma/client";
-import { AlertCircle, CircleCheck, Loader2, Package } from "lucide-react";
+import { Loader2, Package } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useStoreCard } from "./useStoreCard";
@@ -40,22 +39,27 @@ const StoreCardWide = ({ product }: StoreCardProps) => {
             </div>
             <Image
               src={product.imageUrls[0]}
-              layout="fill"
-              objectFit="cover"
+              objectFit="contain"
+              fill // Changed from width/height/layout to fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               alt={product.name}
               className={`rounded-md transition-opacity duration-300 ${
                 hasMultipleImages && isHovered ? "opacity-0" : "opacity-100"
               }`}
+              loading="lazy"
             />
             {hasMultipleImages && product.imageUrls[1] && (
               <Image
                 src={product.imageUrls[1]}
                 layout="fill"
-                objectFit="cover"
+                objectFit="contain"
+                fill // Changed from width/height/layout to fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 alt={product.name}
                 className={`rounded-md absolute top-0 left-0 transition-opacity duration-300 ${
                   isHovered ? "opacity-100" : "opacity-0"
                 }`}
+                loading="lazy"
               />
             )}
           </div>

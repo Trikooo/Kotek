@@ -1,4 +1,4 @@
-'use client'; // Add this at the top of the file
+"use client"; // Add this at the top of the file
 
 import {
   ChevronLeft,
@@ -18,7 +18,11 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import DynamicDropdownMenu from "@/components/dynamic-ui/DropDownMenu"; // Import the new dropdown menu
-import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
 
 interface OrderInfoProps {
   className?: string;
@@ -26,13 +30,31 @@ interface OrderInfoProps {
 
 export default function OrderInfo({ className = "" }: OrderInfoProps) {
   const dropdownItems = [
-    { label: "Edit", onClick: () => {/* Handle Edit */} },
-    { label: "Export", onClick: () => {/* Handle Export */} },
-    { label: "Trash", onClick: () => {/* Handle Trash */} },
+    {
+      label: "Edit",
+      onClick: () => {
+        /* Handle Edit */
+      },
+    },
+    {
+      label: "Export",
+      onClick: () => {
+        /* Handle Export */
+      },
+    },
+    {
+      label: "Trash",
+      onClick: () => {
+        /* Handle Trash */
+      },
+    },
   ];
 
   return (
-    <Card className={`overflow-hidden ${className}`} x-chunk="dashboard-05-chunk-4">
+    <Card
+      className={`overflow-hidden ${className}`}
+      x-chunk="dashboard-05-chunk-4"
+    >
       <CardHeader className="flex flex-row items-start bg-muted/50">
         <div className="grid gap-0.5">
           <CardTitle className="group flex items-center gap-2 text-lg">
@@ -50,7 +72,7 @@ export default function OrderInfo({ className = "" }: OrderInfoProps) {
         </div>
         <div className="ml-auto flex items-center gap-1">
           <Button size="sm" variant="outline" className="h-8 gap-1">
-            <Truck className="h-3.5 w-3.5" strokeWidth={1.5}/>
+            <Truck className="h-3.5 w-3.5" strokeWidth={1.5} />
             <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
               Track Order
             </span>
@@ -58,6 +80,7 @@ export default function OrderInfo({ className = "" }: OrderInfoProps) {
           <DynamicDropdownMenu
             label="More Options"
             items={dropdownItems}
+            isLoggedIn
           />
         </div>
       </CardHeader>

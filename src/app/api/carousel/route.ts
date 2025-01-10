@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newCarouselItem, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("POST CarouselItem ZodError: ", {
+      console.error("POST CarouselItem ZodError: ", {
         message: "Validation error in CarouselItemData",
         errors: error.errors.map((err) => ({
           path: err.path.join("."),

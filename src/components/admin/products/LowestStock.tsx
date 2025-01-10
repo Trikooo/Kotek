@@ -147,18 +147,22 @@ export default function LowestStock() {
     },
   ];
 
-
   return (
     <DataTable
       title="Lowest In Stock"
       description="Manage your products and view their sales performance."
       columns={columns}
       rows={rows}
-      footer={<div className="text-xs text-muted-foreground">
-        Showing <strong>1-10</strong> of <strong>32</strong> products
-      </div>} currentPage={0} totalPages={0} setPage={()=>{
-        console.log("not implemented in LowestStock.tsx");
-      }}    />
+      footer={
+        <div className="text-xs text-muted-foreground">
+          Showing <strong>1-10</strong> of <strong>32</strong> products
+        </div>
+      }
+      currentPage={0}
+      totalPages={0}
+      setPage={() => {
+              }}
+    />
   );
 }
 
@@ -168,5 +172,5 @@ function ProductsDropDown() {
     { label: "Delete", onClick: () => console.log("Delete clicked") },
   ];
 
-  return <DynamicDropdownMenu label="Actions" items={menuItems} />;
+  return <DynamicDropdownMenu label="Actions" items={menuItems} isLoggedIn />;
 }

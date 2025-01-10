@@ -72,9 +72,7 @@ export function EditOrder({ order, onOrderUpdate }: EditOrderProps) {
     },
   });
   const [orderUpdateLoading, setOrderUpdateLoading] = useState<boolean>(false);
-  useEffect(() => {
-    console.log("order.items: ", order.items);
-  });
+
   useEffect(() => {
     // Update form values when order.items changes
     const updatedItems = order.items
@@ -126,10 +124,8 @@ export function EditOrder({ order, onOrderUpdate }: EditOrderProps) {
         }
         return true;
       });
-      console.log("filteredItems: ", filteredItems);
       if (order.id) {
         const newTotalAmount = values.subtotalAmount + values.shippingPrice;
-        console.log("Calculated new total amount:", newTotalAmount);
 
         const updatedOrderData = {
           ...order,
@@ -137,14 +133,11 @@ export function EditOrder({ order, onOrderUpdate }: EditOrderProps) {
           items: filteredItems,
           totalAmount: newTotalAmount,
         };
-        console.log("Sending updated order data:", updatedOrderData);
 
         const updatedOrder = await handleUpdateKotekOrder(
           updatedOrderData,
           order.id
         );
-        console.log("Received updated order response:", updatedOrder);
-
         onOrderUpdate(updatedOrder as unknown as KotekOrder);
         toast({
           title: "Success!",
@@ -195,13 +188,6 @@ export function EditOrder({ order, onOrderUpdate }: EditOrderProps) {
       form.setValue("shippingPrice", newShippingPrice);
     }
   }, [form.watch("items")]);
-
-  useEffect(() => {
-    const subscription = form.watch((value, { name, type }) =>
-      console.log("Form updated:", { field: name, type, value })
-    );
-    return () => subscription.unsubscribe();
-  }, [form.watch, order.items]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -270,18 +256,10 @@ export function EditOrder({ order, onOrderUpdate }: EditOrderProps) {
                               item={item}
                               productOptions={productOptions}
                               onChange={(_, currentOptions) => {
-                                console.log(
-                                  "IterableSelect onChange - Current options:",
-                                  currentOptions
-                                );
                                 if (currentOptions[0]?.value) {
                                   const selectedProduct = products.find(
                                     (product) =>
                                       product.id === currentOptions[0].value
-                                  );
-                                  console.log(
-                                    "Selected product:",
-                                    selectedProduct
                                   );
 
                                   if (selectedProduct) {
@@ -296,11 +274,6 @@ export function EditOrder({ order, onOrderUpdate }: EditOrderProps) {
                                         weight: selectedProduct.weight || 0,
                                       },
                                     };
-
-                                    console.log(
-                                      "New order item:",
-                                      newOrderItem
-                                    );
                                     field.onChange(
                                       field.value.map((item, i) =>
                                         i === index ? newOrderItem : item
@@ -308,9 +281,6 @@ export function EditOrder({ order, onOrderUpdate }: EditOrderProps) {
                                     );
                                   }
                                 } else {
-                                  console.log(
-                                    "No product selected, setting empty item"
-                                  );
                                   const emptyItem = {
                                     productId: "",
                                     quantity: 1,

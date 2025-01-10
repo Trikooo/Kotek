@@ -62,7 +62,7 @@ export default function CarouselDemo({ carouselItems }: CarouselDemoProps) {
                     <Image
                       src={item.imageUrl}
                       alt={item.title}
-                      className="w-full h-min object-contain overflow-hidden"
+                      className="w-full h-min object-contain overflow-hidden hover:scale-105 transition-transform duration-300"
                       width={1080}
                       height={540}
                       priority

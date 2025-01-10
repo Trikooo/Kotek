@@ -5,18 +5,16 @@ import axios from "axios";
 import { getToken } from "next-auth/jwt";
 import { getLabel } from "../../APIservices/controllers/noest";
 
-const GetLabelSchema = z.object({
-  tracking: z.string(),
-});
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
     const token = await getToken({ req: request });
-    // if (token?.role !== "ADMIN") {
-    //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    // }
+    if (token?.role !== "ADMIN") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const trackingNumber = searchParams.get("trackingNumber");
     if (!trackingNumber) {
       console.error("trackingNumber is required.");

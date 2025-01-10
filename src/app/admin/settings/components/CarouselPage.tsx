@@ -71,7 +71,7 @@ export default function CarouselSettings() {
       }));
       await mutateAsync(data);
       toast({
-        title: "Updated order successfully",
+        title: "Updated carousel order successfully",
       });
     } catch (error) {
       console.error("error updating carousel order", error);

@@ -4,19 +4,33 @@ import {
   ChartColumnIncreasing,
   ClipboardList,
   Home,
-  LineChart,
   Package,
-  Package2,
   PanelLeft,
-  ShoppingCart,
   Users,
-  Users2,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function SheetBar() {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const pathname = usePathname();
+
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
+  const getLinkClassName = (path: string) => {
+    const isActive = pathname === path;
+    return `flex items-center gap-4 px-2.5 ${
+      isActive
+        ? "text-foreground"
+        : "text-muted-foreground hover:text-foreground"
+    }`;
+  };
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button size="icon" variant="outline" className="sm:hidden">
           <PanelLeft className="h-5 w-5" />
@@ -27,35 +41,40 @@ export default function SheetBar() {
         <nav className="grid gap-6 text-lg font-medium">
           <Link
             href="/admin/dashboard"
-            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+            className={getLinkClassName("/admin/dashboard")}
+            onClick={handleLinkClick}
           >
             <Home className="h-4 w-4" strokeWidth={1.5} />
             Home
           </Link>
           <Link
-            href="#"
-            className="flex items-center gap-4 px-2.5 text-foreground"
+            href="/admin/orders"
+            className={getLinkClassName("/admin/orders")}
+            onClick={handleLinkClick}
           >
             <ClipboardList className="h-4 w-4" strokeWidth={1.5} />
             Orders
           </Link>
           <Link
-            href="#"
-            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+            href="/admin/products"
+            className={getLinkClassName("/admin/products")}
+            onClick={handleLinkClick}
           >
             <Package className="h-4 w-4" strokeWidth={1.5} />
             Products
           </Link>
           <Link
-            href="#"
-            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+            href="/admin/customers"
+            className={getLinkClassName("/admin/customers")}
+            onClick={handleLinkClick}
           >
-            <Users className="h-5 w-5" strokeWidth={1.5} />
+            <Users className="h-4 w-4" strokeWidth={1.5} />
             Customers
           </Link>
           <Link
             href="/admin/analytics"
-            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+            className={getLinkClassName("/admin/analytics")}
+            onClick={handleLinkClick}
           >
             <ChartColumnIncreasing className="h-5 w-5" strokeWidth={1.5} />
             Analytics

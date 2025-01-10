@@ -17,8 +17,7 @@ export default function StoreLayout({
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // useEffect(() => {
-  //   console.log(NAME);
-  // }, []);
+  //     // }, []);
 
   return (
     <HeaderProvider>

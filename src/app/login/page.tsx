@@ -1,19 +1,15 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { FaXTwitter } from "react-icons/fa6";
 import Link from "next/link";
 import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { FaApple, FaDiscord, FaFacebook, FaTwitter } from "react-icons/fa";
-import Background from "@/components/store/home/section1/Background";
+import { FaDiscord } from "react-icons/fa";
 import Footer from "@/components/store/home/footer/Footer";
 import GoogleIcon from "@/components/icons/Google";
 import { AlertCircle, Loader2, LoaderCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import EmailLoginForm from "./EmailLoginForm";
 
 export default function LoginPage() {
@@ -46,7 +42,6 @@ export default function LoginPage() {
     >
       <SearchParamsHandler setIsCreatingAccount={setIsCreatingAccount} />
       <div className="w-full h-[80vh]">
-        <Background heightPercentage={109} />
         <div className="flex lg:flex-1 items-center justify-between p-6 lg:px-8">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Kotek</span>

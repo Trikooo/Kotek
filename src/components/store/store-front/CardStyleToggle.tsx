@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { AlignJustify, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,34 +24,49 @@ export function CardStyleToggle({
     }
   };
 
+  const baseButtonStyles =
+    "relative z-10 transition-colors duration-200 rounded-none py-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:bg-transparent";
+
   return (
-    <Card className="flex">
-      <Button
-        variant="ghost"
-        size="icon"
+    <Card className="flex w-min overflow-hidden relative">
+      {/* Sliding background */}
+      <div
+        className={`absolute top-0 bottom-0 w-1/2 bg-indigo-600 transition-transform duration-200 ease-in-out ${
+          selectedIcon === "grid" ? "translate-x-full" : "translate-x-0"
+        }`}
+      />
+
+      {/* List button */}
+      <button
         onClick={() => handleToggle("list")}
-        className={` transition-all duration-100 rounded-none  rounded-tl-md rounded-bl-md ${
+        className={`${baseButtonStyles} rounded-tl-md rounded-bl-md ${
           selectedIcon === "list"
-            ? "border-2 border-indigo-600 text-indigo-600 hover:text-indigo-600"
-            : "hover:bg-indigo-50"
+            ? "text-white hover:text-white focus:text-white"
+            : "text-gray-600 hover:text-indigo-600"
         }`}
       >
-        <AlignJustify className="w-4 h-4" strokeWidth={1.5} />
-        <span className="sr-only">List view</span>
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
+        <div className="px-3 py-2">
+          <AlignJustify className="w-4 h-4" strokeWidth={1.5} />
+          <span className="sr-only">List view</span>
+        </div>
+      </button>
+
+      {/* Grid button */}
+      <button
         onClick={() => handleToggle("grid")}
-        className={`transition-all duration-100 rounded-none  rounded-tr-md rounded-br-md py-1 ${
+        className={`${baseButtonStyles} rounded-tr-md rounded-br-md ${
           selectedIcon === "grid"
-            ? "border-2 border-indigo-600 text-indigo-600 hover:text-indigo-600"
-            : "hover:bg-indigo-50"
+            ? "text-white hover:text-white focus:text-white"
+            : "text-gray-600 hover:text-indigo-600"
         }`}
       >
-        <LayoutGrid className="w-4 h-4" strokeWidth={1.5} />
-        <span className="sr-only">Grid view</span>
-      </Button>
+        <div className="px-3 py-2">
+          <LayoutGrid className="w-4 h-4" strokeWidth={1.5} />
+          <span className="sr-only">Grid view</span>
+        </div>
+      </button>
     </Card>
   );
 }
+
+export default CardStyleToggle;

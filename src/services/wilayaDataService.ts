@@ -67,37 +67,31 @@ function isValidWilayaData(data: any): data is Wilayas {
 }
 
 export default async function getWilayaData(): Promise<Wilayas | undefined> {
+  localStorage.removeItem("wilayaData");
   try {
     if (typeof window !== "undefined") {
       // Ensure we are in the browser environment
-      const wilayaData = localStorage.getItem("wilayaData");
+      const wilayaData = localStorage.getItem("wilayaDataV2");
 
       if (wilayaData) {
-        try {
-          const parsedData = JSON.parse(wilayaData);
+        const parsedData = JSON.parse(wilayaData);
 
-          if (isValidWilayaData(parsedData)) {
-            return parsedData;
-          } else {
-            // If data is invalid, remove it from localStorage
-            localStorage.removeItem("wilayaData");
-            throw new Error("Invalid wilaya data format");
-          }
-        } catch (parseError) {
-          // If parsing fails
-          localStorage.removeItem("wilayaData");
-          console.error("Failed to parse wilaya data", parseError);
+        if (isValidWilayaData(parsedData)) {
+          return parsedData;
+        } else {
+          // If data is invalid, remove it from localStorage
+          localStorage.removeItem("wilayaDataV2");
         }
       }
 
       // If no valid data in localStorage, fetch from API
       const response = await axios.get("/api/wilayaData");
-      localStorage.setItem("wilayaData", JSON.stringify(response.data));
+      localStorage.setItem("wilayaDataV2", JSON.stringify(response.data));
       return response.data;
     }
   } catch (error) {
     if (error instanceof axios.AxiosError) {
-      console.error("Error fetching wilaya data:", error.message);
+      console.error("Error fetching wilaya data:", error);
     } else {
       console.error("Unknown error:", error);
     }

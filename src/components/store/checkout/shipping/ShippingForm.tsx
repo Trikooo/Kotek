@@ -207,10 +207,6 @@ export default function ShippingForm() {
                             .stopDesk || 0
                         : wilayaData?.[currentWilaya[0].label].noest.prices
                             .home || 0;
-                      console.log(
-                        "baseShippingPrice in wilaya: ",
-                        baseShippingPrice
-                      );
 
                       setKotekOrder((prev) => ({
                         ...prev,
@@ -274,11 +270,7 @@ export default function ShippingForm() {
                                 .stopDesk || 0
                             : wilayaData?.[selectedWilaya[0].label].noest.prices
                                 .home || 0;
-                          console.log(
-                            "baseShippingPrice in stopDesk: ",
-                            baseShippingPrice
-                          );
-                          setKotekOrder((prev) => ({
+                                                    setKotekOrder((prev) => ({
                             ...prev,
                             shippingPrice: calculateShipping(
                               subtotal,

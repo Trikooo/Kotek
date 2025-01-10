@@ -40,22 +40,19 @@ const EmailLoginForm = ({ onBack }: { onBack: () => void }) => {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      console.log("Starting email login process for:", values.email);
-      setLoading(true);
+            setLoading(true);
       setError(null);
 
       const result = await signIn("email", {
         email: values.email,
         redirect: false,
       });
-      console.log("SignIn result:", result);
 
       if (result?.error) {
         console.error("Login error:", result.error);
         setError("Failed to send verification email. Please try again.");
       } else {
-        console.log("Verification email sent successfully");
-        setError("Check your email for the login link!");
+                setError("Check your email for the login link!");
         form.reset();
       }
     } catch (err) {
@@ -63,8 +60,7 @@ const EmailLoginForm = ({ onBack }: { onBack: () => void }) => {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
-      console.log("Login process completed");
-    }
+          }
   };
 
   return (

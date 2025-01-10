@@ -132,7 +132,6 @@ export default function useShippingForm() {
       stationName: data.station?.label,
       baseShippingPrice: baseShippingPrice,
     };
-    console.log("dataToSend: ", dataToSend);
 
     try {
       setAddressLoading(true);

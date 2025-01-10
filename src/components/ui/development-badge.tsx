@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export default function DevelopmentBadge() {
   return (
     <motion.div
-      className="text-3xl p-3 z-50 text-center"
+      className="text-3xl p-3 z-20 text-center"
       whileHover={{ scale: 1.1}}
       transition={{ type: "inertia", stiffness: 400, damping: 10 }}
     >

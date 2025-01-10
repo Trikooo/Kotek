@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  createKotekOrder,
   deleteKotekOrder,
   getAllUserKotekOrders,
   updateKotekOrder,

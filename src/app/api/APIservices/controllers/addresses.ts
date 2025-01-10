@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { AddressSchema } from "../lib/validation";
-import { Address } from "@/types/types";
+import { Address, Wilayas } from "@/types/types";
+import { getWilayaData } from "./wilayaData";
 
 const prisma = new PrismaClient();
 
@@ -49,15 +50,18 @@ export async function createAddress(userId: string, addressData: Address) {
 
       // If the address is already active, throw an error with a custom message
       throw new Prisma.PrismaClientKnownRequestError(
-        `Unique constraint failed on wilayaValue_commune_address_userId`,
+        `Unique constraint failed on wilayaValue_commune_address_userId_fullName_phoneNumber`,
         { code: "P2002", clientVersion: Prisma.prismaVersion.client }
       );
     }
-
-    // If the address doesn't exist, create a new one
+    // Validate baseShippingPrice:
+    const validatedBaseShippingPrice =
+      validateBaseShippingPrice(validatedAddress);
+        // If the address doesn't exist, create a new one
     const newAddress = await prisma.address.create({
       data: {
         ...validatedAddress,
+        baseShippingPrice: validatedBaseShippingPrice,
         userId,
       },
     });
@@ -117,4 +121,11 @@ export async function deleteAddress(addressId: string) {
     console.error("Error deleting address:", error);
     throw error;
   }
+}
+
+function validateBaseShippingPrice(address: any) {
+  const wilayaData: Wilayas = JSON.parse(getWilayaData());
+  const shippingType = address.stopDesk ? "stopDesk" : "home";
+
+  return wilayaData[address.wilayaLabel].noest.prices[shippingType];
 }

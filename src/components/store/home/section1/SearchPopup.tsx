@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Search, Cpu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import useDebounce from "@/hooks/useDebounce";
 import { useProductsContext } from "@/context/ProductsContext";
 import StoreCardList from "../../store-front/StoreCardList";
 import { ProductSearchParams } from "@/types/types";
+import { CardStyleToggle } from "../../store-front/CardStyleToggle";
 
 interface SearchPopupProps {
   open: boolean;
@@ -19,10 +20,48 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
     resetProducts,
     loading,
     error,
+    loadMoreProducts,
+    pagination,
   } = useProductsContext();
+
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
   const [visible, setVisible] = useState(open);
+  const [style, setStyle] = useState<"grid" | "list">("grid");
+
+  // Intersection Observer callback
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && pagination?.hasNextPage && !loading) {
+        loadMoreProducts();
+      }
+    },
+    [loadMoreProducts, pagination, loading]
+  );
+
+  // Set up Intersection Observer
+  useEffect(() => {
+    const options: IntersectionObserverInit = {
+      root: containerRef.current, // Use the container as the viewport
+      rootMargin: "0px 0px 100px 0px", // Trigger 100px before the end
+      threshold: 0,
+    };
+
+    if (loadMoreTriggerRef.current) {
+      observerRef.current = new IntersectionObserver(handleObserver, options);
+      observerRef.current.observe(loadMoreTriggerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [handleObserver]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -57,33 +96,39 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
     };
   }, [open, onOpenChange]);
 
-  const debouncedSearch = useDebounce(
-    (newParams: ProductSearchParams) => {
-      // Trigger reset to fetch products based on current search params
-      resetProducts(newParams);
-    },
-    500 // Reduced debounce time for better responsiveness
-  );
+  const debouncedSearch = useDebounce((newParams: ProductSearchParams) => {
+    resetProducts(newParams);
+  }, 500);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchQuery = e.target.value.trim();
-    const newParams = { ...productSearchParams, query: searchQuery };
+    const newParams = {
+      ...productSearchParams,
+      query: searchQuery,
+      currentPage: 1,
+    };
     setProductSearchParams(newParams);
     debouncedSearch(newParams);
   };
 
   return (
     <div
-      className={`fixed inset-0 flex items-start justify-center bg-indigo-50/85 backdrop-blur-md z-50 transition-opacity duration-300 ease-in-out ${
+      className={`fixed inset-0 flex items-start justify-center bg-indigo-50/85 backdrop-blur-md z-[1000] transition-opacity duration-300 ease-in-out ${
         open ? "opacity-100" : "opacity-0"
       } ${visible ? "visible" : "invisible"}`}
     >
       <div
         ref={containerRef}
         className={`mt-24 flex flex-col gap-3 relative transition-transform duration-300 ease-in-out lg:w-2/3 w-full h-full max-h-min px-4 ${
-          open ? "transform scale-100" : "transform scale-105"
+          open ? "transform scale-100" : "transform scale-110"
         }`}
       >
+        <div className="flex justify-end">
+          <CardStyleToggle
+            initialStyle={style}
+            onToggle={(style) => setStyle(style)}
+          />
+        </div>
         <div className="relative">
           <Input
             ref={inputRef}
@@ -106,11 +151,16 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
               </p>
             </div>
           ) : (
-            <StoreCardList
-              products={products}
-              loading={loading}
-              error={error ? true : false}
-            />
+            <>
+              <StoreCardList
+                products={products}
+                loading={loading}
+                error={error ? true : false}
+                style={style}
+              />
+              {/* Load more trigger */}
+              <div ref={loadMoreTriggerRef} style={{ height: "1px" }} />
+            </>
           )}
         </div>
       </div>

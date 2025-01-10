@@ -1,10 +1,13 @@
 import { Order, Prisma, PrismaClient } from "@prisma/client";
 import { KotekOrderSchema } from "../lib/validation";
-import { KotekOrder, PaginationMetadata } from "@/types/types";
+import { KotekOrder, PaginationMetadata, Wilayas } from "@/types/types";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import prisma from "../lib/prisma";
 import { deleteNoestOrder } from "./noest";
 import { AxiosError } from "axios";
+import { z } from "zod";
+import { getWilayaData } from "./wilayaData";
+import { calculateShipping } from "@/utils/generalUtils";
 
 export async function getAllKotekOrders(
   userRole: string, // Add user role parameter
@@ -206,72 +209,6 @@ export async function getKotekOrderById(kotekOrderId: string) {
     throw error;
   }
 }
-export async function createKotekOrder(
-  userId: string | null,
-  kotekOrderData: KotekOrder
-) {
-  try {
-    // Validate address conditions
-    if (!kotekOrderData.addressId && !kotekOrderData.guestAddress) {
-      throw new Error("Either addressId or guestAddress must be provided");
-    }
-
-    if (userId && !kotekOrderData.addressId) {
-      throw new Error(
-        "Logged-in users must provide an addressId, not a guestAddress."
-      );
-    }
-
-    // Validate Kotek Order data
-    const validatedKotekOrder = KotekOrderSchema.parse({
-      ...kotekOrderData,
-      userId,
-    });
-
-    // Prepare order creation data
-    const orderCreateData: any = {
-      status: validatedKotekOrder.status,
-      totalAmount: validatedKotekOrder.totalAmount,
-      subtotalAmount: validatedKotekOrder.subtotalAmount,
-      items: {
-        create: validatedKotekOrder.items.map((item) => ({
-          quantity: item.quantity,
-          price: item.price,
-          productId: item.productId,
-        })),
-      },
-    };
-
-    // Add user connection if userId exists
-    if (userId) {
-      orderCreateData.userId = userId;
-    }
-    if (validatedKotekOrder.addressId) {
-      orderCreateData.addressId = validatedKotekOrder.addressId;
-      orderCreateData.address = {
-        connect: { id: validatedKotekOrder.addressId },
-      };
-    }
-
-    // Add guest address if provided
-    if (validatedKotekOrder.guestAddress) {
-      orderCreateData.guestAddress = validatedKotekOrder.guestAddress;
-    }
-
-    // Create new Kotek Order with related items
-    const newKotekOrder = await prisma.order.create({
-      data: orderCreateData,
-      include: {
-        items: true,
-      },
-    });
-
-    return newKotekOrder;
-  } catch (error) {
-    console.error("Error creating Kotek Order:", error);
-    throw error;
-  }
-}
 
 export async function updateKotekOrder(
   kotekOrderId: string,
@@ -348,10 +285,7 @@ export async function updateKotekOrder(
         trackingStatuses.every((t) => t === "DISPATCHED") &&
         refinedOrder.status === "PROCESSING";
       // Update order status to DISPATCHED if all trackings are dispatched
-      console.log("allDispatched: ", allDispatched);
-      console.log("");
       const orderStatus = allDispatched ? "DISPATCHED" : refinedOrder.status;
-      console.log("trackingStatuses: ", trackingStatuses);
       // Update Kotek Order
       return await tx.order.update({
         where: { id: kotekOrderId },
@@ -444,7 +378,7 @@ export async function secondCreateKotekOrder(
 ) {
   try {
     // Validate Kotek Order data
-    const validatedData = KotekOrderSchema.parse({
+    let validatedData = KotekOrderSchema.parse({
       ...kotekOrderData,
       userId,
     });
@@ -454,6 +388,7 @@ export async function secondCreateKotekOrder(
 
     if (!validatedData.guestAddress && !validatedData.addressId)
       throw new Error("Either addressId or guestId must be provided");
+    validatedData = await validatePrices(validatedData);
     const createQuery: Prisma.OrderCreateArgs<DefaultArgs> = {
       data: {
         status: validatedData.status,
@@ -571,5 +506,102 @@ export async function cancelOrder(order: KotekOrder): Promise<{
     failedAt: null,
     failureReason: null,
     order: updatedOrder,
+  };
+}
+
+type ItemType = {
+  quantity: number;
+  price: number;
+  productId: string;
+  noestReady: boolean;
+  id?: string;
+  trackingId?: string | null;
+};
+
+async function validatePrices(
+  data: z.infer<typeof KotekOrderSchema>
+): Promise<z.infer<typeof KotekOrderSchema>> {
+  const { items, guestAddress } = data;
+  let { shippingPrice } = data;
+
+  // Get unique product IDs
+  const productIds = [...new Set(items.map((item) => item.productId))];
+
+  // Fetch all products in a single query
+  const products = await prisma.product.findMany({
+    where: {
+      id: {
+        in: productIds,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      imageUrls: true,
+      weight: true,
+      price: true,
+    },
+  });
+
+  // Create a map for quick product lookup
+  const productMap = new Map(products.map((product) => [product.id, product]));
+
+  // Validate and update each item
+  const validatedItems = items.map((item) => {
+    const product = productMap.get(item.productId);
+
+    if (!product) {
+      throw new Error(`Product with ID ${item.productId} not found`);
+    }
+
+    // Validate price matches database price
+    if (item.price !== product.price) {
+      item.price = product.price;
+    }
+    return item;
+  }) as [ItemType, ...ItemType[]]; // Type assertion for tuple
+
+  // Calculate totals
+  const subtotalAmount = validatedItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  // Validate guestAddress baseShippingPrice
+  if (guestAddress) {
+    const wilayaData: Wilayas = JSON.parse(getWilayaData());
+    if (guestAddress.stopDesk) {
+      guestAddress.baseShippingPrice =
+        wilayaData[guestAddress.wilayaLabel].noest.prices.stopDesk;
+    } else {
+      wilayaData[guestAddress.wilayaLabel].noest.prices.home;
+    }
+  }
+  // Validate shippingPrice
+  if (guestAddress) {
+    shippingPrice = calculateShipping(
+      subtotalAmount,
+      guestAddress.baseShippingPrice
+    );
+  } else if (data.addressId) {
+    const address = await prisma.address.findUnique({
+      where: {
+        id: data.addressId,
+      },
+    });
+    if (address) {
+      shippingPrice = calculateShipping(
+        subtotalAmount,
+        address?.baseShippingPrice
+      );
+    } else throw new Error(`Address with id: ${data.addressId} not found.`);
+  }
+  // Return updated data with validated items and recalculated totals
+  return {
+    ...data,
+    guestAddress,
+    shippingPrice,
+    subtotalAmount,
+    items: validatedItems,
+    totalAmount: subtotalAmount + shippingPrice,
   };
 }
