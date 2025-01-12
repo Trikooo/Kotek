@@ -59,10 +59,8 @@ export class ProductSearchService {
         searchParams[key as keyof ProductSearchParams] !== undefined
     );
   }
-
   async searchProducts(params: unknown): Promise<ProductSearchResponse> {
     const validatedParams = ProductSearchParamsSchema.parse(params);
-
     const {
       query = "",
       categoryIds,
@@ -80,7 +78,7 @@ export class ProductSearchService {
     const offset = (currentPage - 1) * pageSize;
     const sanitizedQuery = this.sanitizeQuery(query);
 
-    // Status filtering logic
+    // Status filtering logic remains the same
     const statusFilter = (() => {
       if (store) {
         return statuses
@@ -131,7 +129,26 @@ export class ProductSearchService {
 
     const [countResult, productResults] = await this.prisma.$transaction([
       this.prisma.$queryRaw<Array<{ total_count: bigint }>>`
-        WITH product_search AS (
+        WITH RECURSIVE category_hierarchy AS (
+          -- Base case: start with specified categories
+          SELECT id, "parentId"
+          FROM "Category"
+          WHERE ${
+            categoryIds
+              ? Prisma.sql`id IN (${Prisma.join(
+                  categoryIds.map((id) => Prisma.sql`${id}::uuid`)
+                )})`
+              : Prisma.sql`TRUE`
+          }
+
+          UNION
+
+          -- Recursive case: add subcategories
+          SELECT c.id, c."parentId"
+          FROM "Category" c
+          INNER JOIN category_hierarchy ch ON c."parentId" = ch.id
+        ),
+        product_search AS (
           SELECT
             p.*,
             c.tags AS category_tags,
@@ -139,13 +156,14 @@ export class ProductSearchService {
               GREATEST(
                 similarity(p.name, ${sanitizedQuery}) * 0.6,
                 similarity(p.description, ${sanitizedQuery}) * 0.3,
-                similarity(p.brand, ${sanitizedQuery}) * 0.3,
+                similarity(p.brand, ${sanitizedQuery}) * 0.2,
                 COALESCE(MAX(similarity(tag, ${sanitizedQuery})) * 0.21, 0),
                 COALESCE(MAX(similarity(c_tag, ${sanitizedQuery})) * 0.2, 0)
               )
             ) AS similarity_score
           FROM
             "Product" p
+          INNER JOIN category_hierarchy ch ON p."categoryId" = ch.id
           LEFT JOIN "Category" c ON p."categoryId" = c.id
           LEFT JOIN LATERAL unnest(p.tags) AS tag ON true
           LEFT JOIN LATERAL unnest(c.tags) AS c_tag ON true
@@ -156,13 +174,6 @@ export class ProductSearchService {
             similarity(p.brand, ${sanitizedQuery}) > 0.3 OR
             similarity(tag, ${sanitizedQuery}) > 0.3 OR
             similarity(c_tag, ${sanitizedQuery}) > 0.3)
-            AND (${
-              categoryIds
-                ? Prisma.sql`p."categoryId" IN (${Prisma.join(
-                    categoryIds.map((id) => Prisma.sql`${id}::uuid`)
-                  )})`
-                : Prisma.sql`TRUE`
-            })
             AND (${
               minPrice ? Prisma.sql`p.price >= ${minPrice}` : Prisma.sql`TRUE`
             })
@@ -181,12 +192,31 @@ export class ProductSearchService {
                 : Prisma.sql`TRUE`
             })
           GROUP BY
-            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags, p.featured, c.tags, p."createdAt"
+            p.id, p.name, p.description, p.brand, p.price, p.status, p."categoryId", p.tags, p.featured, p."createdAt", c.tags
         )
         SELECT COUNT(*) AS total_count FROM product_search
       `,
       this.prisma.$queryRaw<ProductSearchResult[]>`
-        WITH product_search AS (
+        WITH RECURSIVE category_hierarchy AS (
+          -- Base case: start with specified categories
+          SELECT id, "parentId"
+          FROM "Category"
+          WHERE ${
+            categoryIds
+              ? Prisma.sql`id IN (${Prisma.join(
+                  categoryIds.map((id) => Prisma.sql`${id}::uuid`)
+                )})`
+              : Prisma.sql`TRUE`
+          }
+
+          UNION
+
+          -- Recursive case: add subcategories
+          SELECT c.id, c."parentId"
+          FROM "Category" c
+          INNER JOIN category_hierarchy ch ON c."parentId" = ch.id
+        ),
+        product_search AS (
           SELECT
             p.*,
             c.tags AS category_tags,
@@ -201,6 +231,7 @@ export class ProductSearchService {
             ) AS similarity_score
           FROM
             "Product" p
+          INNER JOIN category_hierarchy ch ON p."categoryId" = ch.id
           LEFT JOIN "Category" c ON p."categoryId" = c.id
           LEFT JOIN LATERAL unnest(p.tags) AS tag ON true
           LEFT JOIN LATERAL unnest(c.tags) AS c_tag ON true
@@ -211,13 +242,6 @@ export class ProductSearchService {
             similarity(p.brand, ${sanitizedQuery}) > 0.3 OR
             similarity(tag, ${sanitizedQuery}) > 0.3 OR
             similarity(c_tag, ${sanitizedQuery}) > 0.3)
-            AND (${
-              categoryIds
-                ? Prisma.sql`p."categoryId" IN (${Prisma.join(
-                    categoryIds.map((id) => Prisma.sql`${id}::uuid`)
-                  )})`
-                : Prisma.sql`TRUE`
-            })
             AND (${
               minPrice ? Prisma.sql`p.price >= ${minPrice}` : Prisma.sql`TRUE`
             })

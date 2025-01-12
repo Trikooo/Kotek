@@ -25,7 +25,7 @@ const StoreCardWide = ({ product }: StoreCardProps) => {
   } = useStoreCard(product);
 
   return (
-    <Card>
+    <Card className="bg-card">
       <div className="flex flex-col md:flex-row gap-4 p-5">
         <div
           className="w-full md:w-[200px] flex justify-center md:justify-start pb-6 md:pb-0"
@@ -66,7 +66,7 @@ const StoreCardWide = ({ product }: StoreCardProps) => {
         </div>
         <div className="flex-1">
           <Link
-            className="text md:text-2xl font-semibold pb-2 cursor-pointer hover:text-indigo-600 hover:underline w-max"
+            className="text md:text-lg font-semibold pb-4 cursor-pointer hover:text-indigo-600 hover:underline w-max "
             href={`/store/${product.id}`}
           >
             {product.name}

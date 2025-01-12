@@ -1,4 +1,5 @@
 "use client";
+
 import ProductDetailsImages from "@/components/store/product-page/ProductDetailsImages";
 import ProductInformation from "@/components/store/product-page/ProductInformation";
 import StoreLayout from "../StoreLayout";
@@ -8,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import FeaturedItems from "@/components/store/home/section2/FeaturedItemCard";
 import { Card, CardContent } from "@/components/ui/card";
+import remarkGfm from "remark-gfm";
+import ReactMarkdown from "react-markdown";
 
 export default function ProductPage() {
   const params = useParams();
@@ -43,29 +46,45 @@ export default function ProductPage() {
         </div>
       </div>
 
+      {/* Product Description Section */}
       <div className="mt-14 w-full">
         <CardContent className="p-6">
           <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
           {loading ? (
-            <div className="h-24 bg-gray-200 animate-pulse rounded"></div>
+            <div className="h-24 bg-gray-200 animate-pulse rounded" />
           ) : (
-            <div className="prose max-w-none">
-              {data?.description ? (
-                <p>{data.description}</p>
+            <div className="prose prose-sm max-w-none">
+              {data.description ? (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  className="prose prose-lg max-w-none leading-relaxed prose-p:leading-relaxed prose-li:leading-relaxed"
+                  components={{
+                    p: ({ children }) => (
+                      <p className="leading-relaxed my-4">{children}</p>
+                    ),
+                    li: ({ children }) => (
+                      <li className="leading-relaxed">{children}</li>
+                    ),
+                  }}
+                >
+                  {data.description}
+                </ReactMarkdown>
               ) : (
-                <p>No description available for this product.</p>
+                <p className="leading-relaxed">
+                  No description available for this product.
+                </p>
               )}
             </div>
           )}
         </CardContent>
       </div>
 
+      {/* Recommended Section */}
       <div className="mt-14 w-full">
         <div className="flex flex-col justify-center items-center mt-24">
           <h1 className="text-4xl font-bold text-primary sm:text-6xl">
             Recommended
           </h1>
-
           <FeaturedItems />
         </div>
       </div>

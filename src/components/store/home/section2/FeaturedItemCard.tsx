@@ -6,7 +6,7 @@ import { formatCurrency } from "@/utils/generalUtils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorComponent from "@/components/error/error";
-import { Button } from "@/components/ui/button";
+
 import Link from "next/link";
 
 export default function FeaturedItems() {
@@ -27,10 +27,10 @@ export default function FeaturedItems() {
         }
       `}</style>
       <div>
-        <div className="flex overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 gap-8 hide-scrollbar p-1">
-          {products.slice(0, 4).map((product) => (
+        <div className="flex overflow-x-auto pb-4 md:grid md:grid-cols-3 lg:grid-cols-5 gap-8 hide-scrollbar p-1">
+          {products.slice(0, 5).map((product) => (
             <div key={product.id} className="flex-shrink-0 w-64 md:w-auto">
-              <Card className="overflow-hidden hover:shadow-md">
+              <Card className="overflow-hidden hover:shadow-md bg-card">
                 <CardContent className="p-0">
                   <div className="relative aspect-square">
                     <Link href={`/store/${product.id}`}>
@@ -46,13 +46,11 @@ export default function FeaturedItems() {
                   </div>
                 </CardContent>
               </Card>
-              <Link href={`/store/${product.id}`}>
-                <Button
-                  variant="link"
-                  className="mt-2 text-lg font-semibold truncate p-0 hover:text-indigo-600 duration-0"
-                >
-                  {product.name}
-                </Button>
+              <Link
+                href={`/store/${product.id}`}
+                className="mt-2 text-base font-semibold line-clamp-1 text-left p-0 h-auto hover:text-indigo-600 duration-0 w-full overflow-hidden hover:underline"
+              >
+                {product.name}
               </Link>
               <p className="text-sm ">{formatCurrency(product.price)}</p>
             </div>

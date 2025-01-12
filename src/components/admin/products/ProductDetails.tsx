@@ -13,6 +13,8 @@ import { Category, Product } from "@prisma/client";
 import EditProduct from "./EditProduct";
 import { DeleteProduct } from "./DeleteProduct";
 import { Star } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface AdminProductDetailProps {
   product: Product;
@@ -75,16 +77,24 @@ export default function AdminProductDetail({
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold mb-2">Description</h3>
-              <p className="text-muted-foreground">{product.description}</p>
+              <div className="prose prose-sm max-w-none [&>*]:leading-relaxed [&>*]:mb-4 text-muted-foreground">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {product.description}
+                </ReactMarkdown>
+              </div>
             </div>
             {product.keyFeatures && product.keyFeatures.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-2">Key Features</h3>
-                <ul className="list-disc list-inside">
-                  {product.keyFeatures.map((feature, index) => (
-                    <li key={index}>{feature}</li>
-                  ))}
-                </ul>
+                <div className="prose prose-sm max-w-none [&>*]:leading-relaxed [&>*]:mb-4">
+                  <ul className="list-disc list-inside space-y-2">
+                    {product.keyFeatures.map((feature, index) => (
+                      <li key={index} className="text-muted-foreground">
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             )}
           </div>
@@ -139,7 +149,10 @@ export default function AdminProductDetail({
           <div className="relative">
             <div className="flex space-x-2 overflow-x-auto pb-2">
               {displayedImages.map((url, index) => (
-                <div key={index} className="relative w-40 h-40 flex-shrink-0 hover:opacity-80 transition-all duration-100">
+                <div
+                  key={index}
+                  className="relative w-40 h-40 flex-shrink-0 hover:opacity-80 transition-all duration-100"
+                >
                   <Image
                     src={url}
                     alt={`Product image ${index + 1}`}

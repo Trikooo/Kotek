@@ -86,10 +86,10 @@ export default function CategoriesCarousel() {
           : categories.map((category) => (
               <CarouselItem
                 key={category.id}
-                className="basis-2/3 md:basis-1/3 lg:basis-1/4 py-1"
+                className="basis-2/3 md:basis-1/3 lg:basis-1/5 py-1"
               >
                 <Link href={`/store?categoryId=${category.id}`}>
-                  <Card className="transition-all duration-100 hover:shadow-md overflow-hidden">
+                  <Card className="transition-all duration-100 hover:shadow-md overflow-hidden bg-card">
                     <CardContent className="p-0">
                       <div className="relative w-full aspect-square">
                         <Image

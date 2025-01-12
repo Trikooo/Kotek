@@ -1,5 +1,5 @@
 import CarouselDemo from "@/components/dynamic-ui/Carousel";
-import { useGetActiveCarouselItems, useGetAllCarouselItems } from "@/hooks/carousel/useCarousel";
+import { useGetActiveCarouselItems } from "@/hooks/carousel/useCarousel";
 
 export default function Hero() {
   const { data: carouselItems, isLoading } = useGetActiveCarouselItems();

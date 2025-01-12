@@ -25,9 +25,9 @@ const StoreCardCompact = ({ product }: StoreCardProps) => {
   } = useStoreCard(product);
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full bg-card">
       <div
-        className="relative w-full pt-[75%]" // Changed from pt-[100%] to pt-[75%] for 4:3 aspect ratio
+        className="relative w-full pt-[75%]"
         onMouseEnter={() => hasMultipleImages && setIsHovered(true)}
         onMouseLeave={() => hasMultipleImages && setIsHovered(false)}
         onClick={handleRedirect}
@@ -37,7 +37,7 @@ const StoreCardCompact = ({ product }: StoreCardProps) => {
         </div>
         <Image
           src={product.imageUrls[0]}
-          fill // Changed from width/height/layout to fill
+          fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           alt={product.name}
           className={`rounded-md object-contain transition-opacity duration-300 ${
@@ -48,7 +48,7 @@ const StoreCardCompact = ({ product }: StoreCardProps) => {
         {hasMultipleImages && product.imageUrls[1] && (
           <Image
             src={product.imageUrls[1]}
-            fill // Changed from width/height/layout to fill
+            fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             alt={product.name}
             className={`rounded-md object-contain absolute top-0 left-0 transition-opacity duration-300 ${
@@ -59,12 +59,11 @@ const StoreCardCompact = ({ product }: StoreCardProps) => {
         )}
       </div>
       <div className="p-4 flex flex-col flex-grow">
-        <Button
-          variant="link"
-          className="text-lg font-semibold mb-2 hover:text-indigo-600 duration-0 w-min p-0"
-        >
-          <Link href={`/store/${product.id}`}>{product.name}</Link>
-        </Button>
+        <Link href={`/store/${product.id}`} className="group">
+          <h3 className="text-base font-semibold mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors hover:underline">
+            {product.name}
+          </h3>
+        </Link>
         <div className="flex items-center justify-start gap-2 mb-2">
           <span className="text-lg font-semibold">
             {formatCurrency(product.price)}

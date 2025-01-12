@@ -319,12 +319,9 @@ const fileSchema = z
   .refine((file) => file.size <= 5 * 1024 * 1024, {
     message: "File size must be 5MB or less",
   })
-  .refine(
-    (file) => ["image/jpeg", "image/png", "image/gif"].includes(file.type),
-    {
-      message: "File must be JPEG, PNG, or GIF",
-    }
-  );
+  .refine((file) => file.type.startsWith("image/"), {
+    message: "File must be an image",
+  });
 
 export const updateCarouselItemSchema = z.object({
   image: fileSchema.optional(),

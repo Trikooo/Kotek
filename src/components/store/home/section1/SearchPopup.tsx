@@ -32,6 +32,28 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
   const [visible, setVisible] = useState(open);
   const [style, setStyle] = useState<"grid" | "list">("grid");
 
+  // Handle popup state in browser history
+  useEffect(() => {
+    if (open) {
+      // Push a new state when opening the popup
+      window.history.pushState({ searchPopup: true }, "");
+    }
+
+    // Handle the back button
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state?.searchPopup) {
+        // If we're going back to a search popup state, keep it open
+        onOpenChange(true);
+      } else {
+        // If we're going back to any other state, close the popup
+        onOpenChange(false);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [open, onOpenChange]);
+
   // Intersection Observer callback
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -46,8 +68,8 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
   // Set up Intersection Observer
   useEffect(() => {
     const options: IntersectionObserverInit = {
-      root: containerRef.current, // Use the container as the viewport
-      rootMargin: "0px 0px 100px 0px", // Trigger 100px before the end
+      root: containerRef.current,
+      rootMargin: "0px 0px 100px 0px",
       threshold: 0,
     };
 
@@ -119,7 +141,7 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
     >
       <div
         ref={containerRef}
-        className={`mt-24 flex flex-col gap-3 relative transition-transform duration-300 ease-in-out lg:w-2/3 w-full h-full max-h-min px-4 ${
+        className={`mt-24 flex flex-col gap-3 relative transition-transform duration-300 ease-in-out  w-full h-full max-h-min px-4 ${
           open ? "transform scale-100" : "transform scale-110"
         }`}
       >
@@ -158,7 +180,6 @@ export default function SearchPopup({ open, onOpenChange }: SearchPopupProps) {
                 error={error ? true : false}
                 style={style}
               />
-              {/* Load more trigger */}
               <div ref={loadMoreTriggerRef} style={{ height: "1px" }} />
             </>
           )}

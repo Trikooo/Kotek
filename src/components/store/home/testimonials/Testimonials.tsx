@@ -27,8 +27,8 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
             What Our Customers Say
           </h2>
           <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-            Hear from our satisfied customers about their experience with our PC
-            building service
+            Hear from our satisfied customers about their experience with our
+            service
           </p>
         </div>
         <div className="mx-4 grid items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
@@ -48,7 +48,6 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                     <AvatarImage
                       src={testimonial.image}
                       alt={testimonial.name}
-
                     />
                     <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-indigo-500" />
                   </Avatar>

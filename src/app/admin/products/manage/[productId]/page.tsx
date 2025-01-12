@@ -60,14 +60,8 @@ export default function ProductDetailPage() {
           <AdminProductDetails
             product={product}
             category={category}
-            className="col-span-3 lg:col-span-2"
+            className="col-span-3 lg:col-span-3"
           />
-          <Card className="flex justify-center items-center col-span-3 lg:col-span-1 h-96 lg:h-auto">
-            Orders Card
-          </Card>
-          <Card className="flex justify-center items-center h-96 col-span-3">
-            Reviews Card
-          </Card>
         </div>
       ) : (
         "No data available for this product."

@@ -315,7 +315,7 @@ export default function ProductInformation({
           <Card className="w-full border">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center space-x-2 text-2xl">
-                <Banknote className="h-8 w-8 text-primary" strokeWidth={1.5} />
+                <Banknote className="h-8 w-8 text-primary" strokeWidth={2} />
                 <span>Cash on Delivery</span>
               </CardTitle>
               <CardDescription className="pb-3">
