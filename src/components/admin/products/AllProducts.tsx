@@ -24,6 +24,7 @@ import { ProductSearchParams } from "@/types/types";
 export default function AllProducts() {
   const {
     products,
+    setProducts,
     loading,
     error,
     loadMoreProducts,
@@ -96,7 +97,16 @@ export default function AllProducts() {
       <div className="flex-row sm:flex items-center gap-2">
         <Tooltip>
           <TooltipTrigger>
-            <EditProduct product={product} />
+            <EditProduct
+              product={product}
+              onUpdateProduct={(updatedProduct) => {
+                setProducts((prevProducts) =>
+                  prevProducts.map((p) =>
+                    p.id === updatedProduct.id ? updatedProduct : p
+                  )
+                );
+              }}
+            />
           </TooltipTrigger>
           <TooltipContent>Edit</TooltipContent>
         </Tooltip>

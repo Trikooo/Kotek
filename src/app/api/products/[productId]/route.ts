@@ -88,10 +88,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     // Update product
     const updatedProduct = await updateProduct(params.productId, data);
 
-    return NextResponse.json(
-      { product: updatedProduct, message: "Product updated successfully!" },
-      { status: 200 }
-    );
+    return NextResponse.json(updatedProduct, { status: 200 });
   } catch (error: unknown) {
     // Handle Zod Validation Errors
     if (error instanceof ZodError) {

@@ -9,9 +9,9 @@ import {
 import Image from "next/image";
 import Autoplay from "embla-carousel-autoplay";
 import { useHeaderContext } from "@/context/HeaderContext";
-import { useCategoryContext } from "@/context/CategoriesContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { useGetAllCategories } from "@/hooks/categories/useGetAllCategories";
 
 const CategorySkeleton = () => (
   <CarouselItem className="basis-2/3 md:basis-1/3 lg:basis-1/4 py-1">
@@ -27,7 +27,7 @@ const CategorySkeleton = () => (
 );
 
 export default function CategoriesCarousel() {
-  const { categories, loading, error } = useCategoryContext();
+  const { categories, loading, error } = useGetAllCategories();
   const [isAutoplay, setIsAutoplay] = React.useState(true);
   const [isMobile, setIsMobile] = React.useState(false);
   const { searchFieldVisible } = useHeaderContext();

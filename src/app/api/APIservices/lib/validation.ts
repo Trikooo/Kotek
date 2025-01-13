@@ -1,3 +1,4 @@
+import { isValidUrl } from "@/utils/generalUtils";
 import { z } from "zod";
 
 export const categorySchema = z.object({
@@ -53,7 +54,6 @@ export const productSchema = z.object({
   width: z.number().nonnegative().optional(), // Optional non-negative number for width
   height: z.number().nonnegative().optional(), // Optional non-negative number for height
   weight: z.number().nonnegative().optional(), // Optional non-negative number for weight
-  imageUrls: z.array(z.string()).nonempty(),
 });
 
 // Type inference for TypeScript
@@ -325,7 +325,10 @@ const fileSchema = z
 
 export const updateCarouselItemSchema = z.object({
   image: fileSchema.optional(),
-  link: z.string().url().optional(),
+  link: z
+    .string()
+    .refine((val) => isValidUrl(val), "Must be a valid URL")
+    .optional(),
   title: z.string().optional(),
   displayIndex: z.number().int().min(0),
   isActive: z.boolean().default(true), // isActive should be a boolean, defaulting to true
@@ -334,7 +337,7 @@ export const updateCarouselItemSchema = z.object({
 
 export const createCarouselItemSchema = z.object({
   image: fileSchema,
-  link: z.string().url(),
+  link: z.string().refine((val) => isValidUrl(val), "Must be a valid URL"),
   title: z.string(),
   isActive: z.boolean().default(true),
 });

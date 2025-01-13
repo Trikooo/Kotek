@@ -12,6 +12,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "pub-b8d635fada6740cfb29608ba79c3471c.r2.dev",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.discordapp.com",
       },
     ],

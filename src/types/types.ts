@@ -3,6 +3,7 @@ import {
   CarouselItem,
   Category,
   OrderStatus,
+  Prisma,
   Product,
   ProductStatus,
   User,
@@ -42,7 +43,15 @@ export interface CreateCategoryT {
 export interface CategoryWithSubcategoriesT extends Category {
   subcategories: Category[];
 }
-
+export type CategoryWith2Subcategories = Prisma.CategoryGetPayload<{
+  include: {
+    subcategories: {
+      include: {
+        subcategories: true;
+      };
+    };
+  };
+}>;
 export interface CategoryValidationT {
   name: string;
   description?: string;

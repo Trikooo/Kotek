@@ -12,12 +12,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useCategoryContext } from "@/context/CategoriesContext";
+import { useGetAllCategories } from "@/hooks/categories/useGetAllCategories";
+import { useRouter } from "next/navigation";
 
 export default function ExistingCategories() {
-  const { categories, error, loading } = useCategoryContext();
+  // Mark it as true to get only parent categories...
+  const { categories = [], loading, error } = useGetAllCategories(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [sortOption, setSortOption] = useState<string>("");
+  const router = useRouter();
+
   // Filter categories based on the search term
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -82,6 +86,9 @@ export default function ExistingCategories() {
         rows={rows}
         isLoading={loading}
         error={error}
+        onRowClick={(category) => {
+          router.push(`/admin/dashboard/categories/${category.id}`);
+        }}
       />
     </>
   );
@@ -94,7 +101,7 @@ const CategoriesTitle = ({
 }) => {
   return (
     <div className="flex items-center justify-between">
-      Existing Categories
+      Top Level Categories
       <div className="relative flex items-center md:grow-0">
         <Search
           className="absolute left-2.5 h-4 w-4 text-muted-foreground"

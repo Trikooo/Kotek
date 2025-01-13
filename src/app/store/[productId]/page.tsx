@@ -15,10 +15,10 @@ import ReactMarkdown from "react-markdown";
 export default function ProductPage() {
   const params = useParams();
   const { productId } = params;
-  const { data, loading, error } = useGetProductById(productId as string);
+  const { product, loading, error } = useGetProductById(productId as string);
   const router = useRouter();
 
-  const thumbnails = data?.imageUrls;
+  const thumbnails = product?.imageUrls;
   const handleReload = () => window.location.reload();
 
   if (error) {
@@ -42,7 +42,7 @@ export default function ProductPage() {
           <ProductDetailsImages thumbnails={thumbnails} loading={loading} />
         </div>
         <div className="w-full md:flex-1 mt-8 md:mt-0">
-          <ProductInformation product={data} loading={loading} />
+          <ProductInformation product={product} loading={loading} />
         </div>
       </div>
 
@@ -54,7 +54,7 @@ export default function ProductPage() {
             <div className="h-24 bg-gray-200 animate-pulse rounded" />
           ) : (
             <div className="prose prose-sm max-w-none">
-              {data.description ? (
+              {product.description ? (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   className="prose prose-lg max-w-none leading-relaxed prose-p:leading-relaxed prose-li:leading-relaxed"
@@ -67,7 +67,7 @@ export default function ProductPage() {
                     ),
                   }}
                 >
-                  {data.description}
+                  {product.description}
                 </ReactMarkdown>
               ) : (
                 <p className="leading-relaxed">

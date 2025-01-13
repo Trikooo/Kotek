@@ -20,8 +20,16 @@ export function createProductFormData(product: Partial<CreateProductT>) {
   formData.append("weight", product.weight?.toString() ?? "");
 
   if (product.images && product.images.length > 0) {
-    product.images.forEach((file) => {
-      formData.append("images[]", file);
+    product.images.forEach((image, index) => {
+      if (typeof image === "string") {
+        formData.append(
+          `images[${index}]`,
+          JSON.stringify({ type: "url", value: image })
+        );
+      } else if (image instanceof File) {
+        formData.append(`images[${index}]`, JSON.stringify({ type: "file" }));
+        formData.append(`images[${index}]`, image);
+      }
     });
   }
   return formData;
@@ -31,8 +39,16 @@ export function updateProductFormData(updatedProduct: any) {
   const formData = new FormData();
   Object.entries(updatedProduct).forEach(([key, value]) => {
     if (key === "images" && Array.isArray(value)) {
-      (value as File[]).forEach((image: File) => {
-        formData.append("images[]", image);
+      value.forEach((image, index) => {
+        if (typeof image === "string") {
+          formData.append(
+            `images[${index}]`,
+            JSON.stringify({ type: "url", value: image })
+          );
+        } else if (image instanceof File) {
+          formData.append(`images[${index}]`, JSON.stringify({ type: "file" }));
+          formData.append(`images[${index}]`, image);
+        }
       });
     } else if (key === "imageUrls") {
       formData.append(key, JSON.stringify(value));

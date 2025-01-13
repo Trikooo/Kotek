@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     // Use the new static method to check for filters
     // const hasFilters = ProductSearchService.hasFilters(searchParams);
-    const hasFilters = true
+    const hasFilters = true;
     const token = await getToken({ req: request });
     if (!token || (token.role !== "ADMIN" && !searchParams.store)) {
       searchParams.store = true;
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     const createdProduct = await createProduct(id, data);
 
-    return NextResponse.json({ product: createdProduct }, { status: 201 });
+    return NextResponse.json(createdProduct, { status: 201 });
   } catch (error: unknown) {
     // Handle Zod Validation Errors
     if (error instanceof ZodError) {

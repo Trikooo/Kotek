@@ -1,39 +1,34 @@
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { CategoryWithSubcategoriesT } from "@/types/types";
-import { useEffect, useState, useCallback } from "react";
 
-export function useGetAllCategories() {
-  const [categories, setCategories] = useState<CategoryWithSubcategoriesT[]>(
-    []
-  );
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+// Modify the fetchCategories function to accept a `parent` query parameter
+const fetchCategories = async (
+  parent: boolean
+): Promise<CategoryWithSubcategoriesT[]> => {
+  const { data } = await axios.get("/api/categories", {
+    params: { parent: parent ? "true" : undefined }, // Only send `parent=true` if `parent` is true
+  });
+  return data;
+};
 
-  const fetchCategories = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/categories");
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data: CategoryWithSubcategoriesT[] = await response.json();
-      setCategories(data);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+// Modify the custom hook to accept a `parent` prop with a default value of `false`
+export function useGetAllCategories(parent: boolean = false) {
+  const {
+    data: categories = [], // Provide empty array as default value
+    isLoading: loading,
+    error,
+    refetch,
+    isError,
+  } = useQuery({
+    queryKey: ["categories", parent], // Make sure to include `parent` in the query key
+    queryFn: () => fetchCategories(parent), // Pass `parent` to the fetch function
+  });
 
   return {
     categories,
     loading,
-    error,
-    refetch: fetchCategories,
+    error: isError ? (error as Error).message : null,
+    refetch,
   };
 }

@@ -7,7 +7,6 @@ import { Toaster as SonnerToaster } from "sonner";
 import { Toaster as RadixToaster } from "@/components/ui/toaster";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 
-import { CategoryProvider } from "@/context/CategoriesContext";
 import { CartProvider } from "@/context/CartContext";
 import { KotekOrderProvider } from "@/context/KotekOrderContext";
 import { AddressProvider } from "@/context/AddressContext";
@@ -68,17 +67,15 @@ export default function RootLayout({
           <SessionProviderWrapper>
             <QueryProvider>
               <ProductsProvider>
-                <CategoryProvider>
-                  <CartProvider>
-                    <KotekOrderProvider>
-                      <AddressProvider>{children}</AddressProvider>
-                    </KotekOrderProvider>
-                  </CartProvider>
-                  <SpeedInsights />
-                  <SonnerToaster />
-                  <RadixToaster />
-                  <ReactQueryDevtools />
-                </CategoryProvider>
+                <CartProvider>
+                  <KotekOrderProvider>
+                    <AddressProvider>{children}</AddressProvider>
+                  </KotekOrderProvider>
+                </CartProvider>
+                <SpeedInsights />
+                <SonnerToaster />
+                <RadixToaster />
+                <ReactQueryDevtools />
               </ProductsProvider>
             </QueryProvider>
           </SessionProviderWrapper>

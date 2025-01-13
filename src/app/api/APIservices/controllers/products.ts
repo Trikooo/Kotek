@@ -60,6 +60,9 @@ export async function getProductById(id: string) {
     where: {
       id: id,
     },
+    include: {
+      category: true,
+    },
   });
   return product;
 }
@@ -68,6 +71,9 @@ export async function createProduct(id: string, data: ProductValidationT) {
   try {
     const product = prisma.product.create({
       data: { id: id, ...data },
+      include: {
+        category: true,
+      },
     });
     return product;
   } catch (error) {
@@ -82,6 +88,9 @@ export async function updateProduct(id: string, data: any) {
       id: id,
     },
     data: data,
+    include: {
+      category: true,
+    },
   });
   return updatedProduct;
 }
@@ -147,20 +156,41 @@ export async function processImages(formData: FormData, id: string) {
     formData.get("imagesToDelete")?.toString() || "[]"
   );
 
-  let remainingUrls: string[] = JSON.parse(
-    formData.get("imageUrls")?.toString() || "[]"
-  );
+  const images: Array<{ type: "url" | "file"; value: string | File }> = [];
+  let index = 0;
+  let imageData = formData.get(`images[${index}]`);
+  while (imageData) {
+    const parsedImageData = JSON.parse(imageData.toString());
 
-  const files = formData.getAll("images[]") as File[];
+    if (parsedImageData.type === "url") {
+      images.push({ type: "url", value: parsedImageData.value });
+    } else if (parsedImageData.type === "file") {
+      const file = formData.getAll(`images[${index}]`);
+      if (file[1] instanceof File) {
+        images.push({ type: "file", value: file[1] });
+      }
+    }
+    index++;
+    imageData = formData.get(`images[${index}]`);
+  }
 
   const prefix = `products/${id}`;
-  const r2Urls = await r2Client.uploadImages(files, prefix);
+  const newUrls: string[] = [];
+
+  for (const image of images) {
+    if (image.type === "file") {
+      const r2Url = await r2Client.uploadImages([image.value as File], prefix);
+      newUrls.push(r2Url[0]);
+    } else {
+      newUrls.push(image.value as string);
+    }
+  }
 
   if (imagesToDelete.length > 0) {
     await r2Client.deleteImages(imagesToDelete);
   }
 
-  return [...remainingUrls, ...r2Urls];
+  return newUrls;
 }
 
 export function extractFormData(formData: FormData) {

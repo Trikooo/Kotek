@@ -3,6 +3,7 @@ import {
   getAllCategories,
   createCategory,
   categoryValidation,
+  getParentCategories,
 } from "../APIservices/controllers/categories";
 import { v4 as uuidv4 } from "uuid";
 import { ZodError } from "zod";
@@ -11,7 +12,16 @@ import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   try {
-    const categories = await getAllCategories();
+    // Access the query parameters using request.nextUrl.searchParams
+    const isParent = request.nextUrl.searchParams.get("parent") === "true"; // Check if `parent` query param is true
+
+    let categories;
+    if (isParent) {
+      categories = await getParentCategories(); // Fetch only parent categories if `parent=true`
+    } else {
+      categories = await getAllCategories(); // Fetch all categories otherwise
+    }
+
     return NextResponse.json(categories, { status: 200 });
   } catch (error: unknown) {
     console.error("Error fetching categories:", error);
@@ -73,10 +83,7 @@ export async function POST(request: NextRequest) {
     // Create category
     const newCategory = await createCategory(id, data);
 
-    return NextResponse.json(
-      { message: "Category created successfully.", category: newCategory },
-      { status: 201 }
-    );
+    return NextResponse.json(newCategory, { status: 201 });
   } catch (error: unknown) {
     console.error("POST Category Error:", error);
 

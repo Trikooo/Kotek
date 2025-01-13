@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Select from "@/components/ui/better-select";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
@@ -27,32 +26,48 @@ import {
 } from "@/components/ui/form";
 import { useState } from "react";
 import { Option } from "@/components/ui/better-select";
-import { useCreateCategory } from "@/hooks/categories/useMutateCategory";
+import {
+  useCreateCategory,
+  useCreateSubcategory,
+} from "@/hooks/categories/useMutateCategory";
 import {
   CreateCategoryFormData,
   createCategorySchema,
+  CreateSubcategoryFormData,
 } from "@/validationSchemas/categorySchema";
 
-export default function CreateCategory() {
+export default function CreateSubcategory({
+  parentId,
+  onCreate,
+}: {
+  parentId?: string;
+  onCreate: () => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
-  const { mutate: createCategory, isPending } = useCreateCategory();
-
-  const form = useForm<CreateCategoryFormData>({
+  const { mutate: createSubcategory, isPending } = useCreateSubcategory();
+  const form = useForm<CreateSubcategoryFormData>({
     resolver: zodResolver(createCategorySchema),
     defaultValues: {
       name: "",
       description: "",
+      parentId: parentId,
       tags: "",
     },
   });
 
-  const onSubmit = (data: CreateCategoryFormData) => {
-    createCategory(data, {
-      onSuccess: () => {
-        setIsOpen(false);
-        form.reset();
-      },
-    });
+  const onSubmit = (data: CreateSubcategoryFormData) => {
+    if (parentId) {
+      createSubcategory(
+        { ...data, parentId },
+        {
+          onSuccess: () => {
+            setIsOpen(false);
+            onCreate();
+            form.reset();
+          },
+        }
+      );
+    }
   };
 
   return (
@@ -60,14 +75,14 @@ export default function CreateCategory() {
       <DialogTrigger asChild>
         <Button className="flex gap-2">
           <Plus className="w-4 h-4" />
-          Create New Category
+          Create New Subcategory
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Create New Category</DialogTitle>
+          <DialogTitle>Create New Subcategory</DialogTitle>
           <DialogDescription>
-            Fill out the form below to add a new category.
+            Fill out the form below to add a new subcategory.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -149,7 +164,7 @@ export default function CreateCategory() {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending || !parentId}>
                 {isPending ? "Creating..." : "Create Category"}
               </Button>
             </DialogFooter>

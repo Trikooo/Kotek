@@ -17,17 +17,17 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 interface AdminProductDetailProps {
-  product: Product;
-  category?: Category | null;
+  product: Product & { category: Category };
   className?: string;
+  onUpdateProduct: (updatedProduct: Product & { category: Category }) => void;
 }
 
 type ProductStatus = "ACTIVE" | "INACTIVE" | "DRAFT";
 
 export default function AdminProductDetail({
   product,
-  category,
   className,
+  onUpdateProduct,
 }: AdminProductDetailProps) {
   const [showAllImages, setShowAllImages] = useState(false);
 
@@ -68,7 +68,12 @@ export default function AdminProductDetail({
         </CardTitle>
 
         <div className="flex items-center">
-          <EditProduct product={product} />
+          <EditProduct
+            product={product}
+            onUpdateProduct={(updatedProduct) =>
+              onUpdateProduct(updatedProduct)
+            }
+          />
           <DeleteProduct id={product.id} />
         </div>
       </CardHeader>
@@ -114,7 +119,7 @@ export default function AdminProductDetail({
               </div>
               <div>
                 <p className="font-semibold">Category</p>
-                <p>{category?.name || "Uncategorized"}</p>
+                <p>{product.category?.name || "Uncategorized"}</p>
               </div>
               <div>
                 <p className="font-semibold">Barcode</p>
@@ -157,7 +162,7 @@ export default function AdminProductDetail({
                     src={url}
                     alt={`Product image ${index + 1}`}
                     layout="fill"
-                    objectFit="cover"
+                    objectFit="contain"
                     className="rounded-md"
                   />
                 </div>

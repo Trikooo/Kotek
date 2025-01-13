@@ -50,8 +50,8 @@ export default function FilterSideBar() {
   const [categorySearchTerm, setCategorySearchTerm] = useState("");
 
   const {
-    categoryNames,
-    loading: categoryNamesLoading,
+    data: categoryNames,
+    isLoading: categoryNamesLoading,
     error: categoryNamesError,
   } = useGetAllCategoryNames();
 

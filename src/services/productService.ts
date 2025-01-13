@@ -4,7 +4,7 @@ import {
   updateProductFormData,
 } from "@/utils/formDataUtils";
 import { CreateProductT } from "@/types/types";
-import { Product } from "@prisma/client";
+import { Category, Product } from "@prisma/client";
 
 export async function sendProduct(product: Partial<CreateProductT>) {
   const formData = createProductFormData(product);
@@ -19,9 +19,13 @@ export async function getAllProducts() {
 }
 export async function sendUpdateProduct(product: any, id: string) {
   const formData = updateProductFormData(product);
-  const response = await axios.put<Product>(`/api/products/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const response = await axios.put<Product & { category: Category }>(
+    `/api/products/${id}`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
   return response.data;
 }
 

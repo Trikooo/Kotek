@@ -49,7 +49,7 @@ export const calculateShipping = (
   // For everything else, calculate number of parcels needed
   const fullParcels = Math.floor(subtotal / MAX_SINGLE_PARCEL);
   const remainder = subtotal % MAX_SINGLE_PARCEL;
-    let multiplier = fullParcels * 2; // Each full parcel (150k) costs double
+  let multiplier = fullParcels * 2; // Each full parcel (150k) costs double
 
   // Handle the remainder
   if (remainder > 0) {
@@ -96,8 +96,21 @@ export async function getNoestWilayaValue(
     }
   } catch (error) {
     console.error("Error in getNoestWilayaValue:", error);
-    throw error
+    throw error;
   }
 
   return undefined;
+}
+
+export function isValidUrl(str: string): boolean {
+  try {
+    const urlString = /^[a-zA-Z]+:\/\//.test(str) ? str : `https://${str}`;
+    const url = new URL(urlString);
+
+    // Check if the hostname has at least one dot and valid TLD structure
+    const hostnameRegex = /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+    return hostnameRegex.test(url.hostname);
+  } catch {
+    return false;
+  }
 }

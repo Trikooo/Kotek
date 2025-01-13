@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { SquarePen, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -30,40 +29,11 @@ import Image from "next/image";
 import { useUpdateCarouselItem } from "@/hooks/carousel/useCarousel";
 import { toast } from "@/hooks/use-toast";
 import { CarouselItem } from "@prisma/client";
-
-const MAX_FILE_SIZE = 5000000; // 5MB
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-const carouselItemSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  link: z.string().url("Must be a valid URL"),
-  enabled: z.boolean().default(true),
-  imageFile: z
-    .custom<FileList>(
-      (val) => val instanceof FileList || val === undefined,
-      "Please upload an image"
-    )
-    .refine(
-      (files) =>
-        !files || files.length === 0 || files[0]?.size <= MAX_FILE_SIZE,
-      "Max image size is 5MB"
-    )
-    .refine(
-      (files) =>
-        !files ||
-        files.length === 0 ||
-        ACCEPTED_IMAGE_TYPES.includes(files[0]?.type),
-      "Only .jpg, .jpeg, .png and .webp formats are supported"
-    )
-    .optional(),
-});
-
-type CarouselItemFormValues = z.infer<typeof carouselItemSchema>;
+import {
+  UpdateCarouselItemFormValues,
+  updateCarouselItemSchema,
+} from "@/validationSchemas/carouselItemSchema";
+import { Progress } from "@/components/ui/progress";
 
 interface EditCarouselItemProps {
   item: CarouselItem;
@@ -74,10 +44,12 @@ export default function EditCarouselItem({ item }: EditCarouselItemProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(
     item.imageUrl
   );
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const { mutateAsync } = useUpdateCarouselItem();
 
-  const form = useForm<CarouselItemFormValues>({
-    resolver: zodResolver(carouselItemSchema),
+  const form = useForm<UpdateCarouselItemFormValues>({
+    resolver: zodResolver(updateCarouselItemSchema),
     defaultValues: {
       title: item.title,
       link: item.link,
@@ -95,7 +67,7 @@ export default function EditCarouselItem({ item }: EditCarouselItemProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item]);
 
-  const onSubmit = async (data: CarouselItemFormValues) => {
+  const onSubmit = async (data: UpdateCarouselItemFormValues) => {
     try {
       const formData = new FormData();
       formData.append("title", data.title);
@@ -109,6 +81,7 @@ export default function EditCarouselItem({ item }: EditCarouselItemProps) {
       await mutateAsync({ id: item.id, formData: formData });
       setIsOpen(false);
       form.reset();
+      setUploadProgress(0);
       toast({
         title: "Carousel item updated successfully",
       });
@@ -124,10 +97,36 @@ export default function EditCarouselItem({ item }: EditCarouselItemProps) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setIsImageLoading(true);
+      setUploadProgress(0);
       const reader = new FileReader();
+
+      reader.onloadstart = () => {
+        setIsImageLoading(true);
+      };
+
+      reader.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = (event.loaded / event.total) * 100;
+          setUploadProgress(progress);
+        }
+      };
+
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
+        setIsImageLoading(false);
+        setUploadProgress(100);
       };
+
+      reader.onerror = () => {
+        setIsImageLoading(false);
+        setUploadProgress(0);
+        toast({
+          variant: "destructive",
+          title: "Error loading image",
+        });
+      };
+
       reader.readAsDataURL(file);
     }
   };
@@ -215,26 +214,35 @@ export default function EditCarouselItem({ item }: EditCarouselItemProps) {
                 </FormItem>
               )}
             />
-            {imagePreview && (
+            {isImageLoading && (
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center justify-center">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+                <Progress value={uploadProgress} className="w-full" />
+              </div>
+            )}
+            {imagePreview && !isImageLoading && (
               <div className="mt-4">
                 <Image
                   src={imagePreview}
                   alt="Preview"
                   className="max-w-full h-auto"
-                  height={50}
-                  width={50}
+                  height={200}
+                  width={200}
                 />
               </div>
             )}
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting && (
+                {form.formState.isSubmitting ? (
                   <div className="flex items-center justify-center">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     {"Loading..."}
                   </div>
+                ) : (
+                  "Update Carousel Item"
                 )}
-                Update Carousel Item
               </Button>
             </DialogFooter>
           </form>

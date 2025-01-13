@@ -1,12 +1,13 @@
+import React from "react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   Table,
@@ -17,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CircleAlert, Loader2 } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -101,6 +102,30 @@ export function DataTable({
     ));
   };
 
+  const preventPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleRowClick = (
+    event: React.MouseEvent<HTMLTableRowElement>,
+    row: Row
+  ) => {
+    // Check if the click originated from the actions column or any of its children
+    if (
+      !event.target ||
+      (event.target as HTMLElement).closest('[data-column="actions"]')
+    ) {
+      return;
+    }
+
+    // Check if the click is on or within a dialog
+    if ((event.target as HTMLElement).closest('[role="dialog"]')) {
+      return;
+    }
+
+    onRowClick && onRowClick(row);
+  };
+
   return (
     <Card className={`${className}`}>
       <CardHeader>
@@ -149,7 +174,7 @@ export function DataTable({
                       className={
                         onRowClick ? "cursor-pointer hover:bg-gray-100" : ""
                       }
-                      onClick={() => onRowClick && onRowClick(row)}
+                      onClick={(event) => handleRowClick(event, row)}
                     >
                       {columns.map((column, colIndex) => {
                         const cellData =
@@ -162,8 +187,16 @@ export function DataTable({
                           <TableCell
                             key={colIndex}
                             className={`text-center ${columnClass}`}
+                            data-column={column.header.toLowerCase()}
                           >
-                            {isImage(cellData) ? (
+                            {column.header.toLowerCase() === "actions" ? (
+                              <div
+                                onClick={preventPropagation}
+                                className="flex items-center justify-center"
+                              >
+                                {cellData}
+                              </div>
+                            ) : isImage(cellData) ? (
                               <div className="relative w-16 h-16 sm:w-14 sm:h-14 md:w-12 md:h-12 lg:w-10 lg:h-10 xl:w-8 xl:h-8 2xl:w-6 2xl:h-6 mx-auto">
                                 <Image
                                   src={cellData}

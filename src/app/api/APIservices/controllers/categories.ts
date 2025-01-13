@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Category, Prisma } from "@prisma/client";
 import { categorySchema, updateCategorySchema } from "../lib/validation";
 import { NextRequest } from "next/server";
 import { CategoryValidationT } from "@/types/types";
@@ -13,6 +13,7 @@ export async function getAllCategories() {
     },
   });
 }
+
 export async function getAllCategoryNames() {
   const categoryNames = await prisma.category.findMany({
     select: {
@@ -28,11 +29,29 @@ export async function getCategoryById(id: string) {
     where: {
       id: id,
     },
+    include: {
+      subcategories: {
+        include: {
+          subcategories: true,
+        },
+      },
+    },
   });
   if (!category) {
     throw new Error(`Category with id ${id} not found`);
   }
   return category;
+}
+export async function getParentCategories() {
+  const parentCategories = await prisma.category.findMany({
+    where: {
+      parentId: null,
+    },
+    include: {
+      subcategories: true,
+    },
+  });
+  return parentCategories;
 }
 
 export async function createCategory(id: string, data: CategoryValidationT) {
@@ -100,7 +119,7 @@ export async function categoryValidation(
   id: string
 ): Promise<CategoryValidationT> {
   const formData = await request.formData();
-
+  console.log("formData: ", formData);
   // Extract form data
   const extractedData = extractCategoryFormData(formData);
 
@@ -180,4 +199,24 @@ export function prepareCategoryData(
   if (imageUrl) data.imageUrl = imageUrl;
 
   return data;
+}
+
+export async function getAncestors(
+  categoryId: string
+): Promise<Partial<Category>[]> {
+  const ancestors: Partial<Category>[] = [];
+  let current = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { id: true, name: true, parentId: true },
+  });
+  while (current?.parentId) {
+    current = await prisma.category.findUnique({
+      where: { id: current.parentId },
+      select: { id: true, name: true, parentId: true },
+    });
+    if (current) {
+      ancestors.push(current);
+    }
+  }
+  return ancestors;
 }

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ProductFormValues } from "@/components/admin/products/productSchema";
 import { sendProduct, sendUpdateProduct } from "@/services/productService";
-import { CreateProductT } from "@/types/types";
 
 export const useEditProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,9 +22,7 @@ export const useEditProduct = () => {
       const updatedProduct = await sendUpdateProduct(data, id);
 
       // Show success toast
-      toast.success("Product created successfully", {
-        description: `${updatedProduct.name} has been added to your inventory.`,
-      });
+      toast.success("Product updated successfully");
 
       // Return the created product in case it's needed
       return updatedProduct;

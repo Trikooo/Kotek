@@ -19,20 +19,36 @@ import { Button } from "@/components/ui/button";
 import Select, { Option } from "@/components/ui/better-select";
 import { Switch } from "@/components/ui/switch";
 import ImageUploader from "./ImageUploader";
-import { SetStateAction, useState } from "react";
-import { useCategoryContext } from "@/context/CategoriesContext";
+import { useEffect, useState } from "react";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { Plus, RotateCcw } from "lucide-react";
 import generateCode128 from "@/utils/code128DataGenerator";
+import useGetAllCategoryNames from "@/hooks/categories/useGetAllCategoryNames";
+import { useProductsContext } from "@/context/ProductsContext";
 
 export default function CreateProduct() {
   const { createProduct, isLoading } = useCreateProductV2();
-  const { categoryOptions, loading, error } = useCategoryContext();
+  const { setProducts } = useProductsContext();
+  const {
+    data: categoryNames,
+    isLoading: categoriesLoading,
+    error,
+  } = useGetAllCategoryNames();
   const [selectedCategory, setSelectedCategory] = useState<Option[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<Option[]>([
     { label: "ACTIVE", value: "ACTIVE" },
   ]);
+  const [categoryOptions, setCategoryOptions] = useState<Option[]>([]);
 
+  useEffect(() => {
+    if (categoryNames) {
+      const options = categoryNames.map((category) => ({
+        value: category.id,
+        label: category.name,
+      }));
+      setCategoryOptions(options);
+    }
+  }, [categoryNames]);
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -61,7 +77,8 @@ export default function CreateProduct() {
     form.setValue("barcode", generatedBarcode);
   };
   const onSubmit = async (data: ProductFormValues) => {
-        await createProduct(data);
+    const newProduct = await createProduct(data);
+    setProducts((prev) => [newProduct, ...prev]);
     form.reset();
     setSelectedCategory([]);
   };
@@ -208,7 +225,7 @@ export default function CreateProduct() {
                             options={categoryOptions}
                             selectedOptions={selectedCategory}
                             setSelectedOptions={setSelectedCategory}
-                            loading={loading}
+                            loading={categoriesLoading}
                             error={error}
                             label="category"
                             onChange={(_, current) => {
@@ -420,15 +437,6 @@ export default function CreateProduct() {
                             images={field.value}
                             onImagesChange={(images) => {
                               field.onChange(images);
-                            }}
-                            onRemoveImage={(
-                              e: React.MouseEvent<HTMLButtonElement>,
-                              index: number
-                            ) => {
-                              e.preventDefault();
-                              const newImages = [...field.value];
-                              newImages.splice(index, 1);
-                              field.onChange(newImages);
                             }}
                           />
                         </div>

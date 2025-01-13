@@ -4,11 +4,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -24,23 +22,33 @@ import Select, { Option } from "@/components/ui/better-select";
 import { Switch } from "@/components/ui/switch";
 import ImageUploader from "./ImageUploader";
 import { PenBox, RotateCcw, Plus } from "lucide-react";
-import { Product } from "@prisma/client";
+import { Category, Product } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { ProductFormValues, productSchema } from "./productSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCategoryContext } from "@/context/CategoriesContext";
+
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { $Enums } from "@prisma/client";
 import { useEffect, useState } from "react";
 import generateCode128 from "@/utils/code128DataGenerator";
 import { useEditProduct } from "@/hooks/products/useEditProduct";
+import useGetAllCategoryNames from "@/hooks/categories/useGetAllCategoryNames";
 
 interface EditProductProps {
   product: Product;
+  onUpdateProduct: (updatedProduct: Product & { category: Category }) => void;
 }
 
-export default function EditProduct({ product }: EditProductProps) {
-  const { categoryOptions, loading, error } = useCategoryContext();
+export default function EditProduct({
+  product,
+  onUpdateProduct,
+}: EditProductProps) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const {
+    data: categoryNames,
+    isLoading: categoriesLoading,
+    error,
+  } = useGetAllCategoryNames();
   const { isLoading, updateProduct } = useEditProduct();
   const [selectedCategory, setSelectedCategory] = useState<Option[]>(
     product.categoryId
@@ -53,6 +61,18 @@ export default function EditProduct({ product }: EditProductProps) {
       value: product.status || "ACTIVE",
     },
   ]);
+
+  const [categoryOptions, setCategoryOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    if (categoryNames) {
+      const options = categoryNames.map((category) => ({
+        value: category.id,
+        label: category.name,
+      }));
+      setCategoryOptions(options);
+    }
+  }, [categoryNames]);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -89,11 +109,13 @@ export default function EditProduct({ product }: EditProductProps) {
 
   const onSubmit = async (data: ProductFormValues) => {
     const imageUrls = data.images.filter((image) => typeof image === "string");
-    const images = data.images.filter((image) => image instanceof File);
+    // const images = data.images.filter((image) => image instanceof File);
+    const images = data.images;
     const imagesToDelete = product.imageUrls.filter(
       (image) => !imageUrls.includes(image)
     );
-            await updateProduct(
+
+    const updatedProduct = await updateProduct(
       {
         ...data,
         images: images,
@@ -102,10 +124,12 @@ export default function EditProduct({ product }: EditProductProps) {
       },
       product.id
     );
+    setIsOpen(false);
+    onUpdateProduct(updatedProduct);
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
       <DialogTrigger>
         <Button variant="ghost">
           <PenBox className="w-5 h-5" strokeWidth={1.5} />
@@ -262,7 +286,7 @@ export default function EditProduct({ product }: EditProductProps) {
                                 options={categoryOptions}
                                 selectedOptions={selectedCategory}
                                 setSelectedOptions={setSelectedCategory}
-                                loading={loading}
+                                loading={categoriesLoading}
                                 error={error}
                                 label="category"
                                 onChange={(_, current) => {
@@ -474,15 +498,6 @@ export default function EditProduct({ product }: EditProductProps) {
                                 images={field.value}
                                 onImagesChange={(images) => {
                                   field.onChange(images);
-                                }}
-                                onRemoveImage={(
-                                  e: React.MouseEvent<HTMLButtonElement>,
-                                  index: number
-                                ) => {
-                                  e.preventDefault();
-                                  const newImages = [...field.value];
-                                  newImages.splice(index, 1);
-                                  field.onChange(newImages);
                                 }}
                               />
                             </div>
