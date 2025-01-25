@@ -1,7 +1,6 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 import { type NextRequestWithAuth } from "next-auth/middleware";
-import { toast } from "sonner";
 
 export default withAuth(
   function middleware(req: NextRequestWithAuth) {
