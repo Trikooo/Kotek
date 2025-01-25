@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { getAllCategoryNames } from "../../APIservices/controllers/categories";
 
+
+export const dynamic = "force-dynamic"
 export async function GET(req: NextRequest) {
   try {
     const categoryNames = await getAllCategoryNames();
