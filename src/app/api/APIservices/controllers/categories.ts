@@ -15,13 +15,18 @@ export async function getAllCategories() {
 }
 
 export async function getAllCategoryNames() {
-  const categoryNames = await prisma.category.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-  return categoryNames;
+  try {
+    const categoryNames = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    console.log(categoryNames);
+    return categoryNames;
+  } catch (error) {
+    throw new Error("[getAllCategoryNames] Error at the query level.");
+  }
 }
 
 export async function getCategoryById(id: string) {
