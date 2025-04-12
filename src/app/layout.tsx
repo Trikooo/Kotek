@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Head from "next/head"; // 👈 import Head
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -29,11 +30,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Head>
+        {/* ✅ Facebook Domain Verification Meta Tag */}
+        <meta
+          name="facebook-domain-verification"
+          content="pg0ppak334vgxpx2yq99kzaimr689c"
+        />
+      </Head>
       <body className={cn("min-h-screen font-sans antialiased relative")}>
-        {/* Background layer with gradient */}
+        {/* Background layer */}
         <div className="fixed inset-0 bg-custom-gradient" />
 
-        {/* Grid pattern overlay with mask */}
         <div
           className="fixed inset-0 w-full h-full"
           style={{
@@ -62,7 +69,6 @@ export default function RootLayout({
           }}
         />
 
-        {/* Content layer */}
         <div className="relative">
           <SessionProviderWrapper>
             <QueryProvider>

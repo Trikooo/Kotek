@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server";
 import { getAllCategoryNames } from "../../APIservices/controllers/categories";
 
-
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const categoryNames = await getAllCategoryNames();
@@ -24,7 +23,6 @@ export async function GET(req: NextRequest) {
         }
       );
     }
-
     // Fallback for unexpected error types
     return new Response(
       JSON.stringify({
